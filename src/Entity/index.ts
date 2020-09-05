@@ -1,1 +1,2 @@
-export {Entity} from "./Base";
+export {Base} from "./Base";
+export {Field} from "./Field";

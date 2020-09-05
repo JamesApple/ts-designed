@@ -1,11 +1,26 @@
-import {Entity} from "../Entity";
+import {Entity} from "..";
 
 describe("Entity", function () {
-  class AnEntity extends Entity.Base {}
+  class Empty extends Entity.Base {}
+
+  class OneField extends Entity.Base {
+    @Entity.Field()
+    aField: string;
+  }
 
   describe("Base", function () {
-    it("should compile", async function () {
-      AnEntity.create();
+    it("should create with no parameters", async function () {
+      Empty.create();
+    });
+
+    it("should use the @Field decorator to map a single attribute", async function () {
+      const entity = OneField.create({
+        data: {aField: "a-value"}
+      });
+
+      expect(entity).toMatchObject({
+        aField: "a-value"
+      });
     });
   });
 });
