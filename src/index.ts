@@ -1,1 +1,1 @@
-export { Entity } from './Entity'
+export {Entity} from "./Entity";

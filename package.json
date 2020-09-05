@@ -16,7 +16,7 @@
     "build:es2015": "tsc -p ./typescript/tsconfig.esm2015.json",
     "build:types": "tsc -p ./typescript/tsconfig.types.json",
     "clean": "rm -rf ./dist",
-    "test": "lint && jest --config test/jest.config.js",
+    "test": "npm run lint && jest --config test/jest.config.js",
     "test:inspect": "npm run lint && node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config test/jest.config.js",
     "test:coverage": "jest --config test/jest.config.js --coverage",
     "lint": "eslint --ext \".js,.jsx,.ts,.tsx\" \"./src\"",
@@ -29,14 +29,14 @@
     "tslib": "^2.0.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.21",
+    "@types/jest": "^26.0.13",
     "@types/node": "^14.6.4",
-    "@typescript-eslint/eslint-plugin": "^2.6.0",
-    "@typescript-eslint/parser": "^2.6.0",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1",
     "eslint": "^7.8.1",
-    "eslint-config-prettier": "^6.5.0",
+    "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "jest": "^24.7.1",
+    "jest": "^26.4.2",
     "prettier": "^2.1.1",
     "ts-jest": "^26.3.0",
     "typescript": "^4.0.2"
