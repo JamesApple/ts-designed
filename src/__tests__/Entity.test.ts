@@ -8,6 +8,10 @@ describe("Entity", function () {
     aField: string;
   }
 
+  class NoMarkedFields extends Entity.Base {
+    aField: string;
+  }
+
   describe("Mapping", function () {
     it("should create with no parameters", async function () {
       Empty.create();
@@ -73,6 +77,22 @@ describe("Entity", function () {
       expect(entity).toMatchObject({
         aField: "a-value"
       });
+    });
+
+    it("should not map fields that are not marked as fields", async function () {
+      const entity = NoMarkedFields.create({
+        data: {aField: "aField"}
+      });
+      expect(entity).not.toHaveProperty("aField");
+    });
+
+    it("should not throw if a dot syntax getter returns undefined", async function () {
+      const entity = OneField.build({
+        data: {},
+        mapping: {aField: "a.b.c"}
+      });
+
+      expect(entity).toHaveProperty("aField", undefined);
     });
   });
 });
