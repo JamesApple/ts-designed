@@ -104,3 +104,14 @@ Person.build({
   }
 })
 ```
+
+## Validation
+
+Designed does not implement it's own validation system and out of the box no validation will occur. It is up to you to provide a function that takes an entity and throws an error if it is invalid. 
+
+In practice this means you can choose between [class-validator](https://github.com/typestack/class-validator), [joi](https://github.com/sideway/joi), or any other validation system you would like.
+
+We have used [class-validator](https://github.com/typestack/class-validator) and found it to be the simplest to integrate with this module.
+
+```typescript
+```

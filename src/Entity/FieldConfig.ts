@@ -15,6 +15,6 @@ export class FieldConfig {
   }
 
   initialize(parent: EntityConfig): void {
-    this.decorators.forEach((d) => d(parent.proto, name));
+    this.decorators.forEach((d) => d(parent.proto, this.name));
   }
 }

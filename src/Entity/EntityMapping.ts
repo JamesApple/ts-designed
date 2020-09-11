@@ -4,7 +4,7 @@ import {FieldConfig} from "./FieldConfig";
 import {CreateArgs, isMappedCreateArgs, Mapping} from "./utilityTypes";
 
 export class EntityMapping {
-  private data: any;
+  private data: Object;
   private mappingConfig: {
     [key: string]: Mapping<Base, Object, any> | undefined;
   };
@@ -27,12 +27,12 @@ export class EntityMapping {
           this.assign(f, mapping({instance: this.instance, data: this.data}));
         }
       } else {
-        this.assign(f, this.data[f.name]);
+        this.assign(f, getValue(f.name, this.data));
       }
     });
   }
 
-  assign(field: FieldConfig, data: any): void {
+  private assign(field: FieldConfig, data: Object): void {
     (this.instance as any)[field.name] = data;
   }
 
