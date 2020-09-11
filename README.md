@@ -1,3 +1,5 @@
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/jamesapple/ts-designed/build/master)
+
 # Designed
 
 Designed is a TypeScript library to simplify building expressive, well-designed, domain driven services.
