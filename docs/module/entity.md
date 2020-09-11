@@ -114,4 +114,28 @@ In practice this means you can choose between [class-validator](https://github.c
 We have used [class-validator](https://github.com/typestack/class-validator) and found it to be the simplest to integrate with this module.
 
 ```typescript
+import {IsString, validateSync} from "class-validator";
+import {Entity} from "designed";
+
+const AString: Partial<Entity.FieldConfigArgs> = {
+  decorators: [IsString()]
+};
+
+class Person extends Entity.Base {
+  @Entity.Field(AString)
+  name: string;
+}
+Person.create(); // Creates an empty person
+
+// Naive implementation. If the
+Person.setValidator((entity) => {
+  const errors = validateSync(entity);
+  if (errors.length) throw new Error("model was invalid");
+  return entity;
+});
+
+Person.create() // Throws Error('model was invalid')
+
+Person.create({ data: { name: 'aName' }}) // Returns a validated Person entity.
 ```
+

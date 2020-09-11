@@ -1,9 +1,9 @@
-import {IsIn, validateSync} from "class-validator";
+import {IsString, validateSync} from "class-validator";
 import {Entity} from "..";
 
 describe("ClassValidatorIntegration", function () {
   const AString: Partial<Entity.FieldConfigArgs> = {
-    decorators: [IsIn(["a"])]
+    decorators: [IsString()]
   };
 
   class Person extends Entity.Base {
