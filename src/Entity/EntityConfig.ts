@@ -1,3 +1,4 @@
+import {Base} from "./Base";
 import {FieldConfig} from "./FieldConfig";
 
 export class EntityConfig {
@@ -5,8 +6,18 @@ export class EntityConfig {
 
   private fields: Map<string | Symbol, FieldConfig> = new Map();
 
-  addField(field: FieldConfig) {
+  eachField(visit: (f: FieldConfig) => void): void {
+    for (const f of this.fields.values()) {
+      visit(f);
+    }
+  }
+
+  addField(field: FieldConfig): void {
     this.fields.set(field.name, field);
+  }
+
+  static forInstance(entity: Base): EntityConfig {
+    return this.forPrototype(Object.getPrototypeOf(entity));
   }
 
   static forConstructor(constructor: Function): EntityConfig {
