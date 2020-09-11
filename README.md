@@ -1,4 +1,6 @@
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/jamesapple/ts-designed/build/master)
+[![npm](https://img.shields.io/npm/v/designed.svg)](https://www.npmjs.com/package/designed)
+[![npm](https://img.shields.io/npm/dt/designed.svg)](https://www.npmjs.com/package/designed)
 
 # Designed
 
