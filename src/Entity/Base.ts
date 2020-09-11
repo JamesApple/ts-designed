@@ -3,6 +3,7 @@ import {EntityMapping} from "./EntityMapping";
 
 export class Base {
   static validate = <T extends Base>(v: T): T => v;
+  validate: typeof Base.validate = Base.validate;
 
   /**
    * Map, then validate an entity
@@ -12,7 +13,7 @@ export class Base {
     args?: CreateArgs<InstanceType<T>, D>
   ): InstanceType<T> {
     const instance = this.build(args);
-    this.validate(instance);
+    instance.validate;
     return instance;
   }
 

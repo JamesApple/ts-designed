@@ -13,6 +13,7 @@ export class EntityConfig {
   }
 
   addField(field: FieldConfig): void {
+    field.initialize(this);
     this.fields.set(field.name, field);
   }
 
