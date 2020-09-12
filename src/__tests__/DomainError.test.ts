@@ -1,7 +1,7 @@
-import {DomainError} from "..";
+import {Errors} from "..";
 
 describe("DomainError", function () {
-  class MyError extends DomainError {}
+  class MyError extends Errors.DomainError {}
 
   it("should wrap multiple errors", async function () {
     const root = new Error("Root Cause");

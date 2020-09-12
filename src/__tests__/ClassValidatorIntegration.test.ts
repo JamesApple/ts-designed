@@ -1,5 +1,6 @@
 import {IsString, validateSync} from "class-validator";
 import {Entity} from "..";
+import {Errors} from "..";
 
 describe("ClassValidatorIntegration", function () {
   const AString: Partial<Entity.FieldConfigArgs> = {
@@ -41,5 +42,25 @@ describe("ClassValidatorIntegration", function () {
     expect(() => Person.create()).toThrowErrorMatchingInlineSnapshot(
       `"model was invalid"`
     );
+  });
+
+  it("can create an  from class validation errors", async function () {
+    const error = Errors.EntityValidationError.fromClassValidatorErrors(
+      validateSync(Person.build())
+    );
+    expect({...error}).toMatchInlineSnapshot(`
+      Object {
+        "apiCode": "VALIDATION_ERROR",
+        "causes": Array [
+          Object {
+            "issue": "name must be a string",
+            "path": "name",
+          },
+        ],
+        "details": Object {},
+        "longMessage": "A validation error occurred.",
+        "statusCode": 500,
+      }
+    `);
   });
 });

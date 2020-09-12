@@ -1,5 +1,5 @@
 export class DomainError extends Error {
-  private previousError?: DomainError | Error;
+  previousError?: DomainError | Error;
 
   statusCode = 500;
   apiCode = "INTERNAL_ERROR";
