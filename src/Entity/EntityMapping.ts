@@ -41,7 +41,7 @@ export class EntityMapping {
   }
 }
 
-function getValue(path: string, object: unknown): any {
+export function getValue(path: string, object: unknown): any {
   return path
     .replace(/\[/g, ".")
     .replace(/\]/g, "")

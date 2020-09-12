@@ -1,6 +1,7 @@
 import {CreateArgs} from "./utilityTypes";
 import {EntityMapping} from "./EntityMapping";
 import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
+import {EntitySerializer} from "./EntitySerializer";
 
 export class Base {
   /**
@@ -41,6 +42,10 @@ export class Base {
 
   fields<T extends Base>(this: T): EntityFieldReader {
     return new EntityFieldReader(this);
+  }
+
+  serialize<T extends Base>(this: T): EntitySerializer<T> {
+    return new EntitySerializer(this);
   }
 }
 

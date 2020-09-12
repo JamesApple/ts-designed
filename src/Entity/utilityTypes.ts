@@ -24,7 +24,7 @@ export type CreateArgs<I extends Base, D> =
   | MappedCreateArgs<I, D>;
 
 export interface SimpleCreateArgs<I extends Base> {
-  data: Partial<I>;
+  data: Partial<WithoutFunctions<I>>;
 }
 
 export interface MappedCreateArgs<I extends Base, D extends Object> {
