@@ -6,6 +6,10 @@ export class EntityConfig {
 
   private fields: Map<string | Symbol, FieldConfig> = new Map();
 
+  getFields(): FieldConfig[] {
+    return Array.from(this.fields.values());
+  }
+
   eachField(visit: (f: FieldConfig) => void): void {
     for (const f of this.fields.values()) {
       visit(f);
@@ -35,6 +39,7 @@ export class EntityConfig {
 }
 
 export const ENTITY_CONFIGURATION_KEY = Symbol("ENTITY_CONFIGURATION");
+
 interface Proto {
   [ENTITY_CONFIGURATION_KEY]?: EntityConfig;
 }

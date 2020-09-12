@@ -1,5 +1,6 @@
 import {CreateArgs} from "./utilityTypes";
 import {EntityMapping} from "./EntityMapping";
+import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
 
 export class Base {
   /**
@@ -26,11 +27,23 @@ export class Base {
     return instance;
   }
 
-  private static validator = <T extends Base>(entity: T): T => entity;
+  static validator = <T extends Base>(entity: T): T => entity;
   static setValidator<T extends typeof Base>(
     this: T,
     validator: typeof this.validator
   ): void {
     this.validator = validator;
   }
+
+  static fields<T extends typeof Base>(this: T): ClassFieldReader {
+    return new ClassFieldReader(this);
+  }
+
+  fields<T extends Base>(this: T): EntityFieldReader {
+    return new EntityFieldReader(this);
+  }
+}
+
+export function isEntityConstructor(o: unknown): o is Base {
+  return o === Base || (o as any)?.prototype instanceof Base;
 }
