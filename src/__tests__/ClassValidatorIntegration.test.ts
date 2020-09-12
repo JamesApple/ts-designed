@@ -44,7 +44,7 @@ describe("ClassValidatorIntegration", function () {
     );
   });
 
-  it("can create an  from class validation errors", async function () {
+  it("can create an from class validation errors", async function () {
     const error = Errors.EntityValidationError.fromClassValidatorErrors(
       validateSync(Person.build())
     );

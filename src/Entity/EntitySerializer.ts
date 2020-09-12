@@ -1,5 +1,6 @@
 import {Base} from "./Base";
 import {getValue} from "./EntityMapping";
+import {EntityFieldReader} from "./FieldReader";
 import {WithoutFunctions} from "./utilityTypes";
 
 export class EntitySerializer<T extends Base> {
@@ -23,42 +24,36 @@ export class EntitySerializer<T extends Base> {
     return target as O;
   }
 
-  // asJSON(args?: MappedSerializeArgs<T>, blob = {}) {
-  //   if (args) {
-  //     Object.entries(args).forEach(([field, config]) => {
-  //       if(config)
-  //     });
-  //     // if (typeof args === "string") {
-  //     //   set(blob, )
-  //     // }
-  //   } else {
-  //   }
-  //   return blob;
-  // }
+  asJSON(): AsJsonResult<T> {
+    return new EntityFieldReader(this.instance).onlySet().reduce((json, f) => {
+      let value: any = (this.instance as any)[f.name];
+      if (canBeConvertedToJson(value)) {
+        value = (value as any).serialize().asJSON();
+      }
+      json[f.name] = value;
+      return json;
+    }, {} as any) as any;
+  }
 }
+
+type AsJsonResult<T extends Base> = {
+  [K in keyof WithoutFunctions<T>]: T[K] extends Base
+    ? AsJsonResult<T[K]>
+    : T[K];
+};
 
 type MappedSerializeArgs<T extends Base, O extends Record<string, any>> = {
   [K in keyof WithoutFunctions<O>]?:
     | (O[K] extends Record<string, any> ? MappedSerializeArgs<T, O[K]> : string)
     | ((args: {instance: T}) => O[K]);
-
-  // string | ((args: {instance: T}) => K[O]);
 };
 
-// type MappedSerializeArgs<T extends Base> = {
-//   [K in keyof WithoutFunctions<T>]: T[K] extends Base
-//     ? MappedSerializeArgs<T[K]> | ((args: {instance: T}) => T[K])
-//     : string;
-// };
+interface ConvertableToJson<T extends Base> {
+  serialize: T["serialize"];
+}
 
-// function set(object: Object, path: string, value: any): void {
-//   const pathSegments = path.split(".");
-//   let lastObject: any = object;
-
-//   for (let i = 0; i < pathSegments.length - 1; i++) {
-//     const key = pathSegments[i];
-//     if (!lastObject[key]) lastObject[key] = {};
-//     lastObject = lastObject[key];
-//   }
-//   lastObject[pathSegments.length - 1] = value;
-// }
+function canBeConvertedToJson<T extends Base>(
+  v: any
+): v is ConvertableToJson<T> {
+  return v && v instanceof Base;
+}
