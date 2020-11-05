@@ -47,6 +47,11 @@ export class Base {
   serialize<T extends Base>(this: T): EntitySerializer<T> {
     return new EntitySerializer(this);
   }
+
+  validate<T extends Base>(this: T): T {
+    //@ts-ignore
+    return this.constructor.validator(this);
+  }
 }
 
 export function isEntityConstructor(o: unknown): o is Base {
