@@ -2,6 +2,7 @@
   "name": "designed",
   "version": "0.0.5",
   "description": "DDD Utilities to simplify standing up well designed services",
+  "sideEffects": false,
   "keywords": [],
   "author": "James Apple",
   "license": "MIT",
