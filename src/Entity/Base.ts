@@ -49,8 +49,7 @@ export class Base {
   }
 
   validate<T extends Base>(this: T): T {
-    //@ts-ignore
-    return this.constructor.validator(this);
+    return (this.constructor as any).validator(this);
   }
 }
 
