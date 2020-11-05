@@ -1,11 +1,6 @@
 export class DomainError extends Error {
   previousError?: DomainError | Error;
-
-  statusCode = 500;
-  apiCode = "INTERNAL_ERROR";
-
   message: string;
-  longMessage = "An internal error has occured. Please try again later.";
 
   details: {[key: string]: any} = {};
 

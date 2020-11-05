@@ -1,7 +1,9 @@
-import {Errors} from "..";
+import {DomainError} from "..";
 
 describe("DomainError", function () {
-  class MyError extends Errors.DomainError {}
+  class MyError extends DomainError {
+    apiCode = 700;
+  }
 
   it("should wrap multiple errors", async function () {
     const root = new Error("Root Cause");
@@ -21,6 +23,7 @@ describe("DomainError", function () {
 
   it("should add details", async function () {
     const err = MyError.create("an Error", {
+      apiCode: 400,
       details: {
         some: "context"
       }
@@ -33,12 +36,10 @@ describe("DomainError", function () {
     `);
     expect({...err}).toMatchInlineSnapshot(`
       Object {
-        "apiCode": "INTERNAL_ERROR",
+        "apiCode": 400,
         "details": Object {
           "some": "context",
         },
-        "longMessage": "An internal error has occured. Please try again later.",
-        "statusCode": 500,
       }
     `);
   });

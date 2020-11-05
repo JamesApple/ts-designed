@@ -1,2 +1,2 @@
 export * as Entity from "./Entity";
-export * as Errors from "./DomainError";
+export {DomainError} from "./DomainError";
