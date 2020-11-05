@@ -22,7 +22,7 @@ describe("Serialization", function () {
 
   it("does not output unset fields", async function () {
     const entity = OneField.create({data: {}});
-    expect(entity.serialize().asJSON()).toMatchInlineSnapshot();
+    expect(entity.serialize().asJSON()).toMatchInlineSnapshot(`Object {}`);
   });
 
   it("serializes nested entities", async function () {
