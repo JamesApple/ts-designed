@@ -46,6 +46,9 @@ export class DomainError extends Error {
   ): InstanceType<T> {
     const domainError = this.create(...(rest as any));
     domainError.previousError = error;
+    if (!domainError.message) {
+      domainError.message = error.message;
+    }
     return domainError;
   }
 
