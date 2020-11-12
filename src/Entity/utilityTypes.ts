@@ -1,3 +1,4 @@
+import {Optional} from "../Optional";
 import {Base} from "./Base";
 
 export class EntityInitializationError extends Error {}
@@ -34,4 +35,4 @@ export interface MappedCreateArgs<I extends Base, D extends Object> {
 
 export type Mapping<I extends Base, D extends Object, V> =
   | string
-  | ((val: unknown, args: {instance: I; data: D}) => V);
+  | ((val: Optional<unknown>, args: {instance: I; data: D}) => V);

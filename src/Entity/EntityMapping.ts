@@ -1,3 +1,4 @@
+import {Optional} from "../Optional";
 import {Base} from "./Base";
 import {EntityConfig} from "./EntityConfig";
 import {FieldConfig} from "./FieldConfig";
@@ -26,7 +27,7 @@ export class EntityMapping {
         } else {
           this.assign(
             f,
-            mapping((this.data as any)[f.name], {
+            mapping(Optional.of((this.data as any)[f.name]), {
               instance: this.instance,
               data: this.data
             })

@@ -87,7 +87,7 @@ describe("Entity", function () {
       const entity = OneField.create({
         data,
         mapping: {
-          aField: (passed) => passed as string
+          aField: (passed) => passed.orElse("not this one") as string
         }
       });
 
