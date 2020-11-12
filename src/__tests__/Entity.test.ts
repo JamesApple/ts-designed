@@ -66,7 +66,7 @@ describe("Entity", function () {
       const entity = OneField.create({
         data,
         mapping: {
-          aField: ({instance, data: passedData}) => {
+          aField: (_, {instance, data: passedData}) => {
             expect(data).toEqual(passedData);
             expect(instance).toBeInstanceOf(OneField);
             return "a-value";
@@ -76,6 +76,23 @@ describe("Entity", function () {
 
       expect(entity).toMatchObject({
         aField: "a-value"
+      });
+    });
+
+    it("maps by function and passes in the same field", async function () {
+      const data = {
+        some: "data we ignore",
+        aField: "passed-from-data"
+      };
+      const entity = OneField.create({
+        data,
+        mapping: {
+          aField: (passed) => passed as string
+        }
+      });
+
+      expect(entity).toMatchObject({
+        aField: "passed-from-data"
       });
     });
 

@@ -34,4 +34,4 @@ export interface MappedCreateArgs<I extends Base, D extends Object> {
 
 export type Mapping<I extends Base, D extends Object, V> =
   | string
-  | ((args: {instance: I; data: D}) => V);
+  | ((val: unknown, args: {instance: I; data: D}) => V);

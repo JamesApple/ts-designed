@@ -24,7 +24,13 @@ export class EntityMapping {
         if (typeof mapping === "string") {
           this.assign(f, getValue(mapping, this.data));
         } else {
-          this.assign(f, mapping({instance: this.instance, data: this.data}));
+          this.assign(
+            f,
+            mapping((this.data as any)[f.name], {
+              instance: this.instance,
+              data: this.data
+            })
+          );
         }
       } else {
         this.assign(f, getValue(f.name, this.data));
