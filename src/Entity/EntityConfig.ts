@@ -4,6 +4,8 @@ import {FieldConfig} from "./FieldConfig";
 export class EntityConfig {
   constructor(public proto: Object) {}
 
+  private wasReflectLoaded = "getMetadata" in Reflect;
+
   private fields: Map<string | Symbol, FieldConfig> = new Map();
 
   getFields(): FieldConfig[] {
