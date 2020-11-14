@@ -1,5 +1,4 @@
 import {Base} from "./Base";
-import {getValue} from "./EntityMapping";
 import {EntityFieldReader} from "./FieldReader";
 import {WithoutFunctions} from "./utilityTypes";
 
@@ -56,4 +55,16 @@ function canBeConvertedToJson<T extends Base>(
   v: any
 ): v is ConvertableToJson<T> {
   return v && v instanceof Base;
+}
+
+function getValue(path: string, object: unknown): any {
+  const value = path
+    .replace(/\[/g, ".")
+    .replace(/\]/g, "")
+    .split(".")
+    .reduce((o: any, k: string) => (o || {})[k], object) as unknown;
+  if (value && typeof value === "object" && "serialize" in value) {
+    return (value as any).serialize();
+  }
+  return value;
 }

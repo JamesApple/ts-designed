@@ -23,7 +23,7 @@ export class EntityMapping {
       const mapping = this.mappingConfig[f.name];
       if (mapping) {
         if (typeof mapping === "string") {
-          this.assign(f, getValue(mapping, this.data));
+          this.assign(f, getValue(mapping, this.data, f));
         } else {
           this.assign(
             f,
@@ -34,7 +34,7 @@ export class EntityMapping {
           );
         }
       } else {
-        this.assign(f, getValue(f.name, this.data));
+        this.assign(f, getValue(f.name, this.data, f));
       }
     });
   }
@@ -48,10 +48,12 @@ export class EntityMapping {
   }
 }
 
-export function getValue(path: string, object: unknown): any {
-  return path
-    .replace(/\[/g, ".")
-    .replace(/\]/g, "")
-    .split(".")
-    .reduce((o: any, k: string) => (o || {})[k], object);
+export function getValue(path: string, object: unknown, f: FieldConfig): any {
+  return f.deserialize(
+    path
+      .replace(/\[/g, ".")
+      .replace(/\]/g, "")
+      .split(".")
+      .reduce((o: any, k: string) => (o || {})[k], object) as any
+  );
 }

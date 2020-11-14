@@ -1,4 +1,4 @@
-import {Result} from "./Result";
+import {Result} from "../Result";
 
 describe("Result", () => {
   const aResult = "a-result";
