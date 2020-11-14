@@ -8,6 +8,8 @@ export abstract class Optional<T> {
       : new PresentOptional<NonNullable<T>>(value as any);
   };
 
+  static fromJSON = (data: any) => Optional.of;
+
   static empty = <T = unknown>(): Optional<T> => {
     return new AbsentOptional();
   };
@@ -23,6 +25,8 @@ export abstract class Optional<T> {
   abstract orThrow(errThrower: () => any): T;
 
   abstract toJSON(_: string): T | null;
+
+  abstract asJSON(): T | null;
 }
 
 class PresentOptional<T> extends Optional<T> {
@@ -53,6 +57,10 @@ class PresentOptional<T> extends Optional<T> {
   toJSON(): T | null {
     return this.value;
   }
+
+  asJSON(): T | null {
+    return this.value;
+  }
 }
 
 class AbsentOptional<T> extends Optional<T> {
@@ -81,6 +89,10 @@ class AbsentOptional<T> extends Optional<T> {
   }
 
   toJSON(): T | null {
+    return null;
+  }
+
+  asJSON(): T | null {
     return null;
   }
 }
