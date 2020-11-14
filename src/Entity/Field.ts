@@ -18,10 +18,10 @@ export function Field(
     let reflectedEntity: any;
     if ("getMetadata" in Reflect) {
       entity = (Reflect as any).getMetadata("design:type", proto, property);
-      if (!entity || !(entity instanceof Base)) {
-        entity = undefined;
-      } else if (entity) {
+      if (entity) {
         reflectedEntity = entity;
+      }
+      if (!entity || !(entity.prototype instanceof Base)) {
         entity = undefined;
       }
     }
