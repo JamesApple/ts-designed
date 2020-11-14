@@ -26,7 +26,9 @@ export class EntitySerializer<T extends Base> {
   asJSON(): AsJsonResult<T> {
     return new EntityFieldReader(this.instance).onlySet().reduce((json, f) => {
       let value: any = (this.instance as any)[f.name];
-      if (canBeConvertedToJson(value)) {
+      if (hasAsJSONMethod(value)) {
+        value = (value as any).asJSON();
+      } else if (canBeConvertedToJson(value)) {
         value = (value as any).serialize().asJSON();
       }
       json[f.name] = value;
