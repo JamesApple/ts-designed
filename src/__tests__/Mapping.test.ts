@@ -72,7 +72,7 @@ describe("Mapping", function () {
     }
 
     const mapped = person.serialize().mapTo<SimpleObject>({
-      field: ({instance}) => Number(instance.name)
+      field: (_, instance) => Number(instance.name)
     });
 
     expect(mapped.field).toEqual(0);
@@ -94,7 +94,7 @@ describe("Mapping", function () {
     const mapped = lord.serialize().mapTo({
       serializedName: "name",
       firstPersonsName: "subjects[0].name",
-      revolutionAftermath: ({instance}) => ({
+      revolutionAftermath: (_, instance) => ({
         lords: instance.subjects.map((person) =>
           Lord.create({
             data: {...person, subjects: [Person.create({data: {...instance}})]}

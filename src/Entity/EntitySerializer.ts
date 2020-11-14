@@ -11,7 +11,7 @@ export class EntitySerializer<T extends Base> {
   ): O {
     Object.entries(mapping).forEach(([k, config]) => {
       if (typeof config === "function") {
-        (target as any)[k] = config({instance: this.instance});
+        (target as any)[k] = config((this.instance as any)[k], this.instance);
       } else if (typeof config === "object") {
         if (config == null) return;
         if (target[k] == null) (target as any)[k] = {};
@@ -46,7 +46,7 @@ type AsJsonResult<T extends Base> = {
 type MappedSerializeArgs<T extends Base, O extends Record<string, any>> = {
   [K in keyof WithoutFunctions<O>]?:
     | (O[K] extends Record<string, any> ? MappedSerializeArgs<T, O[K]> : string)
-    | ((args: {instance: T}) => O[K]);
+    | ((value: O[K], instance: T) => O[K]);
 };
 
 interface ConvertableToJson<T extends Base> {
