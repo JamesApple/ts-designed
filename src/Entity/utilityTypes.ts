@@ -29,7 +29,7 @@ export interface SimpleCreateArgs<I extends Base> {
 }
 
 export interface MappedCreateArgs<I extends Base, D extends Object> {
-  data: D;
+  data: WithoutFunctions<D>;
   mapping: MappingConfig<I, D>;
 }
 

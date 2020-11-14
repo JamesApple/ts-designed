@@ -51,10 +51,18 @@ interface ConvertableToJson<T extends Base> {
   serialize: T["serialize"];
 }
 
+interface HasAsJSONMethod {
+  asJSON(data: any): any;
+}
+
 function canBeConvertedToJson<T extends Base>(
   v: any
 ): v is ConvertableToJson<T> {
   return v && v instanceof Base;
+}
+
+function hasAsJSONMethod(v: any): v is HasAsJSONMethod {
+  return v && typeof v === "object" && "asJSON" in v;
 }
 
 function getValue(path: string, object: unknown): any {
@@ -63,8 +71,8 @@ function getValue(path: string, object: unknown): any {
     .replace(/\]/g, "")
     .split(".")
     .reduce((o: any, k: string) => (o || {})[k], object) as unknown;
-  if (value && typeof value === "object" && "serialize" in value) {
-    return (value as any).serialize();
+  if (value && typeof value === "object" && "asJSON" in value) {
+    return (value as any).asJSON();
   }
   return value;
 }

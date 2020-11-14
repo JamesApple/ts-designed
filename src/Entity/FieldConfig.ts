@@ -36,8 +36,8 @@ export class FieldConfig {
 
   deserialize(value: Object) {
     const entity = this.entity ?? this.reflectedEntity;
-    if (entity && "deserialize" in entity) {
-      return entity.deserialize(value);
+    if (entity && "fromJSON" in entity) {
+      return entity.fromJSON(value);
     }
     return value;
   }
