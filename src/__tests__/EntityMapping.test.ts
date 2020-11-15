@@ -1,6 +1,25 @@
+import "reflect-metadata";
 import {Entity} from "..";
+import {EntityConfig} from "../Entity/EntityConfig";
 
 describe("EntityMapping", function () {
+  class StringChild {
+    value: string;
+
+    static fromJSON(data: any) {
+      if (typeof data !== "string") {
+        throw new Error(`StringChild was passed ${data}`);
+      }
+      const instance = new StringChild();
+      instance.value = data;
+      return instance;
+    }
+
+    asJSON() {
+      return this.value;
+    }
+  }
+
   class EntityChild extends Entity.Base {
     @Entity.Field() name: string;
 
@@ -33,6 +52,10 @@ describe("EntityMapping", function () {
 
   class ParentPOJO extends Entity.Base {
     @Entity.Field() child: POJOChild;
+  }
+
+  class StringParent extends Entity.Base {
+    @Entity.Field() child: StringChild;
   }
 
   const raw = {child: {name: "Steve"}} as any;
@@ -106,6 +129,22 @@ describe("EntityMapping", function () {
           .serialize()
           .asJSON()
       ).toEqual({});
+    });
+  });
+
+  describe("Raw value serialization", () => {
+    it("serializes raw values", async function () {
+      const parent = StringParent.create({data: {child: "string" as any}});
+      expect(parent.child).toBeInstanceOf(StringChild);
+      expect(parent.serialize().asJSON()).toEqual({child: "string"});
+    });
+
+    it("does not serialize models with their fromJSON method", async function () {
+      const parent = StringParent.create({
+        data: {child: StringChild.fromJSON("string")}
+      });
+      expect(parent.child).toBeInstanceOf(StringChild);
+      expect(parent.serialize().asJSON()).toEqual({child: "string"});
     });
   });
 });
