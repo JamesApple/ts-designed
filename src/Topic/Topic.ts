@@ -23,7 +23,7 @@ export class Topic<T> implements Topic<T> {
     return new Topic<T>(guaranteeConfig(config));
   }
   protected constructor(private config: FinalTopicConfig<T>) {}
-  private subscribers: Set<ConsumerFunction<T>>;
+  private subscribers: Set<ConsumerFunction<T>> = new Set();
 
   subscribe(consumer: ConsumerFunction<T>): TeardownFunction {
     this.subscribers.add(consumer);
