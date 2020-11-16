@@ -14,6 +14,10 @@ export abstract class Optional<T> {
     return new AbsentOptional();
   };
 
+  abstract isPresent(): this is PresentOptional<T>;
+
+  abstract isAbsent(): this is AbsentOptional<T>;
+
   abstract map<X>(transform: (value: T) => X): Optional<NonNullable<X>>;
 
   abstract flatMap<X>(transform: (value: T) => Optional<X>): Optional<X>;
@@ -61,6 +65,13 @@ class PresentOptional<T> extends Optional<T> {
   asJSON(): T | null {
     return this.value;
   }
+  isPresent(): this is PresentOptional<T> {
+    return true;
+  }
+
+  isAbsent(): this is AbsentOptional<T> {
+    return false;
+  }
 }
 
 class AbsentOptional<T> extends Optional<T> {
@@ -94,5 +105,13 @@ class AbsentOptional<T> extends Optional<T> {
 
   asJSON(): T | null {
     return null;
+  }
+
+  isPresent(): this is PresentOptional<T> {
+    return false
+  }
+
+  isAbsent(): this is AbsentOptional<T> {
+    return true
   }
 }
