@@ -18,6 +18,8 @@ export abstract class Optional<T> {
 
   abstract isAbsent(): this is AbsentOptional<T>;
 
+  abstract filter(transform: (value: T) => boolean): Optional<T>;
+
   abstract map<X>(transform: (value: T) => X): Optional<NonNullable<X>>;
 
   abstract flatMap<X>(transform: (value: T) => Optional<X>): Optional<X>;
@@ -34,6 +36,12 @@ export abstract class Optional<T> {
 }
 
 class PresentOptional<T> extends Optional<T> {
+  filter(transform: (value: T) => boolean): Optional<T> {
+    return transform(this.value)
+      ? new PresentOptional(this.value)
+      : new AbsentOptional<T>();
+  }
+
   constructor(private value: T) {
     super();
   }
@@ -82,6 +90,11 @@ class AbsentOptional<T> extends Optional<T> {
   map<X>(): Optional<X> {
     return new AbsentOptional<X>();
   }
+
+  filter(): Optional<T> {
+    return new AbsentOptional();
+  }
+
   flatMap<X>(): Optional<X> {
     return new AbsentOptional();
   }
