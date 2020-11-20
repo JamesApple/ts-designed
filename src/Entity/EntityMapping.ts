@@ -1,41 +1,18 @@
-import {Optional} from "../Optional";
 import {Base} from "./Base";
 import {EntityConfig} from "./EntityConfig";
 import {FieldConfig} from "./FieldConfig";
-import {CreateArgs, isMappedCreateArgs, Mapping} from "./utilityTypes";
+import {CreateArgs} from "./utilityTypes";
 
 export class EntityMapping {
   private data: Object;
-  private mappingConfig: {
-    [key: string]: Mapping<Base, Object, any> | undefined;
-  };
 
-  constructor(
-    public instance: Base,
-    args: CreateArgs<Base, Object> = {data: {}}
-  ) {
-    this.data = args.data ?? {};
-    this.mappingConfig = isMappedCreateArgs(args) ? args.mapping : {};
+  constructor(public instance: Base, args: CreateArgs<Base, Object> = {}) {
+    this.data = args;
   }
 
   map(): void {
     this.entityConfig.eachField((f) => {
-      const mapping = this.mappingConfig[f.name];
-      if (mapping) {
-        if (typeof mapping === "string") {
-          this.assign(f, getValue(mapping, this.data, f));
-        } else {
-          this.assign(
-            f,
-            mapping(Optional.of((this.data as any)[f.name]), {
-              instance: this.instance,
-              data: this.data
-            })
-          );
-        }
-      } else {
-        this.assign(f, getValue(f.name, this.data, f));
-      }
+      this.assign(f, getValue(f.name, this.data, f));
     });
   }
 

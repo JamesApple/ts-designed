@@ -41,10 +41,8 @@ describe("FieldReading", function () {
 
   it("returns all set fields for an entity", async function () {
     const person = Person.create({
-      data: {
-        name: "Bob",
-        address: Address.create({data: {postcode: 1}})
-      }
+      name: "Bob",
+      address: Address.create({postcode: 1})
     });
     expect(person.fields().onlySet()).toMatchInlineSnapshot(`
       Array [
@@ -70,10 +68,8 @@ describe("FieldReading", function () {
 
   it("returns all unset fields for an entity", async function () {
     const person = Person.create({
-      data: {
-        name: "Bob",
-        address: Address.create({data: {postcode: 1}})
-      }
+      name: "Bob",
+      address: Address.create({postcode: 1})
     });
     expect(person.fields().onlyUnset()).toMatchInlineSnapshot(`Array []`);
     delete person.name;

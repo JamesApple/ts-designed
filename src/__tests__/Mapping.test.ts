@@ -19,7 +19,7 @@ describe("Mapping", function () {
       a: {nested: {name: string}};
       same: string;
     }
-    const person = Person.create({data: {name: "Bill"}});
+    const person = Person.create({name: "Bill"});
 
     expect(
       person.serialize().mapTo<storageType>({
@@ -39,7 +39,7 @@ describe("Mapping", function () {
   });
 
   it("mapsTo an existing object while preserving types", async function () {
-    const person = Person.create({data: {name: "Bill"}});
+    const person = Person.create({name: "Bill"});
 
     const objectWithPerson = {
       some: {
@@ -66,7 +66,7 @@ describe("Mapping", function () {
   });
 
   it("mapsTo using a functional parameter", async function () {
-    const person = Person.create({data: {name: "0"}});
+    const person = Person.create({name: "0"});
     interface SimpleObject {
       field: number;
     }
@@ -85,10 +85,8 @@ describe("Mapping", function () {
 
   it("performs complex mapping using map functions", async function () {
     const lord = Lord.create({
-      data: {
-        name: "Farquad",
-        subjects: [Person.create({data: {name: "Shrek"}})]
-      }
+      name: "Farquad",
+      subjects: [Person.create({name: "Shrek"})]
     });
 
     const mapped = lord.serialize().mapTo({
@@ -97,7 +95,8 @@ describe("Mapping", function () {
       revolutionAftermath: (_, instance) => ({
         lords: instance.subjects.map((person) =>
           Lord.create({
-            data: {...person, subjects: [Person.create({data: {...instance}})]}
+            ...person,
+            subjects: [Person.create({...instance})]
           })
         )
       })

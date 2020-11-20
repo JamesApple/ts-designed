@@ -24,7 +24,7 @@ describe("EntityMapping", function () {
     @Entity.Field() name: string;
 
     static fromJSON(data: any) {
-      return EntityChild.create({data});
+      return EntityChild.create(data);
     }
 
     asJSON() {
@@ -62,14 +62,12 @@ describe("EntityMapping", function () {
 
   describe("POJO", function () {
     it("Serializes an entity from a raw string", async function () {
-      expect(ParentPOJO.create({data: raw}).serialize().asJSON()).toEqual(raw);
+      expect(ParentPOJO.create(raw).serialize().asJSON()).toEqual(raw);
     });
 
     it("Serializes an entity from a model", async function () {
       expect(
-        ParentPOJO.create({
-          data: {child: POJOChild.fromJSON({name: "Steve"})}
-        })
+        ParentPOJO.create({child: POJOChild.fromJSON({name: "Steve"})})
           .serialize()
           .asJSON()
       ).toEqual(raw);
@@ -78,7 +76,7 @@ describe("EntityMapping", function () {
     it("Serializes an entity from a nullish value", async function () {
       expect(
         ParentPOJO.create({
-          data: {child: null as any}
+          child: null as any
         })
           .serialize()
           .asJSON()
@@ -86,25 +84,19 @@ describe("EntityMapping", function () {
     });
 
     it("Serializes an entity from an undefined value", async function () {
-      expect(
-        ParentPOJO.create({
-          data: {}
-        })
-          .serialize()
-          .asJSON()
-      ).toEqual({});
+      expect(ParentPOJO.create({}).serialize().asJSON()).toEqual({});
     });
   });
 
   describe("Entity", () => {
     it("Serializes an entity from a raw string", async function () {
-      expect(Parent.create({data: raw}).serialize().asJSON()).toEqual(raw);
+      expect(Parent.create(raw).serialize().asJSON()).toEqual(raw);
     });
 
     it("Serializes an entity from a model", async function () {
       expect(
         Parent.create({
-          data: {child: EntityChild.create({data: {name: "Steve"}})}
+          child: EntityChild.create({name: "Steve"})
         })
           .serialize()
           .asJSON()
@@ -114,7 +106,7 @@ describe("EntityMapping", function () {
     it("Serializes an entity from a nullish value", async function () {
       expect(
         Parent.create({
-          data: {child: null as any}
+          child: null as any
         })
           .serialize()
           .asJSON()
@@ -122,26 +114,20 @@ describe("EntityMapping", function () {
     });
 
     it("Serializes an entity from an undefined value", async function () {
-      expect(
-        Parent.create({
-          data: {}
-        })
-          .serialize()
-          .asJSON()
-      ).toEqual({});
+      expect(Parent.create({}).serialize().asJSON()).toEqual({});
     });
   });
 
   describe("Raw value serialization", () => {
     it("serializes raw values", async function () {
-      const parent = StringParent.create({data: {child: "string" as any}});
+      const parent = StringParent.create({child: "string" as any});
       expect(parent.child).toBeInstanceOf(StringChild);
       expect(parent.serialize().asJSON()).toEqual({child: "string"});
     });
 
     it("does not serialize models with their fromJSON method", async function () {
       const parent = StringParent.create({
-        data: {child: StringChild.fromJSON("string")}
+        child: StringChild.fromJSON("string")
       });
       expect(parent.child).toBeInstanceOf(StringChild);
       expect(parent.serialize().asJSON()).toEqual({child: "string"});

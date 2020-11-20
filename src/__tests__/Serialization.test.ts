@@ -5,14 +5,8 @@ describe("Serialization", function () {
     @Entity.Field() name: string;
   }
 
-  class TwoFields extends Entity.Base {
-    @Entity.Field() name: string;
-
-    @Entity.Field({entity: OneField}) theNested: OneField;
-  }
-
   it("serializes a simple model", async function () {
-    const entity = OneField.create({data: {name: "theName"}});
+    const entity = OneField.create({name: "theName"});
     expect(entity.serialize().asJSON()).toMatchInlineSnapshot(`
       Object {
         "name": "theName",
@@ -21,26 +15,7 @@ describe("Serialization", function () {
   });
 
   it("does not output unset fields", async function () {
-    const entity = OneField.create({data: {}});
+    const entity = OneField.create({});
     expect(entity.serialize().asJSON()).toMatchInlineSnapshot(`Object {}`);
-  });
-
-  it("serializes nested entities", async function () {
-    const entity = TwoFields.create({
-      data: {
-        name: "A Name"
-      },
-      mapping: {
-        theNested: () => OneField.create({data: {name: "one"}})
-      }
-    });
-    expect(entity.serialize().asJSON()).toMatchInlineSnapshot(`
-      Object {
-        "name": "A Name",
-        "theNested": Object {
-          "name": "one",
-        },
-      }
-    `);
   });
 });
