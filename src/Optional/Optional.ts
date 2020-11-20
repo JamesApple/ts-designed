@@ -8,7 +8,7 @@ export abstract class Optional<T> {
       : new PresentOptional<NonNullable<T>>(value as any);
   };
 
-  static fromJSON = (data: any) => Optional.of;
+  static fromJSON = (data: any) => Optional.of(data);
 
   static empty = <T = unknown>(): Optional<T> => {
     return new AbsentOptional();
@@ -22,9 +22,9 @@ export abstract class Optional<T> {
 
   abstract flatMap<X>(transform: (value: T) => Optional<X>): Optional<X>;
 
-  abstract orElse(other: T): T;
+  abstract orElse<X>(other: X): T | X;
 
-  abstract orGet(supplier: () => T): T;
+  abstract orGet<X>(supplier: () => X): T | X;
 
   abstract orThrow(errThrower: () => any): T;
 
@@ -86,11 +86,11 @@ class AbsentOptional<T> extends Optional<T> {
     return new AbsentOptional();
   }
 
-  orElse(other: T): T {
+  orElse<X>(other: X): T | X {
     return other;
   }
 
-  orGet(supplier: () => T): T {
+  orGet<X>(supplier: () => X): T | X {
     return supplier();
   }
 
@@ -108,10 +108,10 @@ class AbsentOptional<T> extends Optional<T> {
   }
 
   isPresent(): this is PresentOptional<T> {
-    return false
+    return false;
   }
 
   isAbsent(): this is AbsentOptional<T> {
-    return true
+    return true;
   }
 }
