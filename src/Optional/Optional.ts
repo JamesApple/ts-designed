@@ -1,3 +1,5 @@
+export class OptionalValueMissingError extends Error {}
+
 export abstract class Optional<T> {
   /**
    * @example
@@ -131,9 +133,19 @@ export abstract class Optional<T> {
    * @example
    * ```ts
    * Optional.of(5).orThrow(() => { throw new Error('I am thrown'); })
+   * Optional.of(5).orThrow(() => new Error('I am thrown'))
    * ```
    */
-  abstract orThrow(errThrower: () => any): T;
+  abstract orThrow(errThrower: () => Error): T;
+
+  /**
+   * @example
+   * ```ts
+   * Optional.of(5).get() // 5
+   * Optional.of(5).get() // throw TypeError
+   * ```
+   */
+  abstract get(): T;
 
   /**
    * @remark
@@ -185,12 +197,17 @@ class PresentOptional<T> extends Optional<T> {
   asJSON(): T | null {
     return this.value;
   }
+
   isPresent(): this is PresentOptional<T> {
     return true;
   }
 
   isAbsent(): this is AbsentOptional<T> {
     return false;
+  }
+
+  get(): T {
+    return this.value;
   }
 }
 
@@ -219,9 +236,15 @@ class AbsentOptional<T> extends Optional<T> {
     return supplier();
   }
 
-  orThrow(errThrower: () => any): T {
-    errThrower();
-    throw TypeError("Optional.orThrow callback did not throw");
+  orThrow(errThrower: () => Error): T {
+    const err = errThrower();
+    if (err instanceof Error) {
+      throw err;
+    } else {
+      throw TypeError(
+        "Optional.orThrow callback did not throw or return an error"
+      );
+    }
   }
 
   toJSON(): T | null {
@@ -238,5 +261,11 @@ class AbsentOptional<T> extends Optional<T> {
 
   isAbsent(): this is AbsentOptional<T> {
     return true;
+  }
+
+  get(): T {
+    throw new OptionalValueMissingError(
+      ".get() was called on an optional that had no value. Add a check before unwrapping."
+    );
   }
 }
