@@ -32,7 +32,7 @@ export abstract class Optional<T> {
    * Optional.fromJSON('Hello')
    * ```
    */
-  static fromJSON = (data: any) => Optional.of(data);
+  static fromJSON = <T = any>(data: T): Optional<T> => Optional.of(data);
 
   /**
    * @remark

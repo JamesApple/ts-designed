@@ -4,7 +4,7 @@ import {EntityConfig} from "./EntityConfig";
 export interface FieldData {
   name: string;
   subFields?: FieldData[];
-  entityConstructor?: typeof Base;
+  entityConstructor?: Object;
 }
 
 export class ClassFieldReader {
@@ -15,7 +15,7 @@ export class ClassFieldReader {
       return {
         name,
         ...{entityConstructor: entity},
-        ...{subFields: entity ? entity.fields().all() : undefined}
+        ...{subFields: entity ? (entity as any)?.fields()?.all() : undefined}
       };
     });
   }

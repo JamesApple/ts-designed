@@ -9,6 +9,6 @@ export type WithoutFunctions<T> = Pick<
   }[keyof T]
 >;
 
-export type CreateArgs<I extends Base, D> = SimpleCreateArgs<I>;
+export type CreateArgs<I extends Base> = SimpleCreateArgs<I>;
 
 export type SimpleCreateArgs<I extends Base> = Partial<I>;

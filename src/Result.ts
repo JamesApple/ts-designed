@@ -50,7 +50,7 @@ export abstract class Result<T, F> {
 }
 
 export class Fail<E> extends Result<unknown, E> {
-  static of<E>(value: E) {
+  static of<E>(value: E): Fail<E> {
     return new Fail(value);
   }
 
@@ -109,7 +109,7 @@ export class Success<T> extends Result<T, unknown> {
     super();
   }
 
-  static of<E>(value: E) {
+  static of<E>(value: E): Success<E> {
     return new Success(value);
   }
 

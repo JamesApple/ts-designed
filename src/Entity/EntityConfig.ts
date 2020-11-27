@@ -23,6 +23,13 @@ export class EntityConfig {
     this.fields.set(field.name, field);
   }
 
+  clone(proto: Object): EntityConfig {
+    const newConfig = new EntityConfig(proto);
+    this.fields.forEach((f) => newConfig.addField(f.clone()));
+    newConfig.fields.forEach((f) => f.initialize(newConfig));
+    return newConfig;
+  }
+
   static forInstance(entity: Base): EntityConfig {
     return this.forPrototype(Object.getPrototypeOf(entity));
   }
@@ -33,7 +40,12 @@ export class EntityConfig {
 
   static forPrototype(proto: Object): EntityConfig {
     const p = proto as Proto;
-    const config = p[ENTITY_CONFIGURATION_KEY] ?? new EntityConfig(p);
+    let config = p[ENTITY_CONFIGURATION_KEY] ?? new EntityConfig(p);
+
+    // Parent classes will respond with their own entity pre-existing config.
+    if (config.proto !== p) {
+      config = config.clone(p);
+    }
 
     p[ENTITY_CONFIGURATION_KEY] = config;
     return config;

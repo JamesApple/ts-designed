@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import "reflect-metadata";
 import {Entity} from "..";
-import {EntityConfig} from "../Entity/EntityConfig";
 
 describe("EntityMapping", function () {
   class StringChild {
@@ -22,14 +22,6 @@ describe("EntityMapping", function () {
 
   class EntityChild extends Entity.Base {
     @Entity.Field() name: string;
-
-    static fromJSON(data: any) {
-      return EntityChild.create(data);
-    }
-
-    asJSON() {
-      return this.serialize().asJSON();
-    }
   }
 
   class POJOChild {

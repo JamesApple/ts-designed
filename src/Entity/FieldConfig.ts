@@ -1,40 +1,34 @@
-import {Base} from "./Base";
 import {EntityConfig} from "./EntityConfig";
 
 export interface FieldConfigArgs {
-  decorators?: PropertyDecorator[];
   reflectedEntity?: any;
-  entity?: typeof Base;
-  iterable?: boolean;
+  entity?: Object;
+  deserialize?: (v: any) => any;
   name: string;
 }
 
 export class FieldConfig {
   public name: string;
-  public iterable: boolean;
-  public entity?: typeof Base;
-  private reflectedEntity: any;
 
-  private decorators: PropertyDecorator[];
-  constructor({
-    name,
-    decorators = [],
-    entity,
-    reflectedEntity,
-    iterable = false
-  }: FieldConfigArgs) {
+  public reflectedEntity: any;
+  public entity?: Object;
+
+  private _deserialize?: (v: any) => any;
+
+  constructor({name, entity, reflectedEntity, deserialize}: FieldConfigArgs) {
     this.name = name;
-    this.decorators = decorators;
     this.entity = entity;
     this.reflectedEntity = reflectedEntity;
-    this.iterable = iterable;
+    this._deserialize = deserialize;
   }
 
-  initialize(parent: EntityConfig): void {
-    this.decorators.forEach((d) => d(parent.proto, this.name));
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  initialize(_parent: EntityConfig): void {}
 
-  deserialize(value: Object) {
+  deserialize(value: Object): any {
+    if (this._deserialize) {
+      return this._deserialize(value);
+    }
     const entity = this.entity ?? this.reflectedEntity;
     if (entity && "fromJSON" in entity && value != null) {
       if (
@@ -47,5 +41,14 @@ export class FieldConfig {
       return entity.fromJSON(value);
     }
     return value;
+  }
+
+  clone(): FieldConfig {
+    const {reflectedEntity, entity, name} = this;
+    return new FieldConfig({
+      reflectedEntity,
+      entity,
+      name
+    });
   }
 }

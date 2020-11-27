@@ -1,6 +1,5 @@
 import {Entity} from "../index";
-import {MapOutArgs} from "../Entity/EntitySerializer";
-import {WithoutFunctions} from "../Entity/utilityTypes";
+
 describe("Entity.serialize().mapOut()", () => {
   class User extends Entity.Base {
     @Entity.Field()
@@ -8,6 +7,9 @@ describe("Entity.serialize().mapOut()", () => {
 
     @Entity.Field()
     JoinedAt: Date;
+
+    @Entity.Field()
+    same: string;
   }
 
   class Profile extends Entity.Base {
@@ -15,10 +17,35 @@ describe("Entity.serialize().mapOut()", () => {
     userId: string;
 
     @Entity.Field()
-    joinedAt: string;
+    JoinedAt: string;
+
+    @Entity.Field()
+    same: string;
   }
 
   it("Lets you map between two similar types", function () {
-    const user = User.create({data: {UserId: "1", Password: "Hello"}});
+    const user = User.create({
+      UserId: "1",
+      JoinedAt: new Date(),
+      same: "value"
+    });
+
+    const profile = new Profile();
+    user.serialize().mapOut<Profile>(
+      profile,
+      "same",
+      {
+        field: "JoinedAt",
+        map: (d) => d.toISOString()
+      },
+      {
+        from: "UserId",
+        map: {to: "userId", with: (x) => x}
+      }
+    );
+
+    expect(profile.userId).toEqual(user.UserId);
+    expect(profile.JoinedAt).toEqual(user.JoinedAt.toISOString());
+    expect(profile.same).toEqual(user.same);
   });
 });

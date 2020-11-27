@@ -6,7 +6,7 @@ import {CreateArgs} from "./utilityTypes";
 export class EntityMapping {
   private data: Object;
 
-  constructor(public instance: Base, args: CreateArgs<Base, Object> = {}) {
+  constructor(public instance: Base, args: CreateArgs<Base> = {}) {
     this.data = args;
   }
 
@@ -26,11 +26,5 @@ export class EntityMapping {
 }
 
 export function getValue(path: string, object: unknown, f: FieldConfig): any {
-  return f.deserialize(
-    path
-      .replace(/\[/g, ".")
-      .replace(/\]/g, "")
-      .split(".")
-      .reduce((o: any, k: string) => (o || {})[k], object) as any
-  );
+  return f.deserialize((object as any)[path]);
 }

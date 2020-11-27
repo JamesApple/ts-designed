@@ -1,15 +1,16 @@
-import {CreateArgs} from "./utilityTypes";
+import {CreateArgs, WithoutFunctions} from "./utilityTypes";
 import {EntityMapping} from "./EntityMapping";
 import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
 import {EntitySerializer} from "./EntitySerializer";
+import {Optional} from "..";
 
 export class Base {
   /**
    * Map then validate an entity
    */
-  static create<T extends typeof Base, D extends Object>(
+  static create<T extends typeof Base>(
     this: T,
-    args?: CreateArgs<InstanceType<T>, D>
+    args?: CreateArgs<InstanceType<T>>
   ): InstanceType<T> {
     const instance = this.build(args);
     this.validator(instance);
@@ -19,9 +20,9 @@ export class Base {
   /*
    * Map an entity
    */
-  static build<T extends typeof Base, D extends Object>(
+  static build<T extends typeof Base>(
     this: T,
-    args?: CreateArgs<InstanceType<T>, D>
+    args?: CreateArgs<InstanceType<T>>
   ): InstanceType<T> {
     const instance = new this() as InstanceType<T>;
     new EntityMapping(instance, args).map();
@@ -50,6 +51,28 @@ export class Base {
 
   validate<T extends Base>(this: T): T {
     return (this.constructor as any).validator(this);
+  }
+
+  static fromJSON<T extends typeof Base>(
+    this: T,
+    data: Record<string, unknown>
+  ): InstanceType<T> {
+    return this.create(data as any);
+  }
+
+  toJSON(): Record<string, unknown> {
+    return this.asJSON();
+  }
+
+  asJSON(): Record<string, unknown> {
+    return this.serialize().asJSON();
+  }
+
+  maybe<T, K extends keyof WithoutFunctions<T>>(
+    this: T,
+    value: K
+  ): Optional<Exclude<T[K], null | undefined>> {
+    return Optional.of(this[value]);
   }
 }
 
