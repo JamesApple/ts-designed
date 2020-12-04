@@ -37,7 +37,7 @@ Name |
 
 ▸ **publish**(`event`: T): void
 
-*Defined in [src/Topic/Topic.ts:6](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Topic/Topic.ts#L6)*
+*Defined in [src/Topic/Topic.ts:6](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Topic/Topic.ts#L6)*
 
 #### Parameters:
 
@@ -53,7 +53,7 @@ ___
 
 ▸ **subscribe**(`consumer`: ConsumerFunction\<T>): TeardownFunction
 
-*Defined in [src/Topic/Topic.ts:5](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Topic/Topic.ts#L5)*
+*Defined in [src/Topic/Topic.ts:5](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Topic/Topic.ts#L5)*
 
 #### Parameters:
 
@@ -69,7 +69,7 @@ ___
 
 ▸ `Static`**create**\<T>(`config?`: [TopicConfig](tsdoc/interfaces/_topic_topic_.topicconfig.md)\<T>): [Topic](tsdoc/classes/_topic_topic_.topic.md)\<T>
 
-*Defined in [src/Topic/Topic.ts:22](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Topic/Topic.ts#L22)*
+*Defined in [src/Topic/Topic.ts:22](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Topic/Topic.ts#L22)*
 
 #### Type parameters:
 

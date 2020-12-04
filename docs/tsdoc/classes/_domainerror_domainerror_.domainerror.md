@@ -39,7 +39,7 @@
 
 •  **details**: { [key:string]: any;  }
 
-*Defined in [src/DomainError/DomainError.ts:5](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L5)*
+*Defined in [src/DomainError/DomainError.ts:5](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L5)*
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 *Overrides [EntityInitializationError](tsdoc/classes/_entity_utilitytypes_.entityinitializationerror.md).[message](tsdoc/classes/_entity_utilitytypes_.entityinitializationerror.md#message)*
 
-*Defined in [src/DomainError/DomainError.ts:3](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L3)*
+*Defined in [src/DomainError/DomainError.ts:3](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L3)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • `Optional` **previousError**: [DomainError](tsdoc/classes/_domainerror_domainerror_.domainerror.md) \| [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error)
 
-*Defined in [src/DomainError/DomainError.ts:2](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L2)*
+*Defined in [src/DomainError/DomainError.ts:2](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L2)*
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 *Overrides [EntityInitializationError](tsdoc/classes/_entity_utilitytypes_.entityinitializationerror.md).[name](tsdoc/classes/_entity_utilitytypes_.entityinitializationerror.md#name)*
 
-*Defined in [src/DomainError/DomainError.ts:25](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L25)*
+*Defined in [src/DomainError/DomainError.ts:25](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L25)*
 
 **Returns:** string
 
@@ -95,7 +95,7 @@ ___
 
 ▸ **getCause**(): [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error) \| undefined
 
-*Defined in [src/DomainError/DomainError.ts:7](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L7)*
+*Defined in [src/DomainError/DomainError.ts:7](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L7)*
 
 **Returns:** [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error) \| undefined
 
@@ -105,7 +105,7 @@ ___
 
 ▸ **getPreviousErrors**(): [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error)[]
 
-*Defined in [src/DomainError/DomainError.ts:16](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L16)*
+*Defined in [src/DomainError/DomainError.ts:16](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L16)*
 
 **Returns:** [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error)[]
 
@@ -115,7 +115,7 @@ ___
 
 ▸ **getRootCause**(): [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error) \| undefined
 
-*Defined in [src/DomainError/DomainError.ts:11](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L11)*
+*Defined in [src/DomainError/DomainError.ts:11](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L11)*
 
 **Returns:** [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error) \| undefined
 
@@ -125,7 +125,7 @@ ___
 
 ▸ **toString**(): string
 
-*Defined in [src/DomainError/DomainError.ts:35](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L35)*
+*Defined in [src/DomainError/DomainError.ts:35](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L35)*
 
 **Returns:** string
 
@@ -135,7 +135,7 @@ ___
 
 ▸ `Static`**create**\<T>(`this`: T, `message?`: undefined \| string, `overrides?`: Partial\<InstanceType\<T>>): InstanceType\<T>
 
-*Defined in [src/DomainError/DomainError.ts:55](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L55)*
+*Defined in [src/DomainError/DomainError.ts:55](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L55)*
 
 #### Type parameters:
 
@@ -159,7 +159,7 @@ ___
 
 ▸ `Static`**wrap**\<T>(`this`: T, `error`: [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error), ...`rest`: Parameters\<T[\"create\"]>): InstanceType\<T>
 
-*Defined in [src/DomainError/DomainError.ts:42](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/DomainError/DomainError.ts#L42)*
+*Defined in [src/DomainError/DomainError.ts:42](https://github.com/jamesapple/ts-designed/blob/be057cd/src/DomainError/DomainError.ts#L42)*
 
 #### Type parameters:
 

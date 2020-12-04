@@ -26,4 +26,4 @@ Name |
 
 • `Optional` **onSubscriberErr**: undefined \| (err: [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error), event: T) => void
 
-*Defined in [src/Topic/Topic.ts:10](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Topic/Topic.ts#L10)*
+*Defined in [src/Topic/Topic.ts:10](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Topic/Topic.ts#L10)*

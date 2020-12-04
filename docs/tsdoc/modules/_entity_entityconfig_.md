@@ -20,4 +20,4 @@
 
 • `Const` **ENTITY\_CONFIGURATION\_KEY**: unique symbol = Symbol("ENTITY\_CONFIGURATION")
 
-*Defined in [src/Entity/EntityConfig.ts:43](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L43)*
+*Defined in [src/Entity/EntityConfig.ts:55](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L55)*

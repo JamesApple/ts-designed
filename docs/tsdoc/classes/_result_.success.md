@@ -43,7 +43,7 @@ Name |
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[getEither](tsdoc/classes/_result_.result.md#geteither)*
 
-*Defined in [src/Result.ts:136](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L136)*
+*Defined in [src/Result.ts:136](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L136)*
 
 **Returns:** T
 
@@ -55,7 +55,7 @@ ___
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[getOrThrowFailure](tsdoc/classes/_result_.result.md#getorthrowfailure)*
 
-*Defined in [src/Result.ts:132](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L132)*
+*Defined in [src/Result.ts:132](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L132)*
 
 **Returns:** T
 
@@ -67,7 +67,7 @@ ___
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[isFailure](tsdoc/classes/_result_.result.md#isfailure)*
 
-*Defined in [src/Result.ts:128](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L128)*
+*Defined in [src/Result.ts:128](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L128)*
 
 **Returns:** this is Fail\<unknown>
 
@@ -79,7 +79,7 @@ ___
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[isSuccess](tsdoc/classes/_result_.result.md#issuccess)*
 
-*Defined in [src/Result.ts:124](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L124)*
+*Defined in [src/Result.ts:124](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L124)*
 
 **Returns:** this is Success\<T>
 
@@ -91,7 +91,7 @@ ___
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[map](tsdoc/classes/_result_.result.md#map)*
 
-*Defined in [src/Result.ts:116](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L116)*
+*Defined in [src/Result.ts:116](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L116)*
 
 #### Type parameters:
 
@@ -116,7 +116,7 @@ ___
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[mapFailure](tsdoc/classes/_result_.result.md#mapfailure)*
 
-*Defined in [src/Result.ts:120](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L120)*
+*Defined in [src/Result.ts:120](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L120)*
 
 #### Type parameters:
 
@@ -134,7 +134,7 @@ ___
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[swap](tsdoc/classes/_result_.result.md#swap)*
 
-*Defined in [src/Result.ts:140](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L140)*
+*Defined in [src/Result.ts:140](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L140)*
 
 **Returns:** [Result](tsdoc/classes/_result_.result.md)\<unknown, T>
 
@@ -146,7 +146,7 @@ ___
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[toOptional](tsdoc/classes/_result_.result.md#tooptional)*
 
-*Defined in [src/Result.ts:148](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L148)*
+*Defined in [src/Result.ts:148](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L148)*
 
 **Returns:** [Optional](tsdoc/classes/_optional_optional_.optional.md)\<T>
 
@@ -158,7 +158,7 @@ ___
 
 *Overrides [Result](tsdoc/classes/_result_.result.md).[toOptionalFailure](tsdoc/classes/_result_.result.md#tooptionalfailure)*
 
-*Defined in [src/Result.ts:144](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L144)*
+*Defined in [src/Result.ts:144](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L144)*
 
 **Returns:** [Optional](tsdoc/classes/_optional_optional_.optional.md)\<unknown>
 
@@ -170,7 +170,7 @@ ___
 
 *Inherited from [Result](tsdoc/classes/_result_.result.md).[fail](tsdoc/classes/_result_.result.md#fail)*
 
-*Defined in [src/Result.ts:26](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L26)*
+*Defined in [src/Result.ts:26](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L26)*
 
 #### Type parameters:
 
@@ -195,7 +195,7 @@ ___
 
 *Inherited from [Result](tsdoc/classes/_result_.result.md).[fromPromise](tsdoc/classes/_result_.result.md#frompromise)*
 
-*Defined in [src/Result.ts:12](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L12)*
+*Defined in [src/Result.ts:12](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L12)*
 
 #### Type parameters:
 
@@ -220,7 +220,7 @@ ___
 
 *Inherited from [Result](tsdoc/classes/_result_.result.md).[fromThrowable](tsdoc/classes/_result_.result.md#fromthrowable)*
 
-*Defined in [src/Result.ts:4](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L4)*
+*Defined in [src/Result.ts:4](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L4)*
 
 #### Type parameters:
 
@@ -243,7 +243,7 @@ ___
 
 ▸ `Static`**of**\<E>(`value`: E): [Success](tsdoc/classes/_result_.success.md)\<E>
 
-*Defined in [src/Result.ts:112](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L112)*
+*Defined in [src/Result.ts:112](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L112)*
 
 #### Type parameters:
 
@@ -267,7 +267,7 @@ ___
 
 *Inherited from [Result](tsdoc/classes/_result_.result.md).[success](tsdoc/classes/_result_.result.md#success)*
 
-*Defined in [src/Result.ts:22](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L22)*
+*Defined in [src/Result.ts:22](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L22)*
 
 #### Type parameters:
 

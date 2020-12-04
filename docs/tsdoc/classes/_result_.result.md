@@ -43,7 +43,7 @@ Name |
 
 ▸ `Abstract`**getEither**(): T \| F
 
-*Defined in [src/Result.ts:43](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L43)*
+*Defined in [src/Result.ts:43](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L43)*
 
 **Returns:** T \| F
 
@@ -53,7 +53,7 @@ ___
 
 ▸ `Abstract`**getOrThrowFailure**(): T
 
-*Defined in [src/Result.ts:41](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L41)*
+*Defined in [src/Result.ts:41](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L41)*
 
 **Returns:** T
 
@@ -63,7 +63,7 @@ ___
 
 ▸ `Abstract`**isFailure**(): this is Fail\<F>
 
-*Defined in [src/Result.ts:39](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L39)*
+*Defined in [src/Result.ts:39](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L39)*
 
 **Returns:** this is Fail\<F>
 
@@ -73,7 +73,7 @@ ___
 
 ▸ `Abstract`**isSuccess**(): this is Success\<T>
 
-*Defined in [src/Result.ts:37](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L37)*
+*Defined in [src/Result.ts:37](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L37)*
 
 **Returns:** this is Success\<T>
 
@@ -83,7 +83,7 @@ ___
 
 ▸ `Abstract`**map**\<X, Y>(`mapSuccess`: (success: T) => X, `mapError?`: undefined \| (error: F) => Y): [Result](tsdoc/classes/_result_.result.md)\<X, Y>
 
-*Defined in [src/Result.ts:30](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L30)*
+*Defined in [src/Result.ts:30](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L30)*
 
 #### Type parameters:
 
@@ -107,7 +107,7 @@ ___
 
 ▸ `Abstract`**mapFailure**\<X>(`mapFailure`: (failed: F) => X): [Result](tsdoc/classes/_result_.result.md)\<T, X>
 
-*Defined in [src/Result.ts:35](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L35)*
+*Defined in [src/Result.ts:35](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L35)*
 
 #### Type parameters:
 
@@ -129,7 +129,7 @@ ___
 
 ▸ `Abstract`**swap**(): [Result](tsdoc/classes/_result_.result.md)\<F, T>
 
-*Defined in [src/Result.ts:45](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L45)*
+*Defined in [src/Result.ts:45](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L45)*
 
 **Returns:** [Result](tsdoc/classes/_result_.result.md)\<F, T>
 
@@ -139,7 +139,7 @@ ___
 
 ▸ `Abstract`**toOptional**(): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<T>
 
-*Defined in [src/Result.ts:49](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L49)*
+*Defined in [src/Result.ts:49](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L49)*
 
 **Returns:** [Optional](tsdoc/classes/_optional_optional_.optional.md)\<T>
 
@@ -149,7 +149,7 @@ ___
 
 ▸ `Abstract`**toOptionalFailure**(): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<F>
 
-*Defined in [src/Result.ts:47](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L47)*
+*Defined in [src/Result.ts:47](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L47)*
 
 **Returns:** [Optional](tsdoc/classes/_optional_optional_.optional.md)\<F>
 
@@ -159,7 +159,7 @@ ___
 
 ▸ `Static`**fail**\<F, T>(`value`: F): [Result](tsdoc/classes/_result_.result.md)\<T, F>
 
-*Defined in [src/Result.ts:26](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L26)*
+*Defined in [src/Result.ts:26](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L26)*
 
 #### Type parameters:
 
@@ -182,7 +182,7 @@ ___
 
 ▸ `Static`**fromPromise**\<T, F>(`promise`: Promise\<T>): Promise\<[Result](tsdoc/classes/_result_.result.md)\<T, F>>
 
-*Defined in [src/Result.ts:12](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L12)*
+*Defined in [src/Result.ts:12](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L12)*
 
 #### Type parameters:
 
@@ -205,7 +205,7 @@ ___
 
 ▸ `Static`**fromThrowable**\<T, F>(`throwable`: () => T): [Result](tsdoc/classes/_result_.result.md)\<T, F>
 
-*Defined in [src/Result.ts:4](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L4)*
+*Defined in [src/Result.ts:4](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L4)*
 
 #### Type parameters:
 
@@ -228,7 +228,7 @@ ___
 
 ▸ `Static`**success**\<T, F>(`value`: T): [Result](tsdoc/classes/_result_.result.md)\<T, F>
 
-*Defined in [src/Result.ts:22](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Result.ts#L22)*
+*Defined in [src/Result.ts:22](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Result.ts#L22)*
 
 #### Type parameters:
 

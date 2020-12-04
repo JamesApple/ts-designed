@@ -12,35 +12,26 @@
 
 ### Properties
 
-* [decorators](tsdoc/interfaces/_entity_fieldconfig_.fieldconfigargs.md#decorators)
+* [deserialize](tsdoc/interfaces/_entity_fieldconfig_.fieldconfigargs.md#deserialize)
 * [entity](tsdoc/interfaces/_entity_fieldconfig_.fieldconfigargs.md#entity)
-* [iterable](tsdoc/interfaces/_entity_fieldconfig_.fieldconfigargs.md#iterable)
 * [name](tsdoc/interfaces/_entity_fieldconfig_.fieldconfigargs.md#name)
 * [reflectedEntity](tsdoc/interfaces/_entity_fieldconfig_.fieldconfigargs.md#reflectedentity)
 
 ## Properties
 
-### decorators
+### deserialize
 
-• `Optional` **decorators**: PropertyDecorator[]
+• `Optional` **deserialize**: undefined \| (v: any) => any
 
-*Defined in [src/Entity/FieldConfig.ts:5](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L5)*
+*Defined in [src/Entity/FieldConfig.ts:6](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L6)*
 
 ___
 
 ### entity
 
-• `Optional` **entity**: *typeof* Base
+• `Optional` **entity**: Object
 
-*Defined in [src/Entity/FieldConfig.ts:7](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L7)*
-
-___
-
-### iterable
-
-• `Optional` **iterable**: undefined \| false \| true
-
-*Defined in [src/Entity/FieldConfig.ts:8](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L8)*
+*Defined in [src/Entity/FieldConfig.ts:5](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L5)*
 
 ___
 
@@ -48,7 +39,7 @@ ___
 
 •  **name**: string
 
-*Defined in [src/Entity/FieldConfig.ts:9](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L9)*
+*Defined in [src/Entity/FieldConfig.ts:7](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L7)*
 
 ___
 
@@ -56,4 +47,4 @@ ___
 
 • `Optional` **reflectedEntity**: any
 
-*Defined in [src/Entity/FieldConfig.ts:6](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L6)*
+*Defined in [src/Entity/FieldConfig.ts:4](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L4)*

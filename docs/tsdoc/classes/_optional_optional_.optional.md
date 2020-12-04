@@ -21,6 +21,7 @@ Name |
 * [asJSON](tsdoc/classes/_optional_optional_.optional.md#asjson)
 * [filter](tsdoc/classes/_optional_optional_.optional.md#filter)
 * [flatMap](tsdoc/classes/_optional_optional_.optional.md#flatmap)
+* [get](tsdoc/classes/_optional_optional_.optional.md#get)
 * [isAbsent](tsdoc/classes/_optional_optional_.optional.md#isabsent)
 * [isPresent](tsdoc/classes/_optional_optional_.optional.md#ispresent)
 * [map](tsdoc/classes/_optional_optional_.optional.md#map)
@@ -38,7 +39,7 @@ Name |
 
 ▸ `Abstract`**asJSON**(): T \| null
 
-*Defined in [src/Optional/Optional.ts:147](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L147)*
+*Defined in [src/Optional/Optional.ts:159](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L159)*
 
 Serialize a value using designed's preferred #asJSON method
 
@@ -50,7 +51,7 @@ ___
 
 ▸ `Abstract`**filter**(`predicate`: (value: T) => boolean): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<T>
 
-*Defined in [src/Optional/Optional.ts:76](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L76)*
+*Defined in [src/Optional/Optional.ts:78](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L78)*
 
 **`example`** 
 Will remove a value that does not satisfy the predicate.
@@ -74,7 +75,7 @@ ___
 
 ▸ `Abstract`**flatMap**\<X>(`transform`: (value: T) => [Optional](tsdoc/classes/_optional_optional_.optional.md)\<X>): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<X>
 
-*Defined in [src/Optional/Optional.ts:105](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L105)*
+*Defined in [src/Optional/Optional.ts:107](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L107)*
 
 **`remark`** 
 Apply a transform to the value of the optional and return a new optional
@@ -104,11 +105,27 @@ Name | Type |
 
 ___
 
+### get
+
+▸ `Abstract`**get**(): T
+
+*Defined in [src/Optional/Optional.ts:148](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L148)*
+
+**`example`** 
+```ts
+Optional.of(5).get() // 5
+Optional.of(5).get() // throw TypeError
+```
+
+**Returns:** T
+
+___
+
 ### isAbsent
 
 ▸ `Abstract`**isAbsent**(): this is AbsentOptional\<T>
 
-*Defined in [src/Optional/Optional.ts:65](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L65)*
+*Defined in [src/Optional/Optional.ts:67](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L67)*
 
 **`example`** 
 
@@ -127,7 +144,7 @@ ___
 
 ▸ `Abstract`**isPresent**(): this is PresentOptional\<T>
 
-*Defined in [src/Optional/Optional.ts:53](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L53)*
+*Defined in [src/Optional/Optional.ts:55](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L55)*
 
 **`example`** 
 
@@ -146,7 +163,7 @@ ___
 
 ▸ `Abstract`**map**\<X>(`transform`: (value: T) => X): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<NonNullable\<X>>
 
-*Defined in [src/Optional/Optional.ts:90](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L90)*
+*Defined in [src/Optional/Optional.ts:92](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L92)*
 
 **`remark`** 
 Apply a transform to the value of the optional and return a new optional
@@ -179,7 +196,7 @@ ___
 
 ▸ `Abstract`**orElse**\<X>(`other`: X): T \| X
 
-*Defined in [src/Optional/Optional.ts:115](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L115)*
+*Defined in [src/Optional/Optional.ts:117](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L117)*
 
 **`example`** 
 
@@ -208,7 +225,7 @@ ___
 
 ▸ `Abstract`**orGet**\<X>(`supplier`: () => X): T \| X
 
-*Defined in [src/Optional/Optional.ts:125](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L125)*
+*Defined in [src/Optional/Optional.ts:127](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L127)*
 
 **`example`** 
 Use a getter function to return a new value
@@ -235,9 +252,9 @@ ___
 
 ### orThrow
 
-▸ `Abstract`**orThrow**(`errThrower`: () => any): T
+▸ `Abstract`**orThrow**(`errThrower`: () => [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error)): T
 
-*Defined in [src/Optional/Optional.ts:136](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L136)*
+*Defined in [src/Optional/Optional.ts:139](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L139)*
 
 **`remark`** 
 This _must_ throw an exception when the method is invoked or the optional
@@ -246,13 +263,14 @@ itself will throw a `TypeError`.
 **`example`** 
 ```ts
 Optional.of(5).orThrow(() => { throw new Error('I am thrown'); })
+Optional.of(5).orThrow(() => new Error('I am thrown'))
 ```
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
-`errThrower` | () => any |
+`errThrower` | () => [Error](tsdoc/classes/_domainerror_domainerror_.domainerror.md#error) |
 
 **Returns:** T
 
@@ -262,7 +280,7 @@ ___
 
 ▸ `Abstract`**toJSON**(`_`: string): T \| null
 
-*Defined in [src/Optional/Optional.ts:142](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L142)*
+*Defined in [src/Optional/Optional.ts:154](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L154)*
 
 **`remark`** 
 Used with other libraries to allow serialization to JSON without coercing to a string
@@ -281,7 +299,7 @@ ___
 
 ▸ `Static`**empty**\<T>(): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<T>
 
-*Defined in [src/Optional/Optional.ts:39](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L39)*
+*Defined in [src/Optional/Optional.ts:41](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L41)*
 
 **`remark`** 
 Create an empty optional to model a failure case
@@ -298,9 +316,9 @@ ___
 
 ### fromJSON
 
-▸ `Static`**fromJSON**(`data`: any): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<any>
+▸ `Static`**fromJSON**\<T>(`data`: T): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<T>
 
-*Defined in [src/Optional/Optional.ts:33](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L33)*
+*Defined in [src/Optional/Optional.ts:35](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L35)*
 
 **`remark`** 
 Used for compatibility with other parts of this library that utilize
@@ -312,13 +330,19 @@ Optional.fromJSON(null)
 Optional.fromJSON('Hello')
 ```
 
+#### Type parameters:
+
+Name | Default |
+------ | ------ |
+`T` | any |
+
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
-`data` | any |
+`data` | T |
 
-**Returns:** [Optional](tsdoc/classes/_optional_optional_.optional.md)\<any>
+**Returns:** [Optional](tsdoc/classes/_optional_optional_.optional.md)\<T>
 
 ___
 
@@ -326,7 +350,7 @@ ___
 
 ▸ `Static`**of**\<T>(`value`: T \| [Optional](tsdoc/classes/_optional_optional_.optional.md)\<NonNullable\<T>>): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<NonNullable\<T>>
 
-*Defined in [src/Optional/Optional.ts:12](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Optional/Optional.ts#L12)*
+*Defined in [src/Optional/Optional.ts:14](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Optional/Optional.ts#L14)*
 
 **`example`** 
 Create an optional from a nullable value. This will remove the types null

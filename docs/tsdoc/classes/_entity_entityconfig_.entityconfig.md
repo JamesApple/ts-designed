@@ -21,6 +21,7 @@
 ### Methods
 
 * [addField](tsdoc/classes/_entity_entityconfig_.entityconfig.md#addfield)
+* [clone](tsdoc/classes/_entity_entityconfig_.entityconfig.md#clone)
 * [eachField](tsdoc/classes/_entity_entityconfig_.entityconfig.md#eachfield)
 * [getFields](tsdoc/classes/_entity_entityconfig_.entityconfig.md#getfields)
 * [forConstructor](tsdoc/classes/_entity_entityconfig_.entityconfig.md#forconstructor)
@@ -33,7 +34,7 @@
 
 \+ **new EntityConfig**(`proto`: Object): [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md)
 
-*Defined in [src/Entity/EntityConfig.ts:4](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L4)*
+*Defined in [src/Entity/EntityConfig.ts:4](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L4)*
 
 #### Parameters:
 
@@ -49,7 +50,7 @@ Name | Type |
 
 •  **proto**: Object
 
-*Defined in [src/Entity/EntityConfig.ts:5](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L5)*
+*Defined in [src/Entity/EntityConfig.ts:5](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L5)*
 
 ## Methods
 
@@ -57,7 +58,7 @@ Name | Type |
 
 ▸ **addField**(`field`: [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)): void
 
-*Defined in [src/Entity/EntityConfig.ts:21](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L21)*
+*Defined in [src/Entity/EntityConfig.ts:21](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L21)*
 
 #### Parameters:
 
@@ -69,11 +70,27 @@ Name | Type |
 
 ___
 
+### clone
+
+▸ **clone**(`proto`: Object): [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md)
+
+*Defined in [src/Entity/EntityConfig.ts:26](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L26)*
+
+#### Parameters:
+
+Name | Type |
+------ | ------ |
+`proto` | Object |
+
+**Returns:** [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md)
+
+___
+
 ### eachField
 
 ▸ **eachField**(`visit`: (f: [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)) => void): void
 
-*Defined in [src/Entity/EntityConfig.ts:15](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L15)*
+*Defined in [src/Entity/EntityConfig.ts:15](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L15)*
 
 #### Parameters:
 
@@ -89,7 +106,7 @@ ___
 
 ▸ **getFields**(): [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)[]
 
-*Defined in [src/Entity/EntityConfig.ts:11](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L11)*
+*Defined in [src/Entity/EntityConfig.ts:11](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L11)*
 
 **Returns:** [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)[]
 
@@ -99,7 +116,7 @@ ___
 
 ▸ `Static`**forConstructor**(`constructor`: Function): [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md)
 
-*Defined in [src/Entity/EntityConfig.ts:30](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L30)*
+*Defined in [src/Entity/EntityConfig.ts:37](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L37)*
 
 #### Parameters:
 
@@ -115,7 +132,7 @@ ___
 
 ▸ `Static`**forInstance**(`entity`: [Base](tsdoc/classes/_entity_base_.base.md)): [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md)
 
-*Defined in [src/Entity/EntityConfig.ts:26](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L26)*
+*Defined in [src/Entity/EntityConfig.ts:33](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L33)*
 
 #### Parameters:
 
@@ -131,7 +148,7 @@ ___
 
 ▸ `Static`**forPrototype**(`proto`: Object): [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md)
 
-*Defined in [src/Entity/EntityConfig.ts:34](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityConfig.ts#L34)*
+*Defined in [src/Entity/EntityConfig.ts:41](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityConfig.ts#L41)*
 
 #### Parameters:
 

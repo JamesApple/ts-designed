@@ -17,11 +17,12 @@
 ### Properties
 
 * [entity](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md#entity)
-* [iterable](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md#iterable)
 * [name](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md#name)
+* [reflectedEntity](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md#reflectedentity)
 
 ### Methods
 
+* [clone](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md#clone)
 * [deserialize](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md#deserialize)
 * [initialize](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md#initialize)
 
@@ -29,15 +30,15 @@
 
 ### constructor
 
-\+ **new FieldConfig**(`__namedParameters`: { decorators: PropertyDecorator[] = []; entity: undefined \| [Base](tsdoc/classes/_entity_base_.base.md) ; iterable: boolean = false; name: string ; reflectedEntity: any  }): [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)
+\+ **new FieldConfig**(`__namedParameters`: { deserialize: undefined \| (v: any) => any ; entity: undefined \| Object ; name: string ; reflectedEntity: any  }): [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)
 
-*Defined in [src/Entity/FieldConfig.ts:18](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L18)*
+*Defined in [src/Entity/FieldConfig.ts:16](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L16)*
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
-`__namedParameters` | { decorators: PropertyDecorator[] = []; entity: undefined \| [Base](tsdoc/classes/_entity_base_.base.md) ; iterable: boolean = false; name: string ; reflectedEntity: any  } |
+`__namedParameters` | { deserialize: undefined \| (v: any) => any ; entity: undefined \| Object ; name: string ; reflectedEntity: any  } |
 
 **Returns:** [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)
 
@@ -45,17 +46,9 @@ Name | Type |
 
 ### entity
 
-• `Optional` **entity**: *typeof* Base
+• `Optional` **entity**: Object
 
-*Defined in [src/Entity/FieldConfig.ts:15](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L15)*
-
-___
-
-### iterable
-
-•  **iterable**: boolean
-
-*Defined in [src/Entity/FieldConfig.ts:14](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L14)*
+*Defined in [src/Entity/FieldConfig.ts:14](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L14)*
 
 ___
 
@@ -63,15 +56,33 @@ ___
 
 •  **name**: string
 
-*Defined in [src/Entity/FieldConfig.ts:13](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L13)*
+*Defined in [src/Entity/FieldConfig.ts:11](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L11)*
+
+___
+
+### reflectedEntity
+
+•  **reflectedEntity**: any
+
+*Defined in [src/Entity/FieldConfig.ts:13](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L13)*
 
 ## Methods
+
+### clone
+
+▸ **clone**(): [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)
+
+*Defined in [src/Entity/FieldConfig.ts:46](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L46)*
+
+**Returns:** [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)
+
+___
 
 ### deserialize
 
 ▸ **deserialize**(`value`: Object): any
 
-*Defined in [src/Entity/FieldConfig.ts:37](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L37)*
+*Defined in [src/Entity/FieldConfig.ts:28](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L28)*
 
 #### Parameters:
 
@@ -85,14 +96,14 @@ ___
 
 ### initialize
 
-▸ **initialize**(`parent`: [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md)): void
+▸ **initialize**(`_parent`: [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md)): void
 
-*Defined in [src/Entity/FieldConfig.ts:33](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldConfig.ts#L33)*
+*Defined in [src/Entity/FieldConfig.ts:26](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldConfig.ts#L26)*
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
-`parent` | [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md) |
+`_parent` | [EntityConfig](tsdoc/classes/_entity_entityconfig_.entityconfig.md) |
 
 **Returns:** void

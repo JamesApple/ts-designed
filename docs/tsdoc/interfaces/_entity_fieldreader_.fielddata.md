@@ -20,9 +20,9 @@
 
 ### entityConstructor
 
-• `Optional` **entityConstructor**: *typeof* Base
+• `Optional` **entityConstructor**: Object
 
-*Defined in [src/Entity/FieldReader.ts:7](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldReader.ts#L7)*
+*Defined in [src/Entity/FieldReader.ts:7](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldReader.ts#L7)*
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 •  **name**: string
 
-*Defined in [src/Entity/FieldReader.ts:5](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldReader.ts#L5)*
+*Defined in [src/Entity/FieldReader.ts:5](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldReader.ts#L5)*
 
 ___
 
@@ -38,4 +38,4 @@ ___
 
 • `Optional` **subFields**: [FieldData](tsdoc/interfaces/_entity_fieldreader_.fielddata.md)[]
 
-*Defined in [src/Entity/FieldReader.ts:6](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldReader.ts#L6)*
+*Defined in [src/Entity/FieldReader.ts:6](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldReader.ts#L6)*

@@ -12,22 +12,36 @@
 
 ### Methods
 
+* [asJSON](tsdoc/classes/_entity_base_.base.md#asjson)
 * [fields](tsdoc/classes/_entity_base_.base.md#fields)
+* [maybe](tsdoc/classes/_entity_base_.base.md#maybe)
 * [serialize](tsdoc/classes/_entity_base_.base.md#serialize)
+* [toJSON](tsdoc/classes/_entity_base_.base.md#tojson)
 * [validate](tsdoc/classes/_entity_base_.base.md#validate)
 * [build](tsdoc/classes/_entity_base_.base.md#build)
 * [create](tsdoc/classes/_entity_base_.base.md#create)
 * [fields](tsdoc/classes/_entity_base_.base.md#fields)
+* [fromJSON](tsdoc/classes/_entity_base_.base.md#fromjson)
 * [setValidator](tsdoc/classes/_entity_base_.base.md#setvalidator)
 * [validator](tsdoc/classes/_entity_base_.base.md#validator)
 
 ## Methods
 
+### asJSON
+
+▸ **asJSON**(): Record\<string, unknown>
+
+*Defined in [src/Entity/Base.ts:67](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L67)*
+
+**Returns:** Record\<string, unknown>
+
+___
+
 ### fields
 
 ▸ **fields**\<T>(`this`: T): [EntityFieldReader](tsdoc/classes/_entity_fieldreader_.entityfieldreader.md)
 
-*Defined in [src/Entity/Base.ts:43](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L43)*
+*Defined in [src/Entity/Base.ts:44](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L44)*
 
 #### Type parameters:
 
@@ -45,11 +59,35 @@ Name | Type |
 
 ___
 
+### maybe
+
+▸ **maybe**\<T, K>(`this`: T, `value`: K): [Optional](tsdoc/classes/_optional_optional_.optional.md)\<Exclude\<T[K], null \| undefined>>
+
+*Defined in [src/Entity/Base.ts:71](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L71)*
+
+#### Type parameters:
+
+Name | Type |
+------ | ------ |
+`T` | - |
+`K` | keyof [WithoutFunctions](tsdoc/modules/_entity_utilitytypes_.md#withoutfunctions)\<T> |
+
+#### Parameters:
+
+Name | Type |
+------ | ------ |
+`this` | T |
+`value` | K |
+
+**Returns:** [Optional](tsdoc/classes/_optional_optional_.optional.md)\<Exclude\<T[K], null \| undefined>>
+
+___
+
 ### serialize
 
 ▸ **serialize**\<T>(`this`: T): [EntitySerializer](tsdoc/classes/_entity_entityserializer_.entityserializer.md)\<T>
 
-*Defined in [src/Entity/Base.ts:47](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L47)*
+*Defined in [src/Entity/Base.ts:48](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L48)*
 
 #### Type parameters:
 
@@ -67,11 +105,21 @@ Name | Type |
 
 ___
 
+### toJSON
+
+▸ **toJSON**(): Record\<string, unknown>
+
+*Defined in [src/Entity/Base.ts:63](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L63)*
+
+**Returns:** Record\<string, unknown>
+
+___
+
 ### validate
 
 ▸ **validate**\<T>(`this`: T): T
 
-*Defined in [src/Entity/Base.ts:51](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L51)*
+*Defined in [src/Entity/Base.ts:52](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L52)*
 
 #### Type parameters:
 
@@ -91,23 +139,22 @@ ___
 
 ### build
 
-▸ `Static`**build**\<T, D>(`this`: T, `args?`: [CreateArgs](tsdoc/modules/_entity_utilitytypes_.md#createargs)\<InstanceType\<T>, D>): InstanceType\<T>
+▸ `Static`**build**\<T>(`this`: T, `args?`: [CreateArgs](tsdoc/modules/_entity_utilitytypes_.md#createargs)\<InstanceType\<T>>): InstanceType\<T>
 
-*Defined in [src/Entity/Base.ts:22](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L22)*
+*Defined in [src/Entity/Base.ts:23](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L23)*
 
 #### Type parameters:
 
 Name | Type |
 ------ | ------ |
 `T` | *typeof* [Base](tsdoc/classes/_entity_base_.base.md) |
-`D` | Object |
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
 `this` | T |
-`args?` | [CreateArgs](tsdoc/modules/_entity_utilitytypes_.md#createargs)\<InstanceType\<T>, D> |
+`args?` | [CreateArgs](tsdoc/modules/_entity_utilitytypes_.md#createargs)\<InstanceType\<T>> |
 
 **Returns:** InstanceType\<T>
 
@@ -115,9 +162,9 @@ ___
 
 ### create
 
-▸ `Static`**create**\<T, D>(`this`: T, `args?`: [CreateArgs](tsdoc/modules/_entity_utilitytypes_.md#createargs)\<InstanceType\<T>, D>): InstanceType\<T>
+▸ `Static`**create**\<T>(`this`: T, `args?`: [CreateArgs](tsdoc/modules/_entity_utilitytypes_.md#createargs)\<InstanceType\<T>>): InstanceType\<T>
 
-*Defined in [src/Entity/Base.ts:10](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L10)*
+*Defined in [src/Entity/Base.ts:11](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L11)*
 
 Map then validate an entity
 
@@ -126,14 +173,13 @@ Map then validate an entity
 Name | Type |
 ------ | ------ |
 `T` | *typeof* [Base](tsdoc/classes/_entity_base_.base.md) |
-`D` | Object |
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
 `this` | T |
-`args?` | [CreateArgs](tsdoc/modules/_entity_utilitytypes_.md#createargs)\<InstanceType\<T>, D> |
+`args?` | [CreateArgs](tsdoc/modules/_entity_utilitytypes_.md#createargs)\<InstanceType\<T>> |
 
 **Returns:** InstanceType\<T>
 
@@ -143,7 +189,7 @@ ___
 
 ▸ `Static`**fields**\<T>(`this`: T): [ClassFieldReader](tsdoc/classes/_entity_fieldreader_.classfieldreader.md)
 
-*Defined in [src/Entity/Base.ts:39](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L39)*
+*Defined in [src/Entity/Base.ts:40](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L40)*
 
 #### Type parameters:
 
@@ -161,11 +207,34 @@ Name | Type |
 
 ___
 
+### fromJSON
+
+▸ `Static`**fromJSON**\<T>(`this`: T, `data`: Record\<string, unknown>): InstanceType\<T>
+
+*Defined in [src/Entity/Base.ts:56](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L56)*
+
+#### Type parameters:
+
+Name | Type |
+------ | ------ |
+`T` | *typeof* [Base](tsdoc/classes/_entity_base_.base.md) |
+
+#### Parameters:
+
+Name | Type |
+------ | ------ |
+`this` | T |
+`data` | Record\<string, unknown> |
+
+**Returns:** InstanceType\<T>
+
+___
+
 ### setValidator
 
 ▸ `Static`**setValidator**\<T>(`this`: T, `validator`: *typeof* [validator](tsdoc/classes/_entity_base_.base.md#validator)): void
 
-*Defined in [src/Entity/Base.ts:32](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L32)*
+*Defined in [src/Entity/Base.ts:33](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L33)*
 
 #### Type parameters:
 
@@ -188,7 +257,7 @@ ___
 
 ▸ `Static`**validator**\<T>(`entity`: T): T
 
-*Defined in [src/Entity/Base.ts:31](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L31)*
+*Defined in [src/Entity/Base.ts:32](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L32)*
 
 #### Type parameters:
 

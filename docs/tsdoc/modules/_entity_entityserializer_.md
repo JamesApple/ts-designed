@@ -21,7 +21,7 @@
 
 Ƭ  **MapOutArg**\<T, O>: SameTypeFields\<T, O> \| MapDirect\<T, O, keyof T & keyof O> \| MapIndirect\<T, O, keyof T, keyof O>
 
-*Defined in [src/Entity/EntitySerializer.ts:87](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntitySerializer.ts#L87)*
+*Defined in [src/Entity/EntitySerializer.ts:71](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntitySerializer.ts#L71)*
 
 #### Type parameters:
 
@@ -36,7 +36,7 @@ ___
 
 Ƭ  **MapOutArgs**\<T, O>: [MapOutArg](tsdoc/modules/_entity_entityserializer_.md#mapoutarg)\<T, O>[]
 
-*Defined in [src/Entity/EntitySerializer.ts:82](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntitySerializer.ts#L82)*
+*Defined in [src/Entity/EntitySerializer.ts:66](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntitySerializer.ts#L66)*
 
 #### Type parameters:
 

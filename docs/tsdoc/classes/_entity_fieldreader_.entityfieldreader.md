@@ -25,7 +25,7 @@
 
 \+ **new EntityFieldReader**(`instance`: [Base](tsdoc/classes/_entity_base_.base.md)): [EntityFieldReader](tsdoc/classes/_entity_fieldreader_.entityfieldreader.md)
 
-*Defined in [src/Entity/FieldReader.ts:28](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldReader.ts#L28)*
+*Defined in [src/Entity/FieldReader.ts:28](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldReader.ts#L28)*
 
 #### Parameters:
 
@@ -41,7 +41,7 @@ Name | Type |
 
 ▸ **onlySet**(): [FieldData](tsdoc/interfaces/_entity_fieldreader_.fielddata.md)[]
 
-*Defined in [src/Entity/FieldReader.ts:31](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldReader.ts#L31)*
+*Defined in [src/Entity/FieldReader.ts:31](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldReader.ts#L31)*
 
 **Returns:** [FieldData](tsdoc/interfaces/_entity_fieldreader_.fielddata.md)[]
 
@@ -51,6 +51,6 @@ ___
 
 ▸ **onlyUnset**(): [FieldData](tsdoc/interfaces/_entity_fieldreader_.fielddata.md)[]
 
-*Defined in [src/Entity/FieldReader.ts:38](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/FieldReader.ts#L38)*
+*Defined in [src/Entity/FieldReader.ts:38](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/FieldReader.ts#L38)*
 
 **Returns:** [FieldData](tsdoc/interfaces/_entity_fieldreader_.fielddata.md)[]

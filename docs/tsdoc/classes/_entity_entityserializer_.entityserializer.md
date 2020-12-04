@@ -24,7 +24,7 @@ Name | Type |
 
 * [asJSON](tsdoc/classes/_entity_entityserializer_.entityserializer.md#asjson)
 * [mapOut](tsdoc/classes/_entity_entityserializer_.entityserializer.md#mapout)
-* [mapTo](tsdoc/classes/_entity_entityserializer_.entityserializer.md#mapto)
+* [mapOutRaw](tsdoc/classes/_entity_entityserializer_.entityserializer.md#mapoutraw)
 
 ## Constructors
 
@@ -32,7 +32,7 @@ Name | Type |
 
 \+ **new EntitySerializer**(`instance`: T): [EntitySerializer](tsdoc/classes/_entity_entityserializer_.entityserializer.md)
 
-*Defined in [src/Entity/EntitySerializer.ts:7](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntitySerializer.ts#L7)*
+*Defined in [src/Entity/EntitySerializer.ts:7](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntitySerializer.ts#L7)*
 
 #### Parameters:
 
@@ -48,7 +48,7 @@ Name | Type |
 
 ▸ **asJSON**(): AsJsonResult\<T>
 
-*Defined in [src/Entity/EntitySerializer.ts:52](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntitySerializer.ts#L52)*
+*Defined in [src/Entity/EntitySerializer.ts:40](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntitySerializer.ts#L40)*
 
 **Returns:** AsJsonResult\<T>
 
@@ -58,7 +58,7 @@ ___
 
 ▸ **mapOut**\<O>(`target`: O, ...`fields`: [MapOutArgs](tsdoc/modules/_entity_entityserializer_.md#mapoutargs)\<[WithoutFunctions](tsdoc/modules/_entity_utilitytypes_.md#withoutfunctions)\<T>, [WithoutFunctions](tsdoc/modules/_entity_utilitytypes_.md#withoutfunctions)\<O>>): O
 
-*Defined in [src/Entity/EntitySerializer.ts:10](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntitySerializer.ts#L10)*
+*Defined in [src/Entity/EntitySerializer.ts:10](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntitySerializer.ts#L10)*
 
 #### Type parameters:
 
@@ -77,23 +77,22 @@ Name | Type |
 
 ___
 
-### mapTo
+### mapOutRaw
 
-▸ **mapTo**\<O>(`mapping`: MappedSerializeArgs\<T, O>, `target?`: Partial\<O>): O
+▸ **mapOutRaw**\<O>(...`fields`: [MapOutArgs](tsdoc/modules/_entity_entityserializer_.md#mapoutargs)\<[WithoutFunctions](tsdoc/modules/_entity_utilitytypes_.md#withoutfunctions)\<T>, [WithoutFunctions](tsdoc/modules/_entity_utilitytypes_.md#withoutfunctions)\<O>>): O
 
-*Defined in [src/Entity/EntitySerializer.ts:34](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntitySerializer.ts#L34)*
+*Defined in [src/Entity/EntitySerializer.ts:17](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntitySerializer.ts#L17)*
 
 #### Type parameters:
 
 Name | Type |
 ------ | ------ |
-`O` | Record\<string, any> |
+`O` | Object |
 
 #### Parameters:
 
-Name | Type | Default value |
------- | ------ | ------ |
-`mapping` | MappedSerializeArgs\<T, O> | - |
-`target` | Partial\<O> | {} |
+Name | Type |
+------ | ------ |
+`...fields` | [MapOutArgs](tsdoc/modules/_entity_entityserializer_.md#mapoutargs)\<[WithoutFunctions](tsdoc/modules/_entity_utilitytypes_.md#withoutfunctions)\<T>, [WithoutFunctions](tsdoc/modules/_entity_utilitytypes_.md#withoutfunctions)\<O>> |
 
 **Returns:** O

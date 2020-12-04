@@ -20,7 +20,7 @@
 
 ▸ **isEntityConstructor**(`o`: unknown): o is Base
 
-*Defined in [src/Entity/Base.ts:56](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Base.ts#L56)*
+*Defined in [src/Entity/Base.ts:79](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Base.ts#L79)*
 
 #### Parameters:
 

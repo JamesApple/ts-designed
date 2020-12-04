@@ -20,7 +20,7 @@
 
 ▸ **getValue**(`path`: string, `object`: unknown, `f`: [FieldConfig](tsdoc/classes/_entity_fieldconfig_.fieldconfig.md)): any
 
-*Defined in [src/Entity/EntityMapping.ts:28](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/EntityMapping.ts#L28)*
+*Defined in [src/Entity/EntityMapping.ts:28](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/EntityMapping.ts#L28)*
 
 #### Parameters:
 

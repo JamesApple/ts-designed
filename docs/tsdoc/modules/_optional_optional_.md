@@ -9,3 +9,4 @@
 ### Classes
 
 * [Optional](tsdoc/classes/_optional_optional_.optional.md)
+* [OptionalValueMissingError](tsdoc/classes/_optional_optional_.optionalvaluemissingerror.md)

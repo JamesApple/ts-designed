@@ -16,7 +16,7 @@
 
 ▸ **Field**(`fieldConfig?`: Omit\<[FieldConfigArgs](tsdoc/interfaces/_entity_fieldconfig_.fieldconfigargs.md), \"name\">): PropertyDecorator
 
-*Defined in [src/Entity/Field.ts:9](https://github.com/jamesapple/ts-designed/blob/d9cf2e1/src/Entity/Field.ts#L9)*
+*Defined in [src/Entity/Field.ts:9](https://github.com/jamesapple/ts-designed/blob/be057cd/src/Entity/Field.ts#L9)*
 
 Field decorates a property to allow use in other helpers within the
 entity library.
