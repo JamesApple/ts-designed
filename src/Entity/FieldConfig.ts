@@ -5,6 +5,7 @@ export interface FieldConfigArgs {
   entity?: Object;
   deserialize?: (v: any) => any;
   name: string;
+  iterable?: boolean;
 }
 
 export class FieldConfig {
@@ -15,32 +16,61 @@ export class FieldConfig {
 
   private _deserialize?: (v: any) => any;
 
-  constructor({name, entity, reflectedEntity, deserialize}: FieldConfigArgs) {
+  private iterable?: boolean;
+
+  constructor({
+    name,
+    entity,
+    iterable,
+    reflectedEntity,
+    deserialize
+  }: FieldConfigArgs) {
     this.name = name;
     this.entity = entity;
     this.reflectedEntity = reflectedEntity;
     this._deserialize = deserialize;
+    this.iterable = iterable;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   initialize(_parent: EntityConfig): void {}
 
   deserialize(value: Object): any {
-    if (this._deserialize) {
-      return this._deserialize(value);
-    }
     const entity = this.entity ?? this.reflectedEntity;
-    if (entity && "fromJSON" in entity && value != null) {
-      if (
-        typeof value === "object" &&
-        "constructor" in value &&
-        value.constructor === entity
-      ) {
-        return value;
+    const mapSingle = (v: Object): any => {
+      if (this._deserialize) {
+        return this._deserialize(v);
       }
-      return entity.fromJSON(value);
+      if (entity && "fromJSON" in entity && v != null) {
+        if (
+          typeof v === "object" &&
+          "constructor" in v &&
+          v.constructor === entity
+        ) {
+          return v;
+        }
+        return entity.fromJSON(v);
+      }
+      return v;
+    };
+    if (value && this.isArrayLike()) {
+      return (value as Array<any>).map(mapSingle);
+    } else {
+      return mapSingle(value);
     }
-    return value;
+  }
+
+  isArrayLike(): boolean {
+    if (this.iterable != null) {
+      return this.iterable;
+    }
+    if (this.reflectedEntity) {
+      return (
+        this.reflectedEntity === Array ||
+        this.reflectedEntity.prototype instanceof Array
+      );
+    }
+    return false;
   }
 
   clone(): FieldConfig {

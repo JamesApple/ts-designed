@@ -21,15 +21,18 @@ describe("FieldReading", function () {
       Array [
         Object {
           "entityConstructor": undefined,
+          "fieldArrayLike": false,
           "name": "name",
           "subFields": undefined,
         },
         Object {
           "entityConstructor": [Function],
+          "fieldArrayLike": false,
           "name": "address",
           "subFields": Array [
             Object {
               "entityConstructor": undefined,
+              "fieldArrayLike": false,
               "name": "postcode",
               "subFields": undefined,
             },
@@ -48,15 +51,18 @@ describe("FieldReading", function () {
       Array [
         Object {
           "entityConstructor": undefined,
+          "fieldArrayLike": false,
           "name": "name",
           "subFields": undefined,
         },
         Object {
           "entityConstructor": [Function],
+          "fieldArrayLike": false,
           "name": "address",
           "subFields": Array [
             Object {
               "entityConstructor": undefined,
+              "fieldArrayLike": false,
               "name": "postcode",
               "subFields": undefined,
             },
@@ -77,6 +83,7 @@ describe("FieldReading", function () {
       Array [
         Object {
           "entityConstructor": undefined,
+          "fieldArrayLike": false,
           "name": "name",
           "subFields": undefined,
         },

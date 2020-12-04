@@ -125,4 +125,66 @@ describe("EntityMapping", function () {
       expect(parent.serialize().asJSON()).toEqual({child: "string"});
     });
   });
+
+  describe("array serialization", function () {
+    class Child extends Entity.Base {
+      @Entity.Field() name: string;
+    }
+    class Parent extends Entity.Base {
+      @Entity.Field({entity: Child}) children: Child[];
+      @Entity.Field({iterable: true, entity: Child}) iterableChildren?: Child[];
+    }
+
+    it("serializes nested entities", async function () {
+      const fromEntity = Parent.create({
+        children: [
+          Child.create({name: "first"}),
+          Child.create({name: "second"})
+        ]
+      });
+
+      expect(
+        (fromEntity.serialize().asJSON().children as any)[0].constructor
+      ).toEqual(Object);
+      expect(fromEntity.serialize().asJSON()).toEqual({
+        children: [{name: "first"}, {name: "second"}]
+      });
+    });
+
+    it("serializes nested iterable entities", async function () {
+      const fromEntity = Parent.create({
+        iterableChildren: [
+          Child.create({name: "first"}),
+          Child.create({name: "second"})
+        ]
+      });
+
+      expect(
+        (fromEntity.serialize().asJSON().iterableChildren as any)[0].constructor
+      ).toEqual(Object);
+      expect(fromEntity.serialize().asJSON()).toEqual({
+        iterableChildren: [{name: "first"}, {name: "second"}]
+      });
+    });
+
+    it("creates from nested entities", async function () {
+      const fromData = Parent.fromJSON({
+        children: [{name: "first"}, {name: "second"}]
+      });
+
+      expect(fromData.children[0]).toBeInstanceOf(Child);
+    });
+
+    it("creates from iterable entities", async function () {
+      const fromData = Parent.fromJSON({
+        iterableChildren: [{name: "first"}, {name: "second"}]
+      });
+
+      expect(fromData.iterableChildren![0]).toBeInstanceOf(Child);
+    });
+
+    it("creates from null nested entities", async function () {
+      Parent.create({}).serialize().asJSON();
+    });
+  });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {Base} from "./Base";
 import {EntityFieldReader} from "./FieldReader";
 import {WithoutFunctions} from "./utilityTypes";
@@ -39,11 +40,20 @@ export class EntitySerializer<T extends Base> {
 
   asJSON(): AsJsonResult<T> {
     return new EntityFieldReader(this.instance).onlySet().reduce((json, f) => {
+      const deserializeSingle = (v: any) => {
+        if (hasAsJSONMethod(value)) {
+          v = v.asJSON();
+        } else if (canBeConvertedToJson(v)) {
+          v = (v as any).serialize().asJSON();
+        }
+        return v;
+      };
+
       let value: any = (this.instance as any)[f.name];
       if (hasAsJSONMethod(value)) {
-        value = (value as any).asJSON();
-      } else if (canBeConvertedToJson(value)) {
-        value = (value as any).serialize().asJSON();
+        value = deserializeSingle(value);
+      } else if (f.fieldArrayLike && value) {
+        value = value.map(deserializeSingle);
       }
       json[f.name] = value;
       return json;

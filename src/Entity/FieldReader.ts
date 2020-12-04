@@ -5,17 +5,21 @@ export interface FieldData {
   name: string;
   subFields?: FieldData[];
   entityConstructor?: Object;
+  fieldArrayLike: boolean;
 }
 
 export class ClassFieldReader {
   constructor(private konstructor: typeof Base) {}
 
   all(): FieldData[] {
-    return this.config.getFields().map(({name, entity}) => {
+    return this.config.getFields().map((f) => {
       return {
-        name,
-        ...{entityConstructor: entity},
-        ...{subFields: entity ? (entity as any)?.fields()?.all() : undefined}
+        name: f.name,
+        fieldArrayLike: f.isArrayLike(),
+        ...{entityConstructor: f.entity},
+        ...{
+          subFields: f.entity ? (f.entity as any)?.fields()?.all() : undefined
+        }
       };
     });
   }
