@@ -76,7 +76,7 @@ describe("EntityMapping", function () {
     });
 
     it("Serializes an entity from an undefined value", async function () {
-      expect(ParentPOJO.create({}).serialize().asJSON()).toEqual({});
+      expect(ParentPOJO.build({}).serialize().asJSON()).toEqual({});
     });
   });
 
@@ -106,7 +106,7 @@ describe("EntityMapping", function () {
     });
 
     it("Serializes an entity from an undefined value", async function () {
-      expect(Parent.create({}).serialize().asJSON()).toEqual({});
+      expect(Parent.build({}).serialize().asJSON()).toEqual({});
     });
   });
 
@@ -152,7 +152,7 @@ describe("EntityMapping", function () {
     });
 
     it("serializes nested iterable entities", async function () {
-      const fromEntity = Parent.create({
+      const fromEntity = Parent.build({
         iterableChildren: [
           Child.create({name: "first"}),
           Child.create({name: "second"})
@@ -184,7 +184,7 @@ describe("EntityMapping", function () {
     });
 
     it("creates from null nested entities", async function () {
-      Parent.create({}).serialize().asJSON();
+      Parent.build({}).serialize().asJSON();
     });
   });
 });

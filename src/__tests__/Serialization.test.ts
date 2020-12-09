@@ -15,7 +15,7 @@ describe("Serialization", function () {
   });
 
   it("does not output unset fields", async function () {
-    const entity = OneField.create({});
+    const entity = OneField.build({});
     expect(entity.serialize().asJSON()).toMatchInlineSnapshot(`Object {}`);
   });
 });

@@ -1,12 +1,11 @@
-import {Base} from "./Base";
+import {Attributes, Base} from "./Base";
 import {EntityConfig} from "./EntityConfig";
 import {FieldConfig} from "./FieldConfig";
-import {CreateArgs} from "./utilityTypes";
 
 export class EntityMapping {
   private data: Object;
 
-  constructor(public instance: Base, args: CreateArgs<Base> = {}) {
+  constructor(public instance: Base, args: Attributes<Base> = {}) {
     this.data = args;
   }
 

@@ -1,8 +1,14 @@
-import {CreateArgs, WithoutFunctions} from "./utilityTypes";
+import {WithoutFunctions} from "./utilityTypes";
 import {EntityMapping} from "./EntityMapping";
 import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
 import {EntitySerializer} from "./EntitySerializer";
 import {Optional} from "..";
+
+/**
+ * Type of non function attributes. This currently ignores any methods that may
+ * have been defined on the entity.
+ */
+export type Attributes<I extends Base> = WithoutFunctions<I>;
 
 export class Base {
   /**
@@ -10,7 +16,7 @@ export class Base {
    */
   static create<T extends typeof Base>(
     this: T,
-    args?: CreateArgs<InstanceType<T>>
+    args?: Attributes<InstanceType<T>>
   ): InstanceType<T> {
     const instance = this.build(args);
     this.validator(instance);
@@ -22,7 +28,7 @@ export class Base {
    */
   static build<T extends typeof Base>(
     this: T,
-    args?: CreateArgs<InstanceType<T>>
+    args?: Partial<Attributes<InstanceType<T>>>
   ): InstanceType<T> {
     const instance = new this() as InstanceType<T>;
     new EntityMapping(instance, args).map();
