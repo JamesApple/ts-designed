@@ -12,8 +12,8 @@ describe("DomainError", function () {
 
   it("should wrap multiple errors", async function () {
     const root = new Error("Root Cause");
-    const intermediate = Parent.wrap(root, "Intermediate");
-    const final = Parent.wrap(intermediate, "Final");
+    const intermediate = Parent.wrap(root, {message: "Intermediate"});
+    const final = Parent.wrap(intermediate, {message: "Final"});
 
     expect(final.getCause()).toEqual(intermediate);
     expect(final.getRootCause()).toEqual(root);
