@@ -11,7 +11,7 @@ module.exports = {
   ],
   globals: {
     "ts-jest": {
-      tsConfig: "src/__tests__/tsconfig.json"
+      tsconfig: "src/__tests__/tsconfig.json"
     }
   },
   testPathIgnorePatterns: ["/node_modules/", "/fixtures/", "/utils/"],

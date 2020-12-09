@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import {Base} from "./Base";
+import {Attributes, AttributeSelection, Base} from "./Base";
 import {EntityFieldReader} from "./FieldReader";
 import {WithoutFunctions} from "./utilityTypes";
 
@@ -7,6 +7,15 @@ type FunctionlessBase = WithoutFunctions<Base>;
 
 export class EntitySerializer<T extends Base> {
   constructor(private instance: T) {}
+
+  pick<K extends keyof Attributes<T>>(
+    ...fields: K[]
+  ): AttributeSelection<T, K> {
+    return fields.reduce((picked, key) => {
+      picked[key] = this.instance[key];
+      return picked;
+    }, {} as AttributeSelection<T, K>);
+  }
 
   mapOut<O extends Object>(
     target: O,

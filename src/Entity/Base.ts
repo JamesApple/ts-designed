@@ -10,6 +10,11 @@ import {Optional} from "..";
  */
 export type Attributes<I extends Base> = WithoutFunctions<I>;
 
+export type AttributeSelection<
+  I extends Base,
+  K extends keyof Attributes<I>
+> = Pick<I, K>;
+
 export class Base {
   /**
    * Map then validate an entity
