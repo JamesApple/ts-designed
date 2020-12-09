@@ -1,19 +1,36 @@
 import {WithoutFunctions} from "./utilityTypes";
 import {EntityMapping} from "./EntityMapping";
 import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
-import {EntitySerializer} from "./EntitySerializer";
+import {EntitySerializer, RemoveNever} from "./EntitySerializer";
 import {Optional} from "..";
 
-/**
- * Type of non function attributes. This currently ignores any methods that may
- * have been defined on the entity.
- */
-export type Attributes<I extends Base> = WithoutFunctions<I>;
+export type Attributes<I> = WithoutFunctions<I>;
 
-export type AttributeSelection<
-  I extends Base,
-  K extends keyof Attributes<I>
-> = Pick<I, K>;
+export type AttributeSelection<I, K extends keyof Attributes<I>> = Pick<I, K>;
+
+export type AttributesWithout<I, K extends keyof Attributes<I>> = RemoveNever<
+  {
+    [OK in keyof Attributes<I>]: OK extends K ? never : Attributes<I>[OK];
+  }
+>;
+
+export type WithRequiredAttributes<I, K extends keyof Attributes<I>> = {
+  [OK in keyof I]: OK extends K ? Exclude<I[OK], null | undefined> : I[OK];
+};
+
+export type WithoutAttributes<I, K extends keyof Attributes<I>> = RemoveNever<
+  {
+    [OK in keyof I]: OK extends K ? never : I[OK];
+  }
+>;
+
+export type WithOptionalAttributes<I, K extends keyof Attributes<I>> = {
+  [OK in keyof I]: OK extends K ? I[OK] | undefined : I[OK];
+};
+
+export type WithNullableAttributes<I, K extends keyof Attributes<I>> = {
+  [OK in keyof I]: OK extends K ? I[OK] | null : I[OK];
+};
 
 export class Base {
   /**

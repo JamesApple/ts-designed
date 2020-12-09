@@ -120,11 +120,16 @@ type MapIndirect<
   };
 }[K];
 
-type RemoveNever<T> = {
+type NonNeverKeys<T> = {
   [K in keyof T]: T[K] extends never ? never : K;
 }[keyof T];
 
-type SameTypeFields<T extends FunctionlessBase, O extends Object> = RemoveNever<
+export type RemoveNever<T> = Pick<T, NonNeverKeys<T>>;
+
+type SameTypeFields<
+  T extends FunctionlessBase,
+  O extends Object
+> = NonNeverKeys<
   {
     [K in keyof T & keyof O]: T[K] extends O[K] ? K : never;
   }
