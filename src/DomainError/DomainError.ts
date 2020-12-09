@@ -59,16 +59,16 @@ export function asDomainErrorBaseClass<T extends AnyConstructor>(BaseError: T) {
 
     get name(): string {
       return this.previousError
-        ? `${this._name}(${this.previousError.name})`
-        : this._name;
+        ? `${this.className}(${this.previousError.name})`
+        : this.className;
     }
 
-    private get _name(): string {
+    get className(): string {
       return this.constructor.name;
     }
 
     toString(): string {
-      const currentErrorString = `${this._name}: ${this.message}`;
+      const currentErrorString = `${this.className}: ${this.message}`;
       return this.previousError
         ? `${currentErrorString}\n\t${this.previousError.toString()}`
         : currentErrorString;
@@ -99,7 +99,7 @@ export function asDomainErrorBaseClass<T extends AnyConstructor>(BaseError: T) {
       return error;
     }
   }
-  return BaseDomainError as typeof BaseDomainError;
+  return BaseDomainError;
 }
 
 export const DomainError = asDomainErrorBaseClass(Error);
