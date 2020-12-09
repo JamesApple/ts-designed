@@ -1,1 +1,1 @@
-export {DomainError} from "./DomainError";
+export {DomainError, asDomainErrorBaseClass} from "./DomainError";
