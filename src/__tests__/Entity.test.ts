@@ -144,3 +144,29 @@ describe("maybe", function () {
     expect(HasOptionalField.create({}).maybe("field").isAbsent()).toEqual(true);
   });
 });
+
+describe("Mapping non entity classes", function () {
+  class Child {
+    name: string;
+
+    static fromJSON(data: any): any {
+      const child = new Child();
+      child.name = data;
+      return child;
+    }
+  }
+  class Parent extends Entity.Base {
+    @Entity.Field() child: Child;
+  }
+
+  it("serializes", async function () {
+    expect(Parent.fromJSON({child: "Hello World"} as any))
+      .toMatchInlineSnapshot(`
+      Object {
+        "child": Child {
+          "name": "Hello World",
+        },
+      }
+    `);
+  });
+});

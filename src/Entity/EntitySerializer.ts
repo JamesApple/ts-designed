@@ -66,7 +66,7 @@ export class EntitySerializer<T extends Base> {
       }
       json[f.name] = value;
       return json;
-    }, {} as any) as any;
+    }, {} as AsJsonResult<T>);
   }
 }
 
@@ -135,12 +135,14 @@ type SameTypeFields<
   }
 >;
 
-type AsJsonResult<T extends Base> = {
-  [K in keyof WithoutFunctions<T>]: T[K] extends Base
-    ? AsJsonResult<T[K]>
+type AnythingWithAsJSON = {asJSON(): any};
+export type AsJsonResult<T extends HasAsJSONMethod> = {
+  [K in keyof Attributes<T>]: T[K] extends AnythingWithAsJSON
+    ? ReturnType<T[K]["asJSON"]>
     : T[K];
 };
 
+// AsJsonResult<T[K]>
 interface ConvertableToJson<T extends Base> {
   serialize: T["serialize"];
 }

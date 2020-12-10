@@ -1,8 +1,9 @@
 {
   "extends": "./typescript/tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2015",
+    "lib": ["es2018"],
     "module": "commonjs",
+    "target": "es2018",
     "outDir": "./dist/cjs"
   }
 }

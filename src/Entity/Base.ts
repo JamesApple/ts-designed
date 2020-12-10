@@ -1,7 +1,7 @@
 import {WithoutFunctions} from "./utilityTypes";
 import {EntityMapping} from "./EntityMapping";
 import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
-import {EntitySerializer, RemoveNever} from "./EntitySerializer";
+import {AsJsonResult, EntitySerializer, RemoveNever} from "./EntitySerializer";
 import {Optional} from "..";
 
 export type Attributes<I> = WithoutFunctions<I>;
@@ -65,12 +65,12 @@ export class Base {
     this.validator = validator;
   }
 
-  static fields<T extends typeof Base>(this: T): ClassFieldReader {
+  static fields<T extends typeof Base>(this: T): ClassFieldReader<T> {
     return new ClassFieldReader(this);
   }
 
-  fields<T extends Base>(this: T): EntityFieldReader {
-    return new EntityFieldReader(this);
+  fields<T extends Base>(this: T): EntityFieldReader<T> {
+    return new EntityFieldReader(this) as any;
   }
 
   serialize<T extends Base>(this: T): EntitySerializer<T> {
@@ -81,18 +81,15 @@ export class Base {
     return (this.constructor as any).validator(this);
   }
 
-  static fromJSON<T extends typeof Base>(
-    this: T,
-    data: Record<string, unknown>
-  ): InstanceType<T> {
-    return this.create(data as any);
+  static fromJSON<T extends typeof Base>(this: T, data: any): InstanceType<T> {
+    return this.create(data);
   }
 
-  toJSON(): Record<string, unknown> {
+  toJSON(): AsJsonResult<this> {
     return this.asJSON();
   }
 
-  asJSON(): Record<string, unknown> {
+  asJSON(): AsJsonResult<this> {
     return this.serialize().asJSON();
   }
 

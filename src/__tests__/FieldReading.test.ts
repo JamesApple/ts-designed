@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {Entity} from "..";
 
 describe("FieldReading", function () {
@@ -6,12 +7,23 @@ describe("FieldReading", function () {
     postcode: number;
   }
 
+  class DoesNotHaveAllMethod {
+    fields(): any {
+      return {};
+    }
+
+    name: string;
+  }
+
   class Person extends Entity.Base {
     @Entity.Field()
     name?: string;
 
     @Entity.Field({entity: Address})
     address: Address;
+
+    @Entity.Field()
+    doesNotHaveAll?: DoesNotHaveAllMethod;
   }
 
   it("returns all fields for the class", async function () {
@@ -20,7 +32,7 @@ describe("FieldReading", function () {
     expect(fields).toMatchInlineSnapshot(`
       Array [
         Object {
-          "entityConstructor": undefined,
+          "entityConstructor": [Function],
           "fieldArrayLike": false,
           "name": "name",
           "subFields": undefined,
@@ -31,12 +43,18 @@ describe("FieldReading", function () {
           "name": "address",
           "subFields": Array [
             Object {
-              "entityConstructor": undefined,
+              "entityConstructor": [Function],
               "fieldArrayLike": false,
               "name": "postcode",
               "subFields": undefined,
             },
           ],
+        },
+        Object {
+          "entityConstructor": [Function],
+          "fieldArrayLike": false,
+          "name": "doesNotHaveAll",
+          "subFields": undefined,
         },
       ]
     `);
@@ -50,7 +68,7 @@ describe("FieldReading", function () {
     expect(person.fields().onlySet()).toMatchInlineSnapshot(`
       Array [
         Object {
-          "entityConstructor": undefined,
+          "entityConstructor": [Function],
           "fieldArrayLike": false,
           "name": "name",
           "subFields": undefined,
@@ -61,7 +79,7 @@ describe("FieldReading", function () {
           "name": "address",
           "subFields": Array [
             Object {
-              "entityConstructor": undefined,
+              "entityConstructor": [Function],
               "fieldArrayLike": false,
               "name": "postcode",
               "subFields": undefined,
@@ -77,14 +95,29 @@ describe("FieldReading", function () {
       name: "Bob",
       address: Address.create({postcode: 1})
     });
-    expect(person.fields().onlyUnset()).toMatchInlineSnapshot(`Array []`);
+    expect(person.fields().onlyUnset()).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "entityConstructor": [Function],
+          "fieldArrayLike": false,
+          "name": "doesNotHaveAll",
+          "subFields": undefined,
+        },
+      ]
+    `);
     delete person.name;
     expect(person.fields().onlyUnset()).toMatchInlineSnapshot(`
       Array [
         Object {
-          "entityConstructor": undefined,
+          "entityConstructor": [Function],
           "fieldArrayLike": false,
           "name": "name",
+          "subFields": undefined,
+        },
+        Object {
+          "entityConstructor": [Function],
+          "fieldArrayLike": false,
+          "name": "doesNotHaveAll",
           "subFields": undefined,
         },
       ]

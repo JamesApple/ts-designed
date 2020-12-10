@@ -1,26 +1,43 @@
-import {Base} from "./Base";
+import {Attributes, Base} from "./Base";
+
 import {EntityConfig} from "./EntityConfig";
 
-export interface FieldData {
-  name: string;
-  subFields?: FieldData[];
+export interface FieldData<
+  T extends HasFieldsIntrospection,
+  K extends keyof Attributes<T>
+> {
+  name: K;
   entityConstructor?: Object;
   fieldArrayLike: boolean;
 }
 
-export class ClassFieldReader {
-  constructor(private konstructor: typeof Base) {}
+export interface FieldDataWithSubfields<
+  T extends HasFieldsIntrospection,
+  K extends keyof Attributes<T>
+> {
+  name: K;
+  subFields?: MappedFieldUnion<T[K]>;
+  entityConstructor?: Object;
+  fieldArrayLike: boolean;
+}
 
-  all(): FieldData[] {
-    return this.config.getFields().map((f) => {
+export class ClassFieldReader<
+  T extends typeof Base,
+  I extends Required<InstanceType<T>> = Required<InstanceType<T>>
+> {
+  constructor(private konstructor: T) {}
+
+  all(): MappedFieldUnion<I> {
+    const fields = this.config.getFields();
+    return fields.map((f) => {
       return {
         name: f.name,
         fieldArrayLike: f.isArrayLike(),
-        ...{entityConstructor: f.entity},
-        ...{
-          subFields: f.entity ? (f.entity as any)?.fields()?.all() : undefined
-        }
-      };
+        entityConstructor: f.entity ?? f.reflectedEntity,
+        subFields: isHasFieldsIntrospection(f.entity)
+          ? f.entity?.fields()?.all()
+          : undefined
+      } as any;
     });
   }
 
@@ -29,24 +46,58 @@ export class ClassFieldReader {
   }
 }
 
-export class EntityFieldReader {
-  constructor(private instance: Base) {}
+export class EntityFieldReader<
+  I extends HasFieldsIntrospection,
+  T extends HasFieldsIntrospection = Required<I>
+> {
+  /*
+   * Instance must be set to required or field types will break when accessing optional values
+   */
+  instance: T;
+  constructor(instance: T) {
+    this.instance = instance as T;
+  }
 
-  onlySet(): FieldData[] {
+  onlySet(): MappedFieldUnion<T> {
     return this.parentFields.filter((field) => {
-      const fieldValue = (this.instance as any)[field.name];
+      const fieldValue = this.instance[field.name];
       return fieldValue != null;
     });
   }
 
-  onlyUnset(): FieldData[] {
+  onlyUnset(): MappedFieldUnion<T> {
     return this.parentFields.filter((field) => {
-      const fieldValue = (this.instance as any)[field.name];
+      const fieldValue = this.instance[field.name];
       return fieldValue == null;
     });
   }
 
-  private get parentFields(): FieldData[] {
-    return new ClassFieldReader(this.instance.constructor as any).all();
+  all(): MappedFieldUnion<T> {
+    return this.parentFields;
+  }
+
+  private get parentFields(): MappedFieldUnion<T> {
+    return new ClassFieldReader(this.instance.constructor as any).all() as any;
   }
 }
+
+interface HasFieldsIntrospection {
+  fields(): {
+    all(): any;
+  };
+}
+
+function isHasFieldsIntrospection(
+  maybeEntity: unknown
+): maybeEntity is HasFieldsIntrospection {
+  return typeof (maybeEntity as any)?.fields === "function";
+}
+
+type ValueOf<T> = T[keyof T];
+type MappedFieldUnion<T extends HasFieldsIntrospection> = ValueOf<
+  {
+    [K in keyof Attributes<T>]: T[K] extends HasFieldsIntrospection
+      ? FieldDataWithSubfields<T, K>
+      : FieldData<T, K>;
+  }
+>[];
