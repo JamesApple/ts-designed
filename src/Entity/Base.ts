@@ -4,7 +4,16 @@ import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
 import {AsJsonResult, EntitySerializer, RemoveNever} from "./EntitySerializer";
 import {Optional} from "..";
 
-export type Attributes<I> = WithoutFunctions<I>;
+export type Attributes<T> = {
+  [P in keyof WithoutFunctions<T>]: Exclude<
+    T[P],
+    null | undefined
+  > extends (infer AV)[]
+    ? Attributes<AV>[]
+    : Exclude<T[P], null | undefined> extends hasAsJSON
+    ? Attributes<T[P]> | T[P]
+    : T[P];
+};
 
 type hasAsJSON = {asJSON(...args: any): any};
 export type AttributesOrEntities<T> = {
@@ -45,7 +54,7 @@ export class Base {
    */
   static create<T extends typeof Base>(
     this: T,
-    args?: AttributesOrEntities<InstanceType<T>>
+    args?: Attributes<InstanceType<T>>
   ): InstanceType<T> {
     const instance = this.build(args);
     this.validator(instance);
@@ -57,7 +66,7 @@ export class Base {
    */
   static build<T extends typeof Base>(
     this: T,
-    args?: Partial<AttributesOrEntities<InstanceType<T>>>
+    args?: Partial<Attributes<InstanceType<T>>>
   ): InstanceType<T> {
     const instance = new this() as InstanceType<T>;
     new EntityMapping(instance, args).map();

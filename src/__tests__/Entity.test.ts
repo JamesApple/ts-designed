@@ -170,3 +170,51 @@ describe("Mapping non entity classes", function () {
     `);
   });
 });
+
+describe("mapping arrays", function () {
+  xit("Validates types", async function () {
+    class Otherchild {
+      bongo: string;
+      aMethod(): any {}
+    }
+
+    class Child extends Entity.Base {
+      name: string;
+      bingo?: string;
+      child?: Child;
+    }
+    class Parent extends Entity.Base {
+      children?: (Child | Otherchild)[];
+      child: Child | null;
+      otherchild?: Otherchild;
+      blah: string;
+    }
+
+    Parent.create({
+      blah: "",
+      child: {name: ""},
+      children: [{name: ""}, {bingo: "", name: ""}, new Child() /* null */]
+    });
+
+    Parent.create({
+      blah: "",
+      child: null
+    });
+    Parent.create({
+      blah: "",
+      child: null,
+      otherchild: new Otherchild()
+    });
+
+    Parent.create({
+      blah: "",
+      child: null,
+      //@ts-expect-error
+      otherchild: {bongo: ""}
+    });
+    //@ts-expect-error
+    Parent.create({
+      blah: ""
+    });
+  });
+});
