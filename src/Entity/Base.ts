@@ -6,6 +6,13 @@ import {Optional} from "..";
 
 export type Attributes<I> = WithoutFunctions<I>;
 
+type hasAsJSON = {asJSON(...args: any): any};
+export type AttributesOrEntities<T> = {
+  [K in keyof WithoutFunctions<T>]: T[K] extends hasAsJSON
+    ? T[K] | Attributes<T[K]>
+    : T[K];
+};
+
 export type AttributeSelection<I, K extends keyof Attributes<I>> = Pick<I, K>;
 
 export type AttributesWithout<I, K extends keyof Attributes<I>> = RemoveNever<
@@ -38,7 +45,7 @@ export class Base {
    */
   static create<T extends typeof Base>(
     this: T,
-    args?: Attributes<InstanceType<T>>
+    args?: AttributesOrEntities<InstanceType<T>>
   ): InstanceType<T> {
     const instance = this.build(args);
     this.validator(instance);
@@ -50,7 +57,7 @@ export class Base {
    */
   static build<T extends typeof Base>(
     this: T,
-    args?: Partial<Attributes<InstanceType<T>>>
+    args?: Partial<AttributesOrEntities<InstanceType<T>>>
   ): InstanceType<T> {
     const instance = new this() as InstanceType<T>;
     new EntityMapping(instance, args).map();
