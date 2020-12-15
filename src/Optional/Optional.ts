@@ -1,3 +1,8 @@
+import {
+  AbsentAsyncOptional,
+  AsyncOptional,
+  PresentAsyncOptional
+} from "./AsyncOptional";
 export class OptionalValueMissingError extends Error {}
 
 export abstract class Optional<T> {
@@ -91,6 +96,10 @@ export abstract class Optional<T> {
    */
   abstract map<X>(transform: (value: T) => X): Optional<NonNullable<X>>;
 
+  abstract mapAsync<X>(
+    transform: (value: T) => Promise<X>
+  ): AsyncOptional<NonNullable<X>>;
+
   /**
    * @remark
    * Apply a transform to the value of the optional and return a new optional
@@ -105,6 +114,10 @@ export abstract class Optional<T> {
    * ```
    */
   abstract flatMap<X>(transform: (value: T) => Optional<X>): Optional<X>;
+
+  abstract flatMapAsync<X>(
+    transform: (value: T) => AsyncOptional<X> | Promise<Optional<X>>
+  ): AsyncOptional<X>;
 
   /**
    * @example
@@ -159,7 +172,7 @@ export abstract class Optional<T> {
   abstract asJSON(): T | null;
 }
 
-class PresentOptional<T> extends Optional<T> {
+export class PresentOptional<T> extends Optional<T> {
   filter(transform: (value: T) => boolean): Optional<T> {
     return transform(this.value)
       ? new PresentOptional(this.value)
@@ -174,8 +187,22 @@ class PresentOptional<T> extends Optional<T> {
     return Optional.of(transform(this.value));
   }
 
+  mapAsync<X>(
+    transform: (value: T) => Promise<X>
+  ): AsyncOptional<NonNullable<X>> {
+    return PresentAsyncOptional.fromPromise(transform(this.value));
+  }
+
   flatMap<X>(transform: (value: T) => Optional<X>): Optional<X> {
     return transform(this.value);
+  }
+
+  flatMapAsync<X>(
+    transform: (value: T) => AsyncOptional<X> | Promise<Optional<X>>
+  ): AsyncOptional<X> {
+    return PresentAsyncOptional.fromPromise(
+      (transform(this.value) as any).then((v: any) => v.orElse(null))
+    );
   }
 
   orElse(): T {
@@ -211,7 +238,7 @@ class PresentOptional<T> extends Optional<T> {
   }
 }
 
-class AbsentOptional<T> extends Optional<T> {
+export class AbsentOptional<T> extends Optional<T> {
   constructor() {
     super();
   }
@@ -220,12 +247,20 @@ class AbsentOptional<T> extends Optional<T> {
     return new AbsentOptional<X>();
   }
 
+  mapAsync<X>(): AsyncOptional<NonNullable<X>> {
+    return new AbsentAsyncOptional();
+  }
+
   filter(): Optional<T> {
     return new AbsentOptional();
   }
 
   flatMap<X>(): Optional<X> {
     return new AbsentOptional();
+  }
+
+  flatMapAsync<X>(): AsyncOptional<X> {
+    return new AbsentAsyncOptional();
   }
 
   orElse<X>(other: X): T | X {

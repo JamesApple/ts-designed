@@ -1,4 +1,6 @@
-import {Optional} from "../Optional";
+import {AbsentOptional, Optional, PresentOptional} from "../Optional";
+import {PresentAsyncOptional} from "../Optional/AsyncOptional";
+import {Result} from "../Result";
 
 describe("Optional", function () {
   it("creates from null", async function () {
@@ -40,6 +42,144 @@ describe("Optional", function () {
     expect(JSON.stringify(o)).toEqual(`"${original}"`);
     o.orThrow(() => {
       throw Error("optional should not have thrown");
+    });
+  });
+});
+
+describe("Async Optional", function () {
+  const tests: [
+    name: string,
+    action: (opt: Optional<number>) => Promise<any>,
+    nulled: (nulled: any) => any,
+    present: (present: any) => any
+  ][] = [
+    [
+      "maps to async then gets",
+      async (opt) => opt.mapAsync(async (n) => n + 1).get(),
+      (nulled) => expect(nulled).toBeInstanceOf(TypeError),
+      (present) => expect(present).toEqual(2)
+    ],
+
+    [
+      "maps to async then orElses",
+      async (opt) => opt.mapAsync(async (n) => n + 1).orElse(3),
+      (nulled) => expect(nulled).toEqual(3),
+      (present) => expect(present).toEqual(2)
+    ],
+
+    [
+      "maps to async then orGets",
+      async (opt) => opt.mapAsync(async (n) => n + 1).orGet(() => 3),
+      (nulled) => expect(nulled).toEqual(3),
+      (present) => expect(present).toEqual(2)
+    ],
+
+    [
+      "maps to async then back to sync and orElses",
+      async (opt) =>
+        await opt.mapAsync(async (n) => n + 1).then((o) => o.orElse(3)),
+      (nulled) => expect(nulled).toEqual(3),
+      (present) => expect(present).toEqual(2)
+    ],
+
+    [
+      "maps to async then back to sync and back to async",
+      async (opt) =>
+        await opt
+          .mapAsync(async (n) => n + 1)
+          .then((o) => o.mapAsync(async (a) => a)),
+      (nulled) => expect(nulled.orElse(3)).toEqual(3),
+      (present) => expect(present.orElse(3)).toEqual(2)
+    ],
+
+    [
+      "maps to async then back to sync and back to async",
+      async (opt) =>
+        await opt
+          .mapAsync(async (n) => n + 1)
+          .then((o) => o.mapAsync(async (a) => a)),
+      (nulled) => expect(nulled).toBeInstanceOf(AbsentOptional),
+      (present) => expect(present).toBeInstanceOf(PresentOptional)
+    ],
+
+    [
+      "throws the first encountered error in the async chain",
+      async (opt) =>
+        await opt
+          .mapAsync(async (n) => n + 1)
+          .map(() => {
+            throw new Error("throws this one if present");
+          })
+          .orThrow(() => new Error("does not throw me")),
+      (nulled) => expect(nulled).toEqual(new Error("does not throw me")),
+      (present) =>
+        expect(present).toEqual(new Error("throws this one if present"))
+    ],
+
+    [
+      "uses the kitchen sink of maps",
+      async (opt) =>
+        await opt
+          .mapAsync(async (n) => n + 1)
+          .flatMapAsync(async (x) => Optional.of(x + 1))
+          .flatMapAsync((x) =>
+            PresentAsyncOptional.fromPromise(Promise.resolve(x + 1))
+          )
+          .map((n) => n + 1)
+          .flatMap((n) => Optional.of(n + 1))
+          .orElse("not present"),
+      (nulled) => expect(nulled).toEqual("not present"),
+      (present) => expect(present).toEqual(6)
+    ],
+
+    [
+      "uses the kitchen sink of maps",
+      async (opt) =>
+        await opt
+          .mapAsync(async (n) => n + 1)
+          .flatMapAsync(async (x) => Optional.of(x + 1))
+          .flatMapAsync((x) =>
+            PresentAsyncOptional.fromPromise(Promise.resolve(x + 1))
+          )
+          .map((n) => n + 1)
+          .flatMap((n) => Optional.of(n + 1))
+          .orElse("not present"),
+      (nulled) => expect(nulled).toEqual("not present"),
+      (present) => expect(present).toEqual(6)
+    ],
+
+    [
+      "filters in",
+      async (opt) =>
+        await opt
+          .mapAsync(async (n) => n + 1)
+          .filter((v) => v === 2)
+          .orElse("not present"),
+      (nulled) => expect(nulled).toEqual("not present"),
+      (present) => expect(present).toEqual(2)
+    ],
+
+    [
+      "filters out",
+      async (opt) =>
+        await opt
+          .mapAsync(async (n) => n + 1)
+          .filter((v) => v !== 2)
+          .orElse("not present"),
+      (nulled) => expect(nulled).toEqual("not present"),
+      (present) => expect(present).toEqual("not present")
+    ]
+  ];
+
+  tests.forEach(([name, action, nulled, present]) => {
+    it(`${name} with an Optional.of(1)`, async function () {
+      const r = await Result.fromPromise(action(Optional.of(1)));
+      present(r.getEither());
+    });
+
+    it(`${name} with an Optional.empty()`, async function () {
+      const r = await Result.fromPromise(action(Optional.empty()));
+      nulled(r.getEither());
     });
   });
 });
