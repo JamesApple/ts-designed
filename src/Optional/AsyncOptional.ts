@@ -9,7 +9,7 @@ export abstract class AsyncOptional<T>
   }
 
   static empty<T>(): AsyncOptionalOf<T> {
-    return new AbsentAsyncOptional();
+    return new NoopAsyncOptional();
   }
 
   abstract then<TResult1 = Optional<NonNullable<T>>, TResult2 = never>(
@@ -44,28 +44,28 @@ export abstract class AsyncOptional<T>
   abstract asJSON(_: string): Promise<T | null>;
 }
 
-export class AbsentAsyncOptional<T> extends AsyncOptional<T> {
+export class NoopAsyncOptional<T> extends AsyncOptional<T> {
   flatMapAsync<X>(): AsyncOptional<X> {
-    return new AbsentAsyncOptional();
+    return new NoopAsyncOptional();
   }
 
   mapAsync<X>(): AsyncOptionalOf<X> {
-    return new AbsentAsyncOptional();
+    return new NoopAsyncOptional();
   }
 
   filter(): AsyncOptional<T> {
-    return new AbsentAsyncOptional();
+    return new NoopAsyncOptional();
   }
 
-  flatMap<X>(transform: (value: T) => Optional<X>): AbsentAsyncOptional<X> {
-    return new AbsentAsyncOptional();
+  flatMap<X>(): NoopAsyncOptional<X> {
+    return new NoopAsyncOptional();
   }
 
-  toJSON(_: string): Promise<T | null> {
+  toJSON(): Promise<T | null> {
     return Promise.resolve(null);
   }
 
-  asJSON(_: string): Promise<T | null> {
+  asJSON(): Promise<T | null> {
     return Promise.resolve(null);
   }
 
@@ -96,7 +96,7 @@ export class AbsentAsyncOptional<T> extends AsyncOptional<T> {
   }
 
   map<X>(): AsyncOptional<X> {
-    return new AbsentAsyncOptional();
+    return new NoopAsyncOptional();
   }
 
   then<TResult1 = Optional<NonNullable<T>>, TResult2 = never>(
@@ -139,7 +139,7 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
     return PresentAsyncOptional.fromPromise(
       this.value.then((v: any) => {
         if (v == null) {
-          return new AbsentAsyncOptional();
+          return new NoopAsyncOptional();
         }
         return predicate(v) ? v : null;
       })
@@ -154,18 +154,18 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
     return PresentAsyncOptional.fromPromise(
       this.value.then((v) => {
         if (v == null) {
-          return new AbsentAsyncOptional();
+          return new NoopAsyncOptional();
         }
         return transform(v).orElse(null!) as any;
       })
     );
   }
 
-  toJSON(_: string): Promise<T | null> {
+  toJSON(): Promise<T | null> {
     return this.value.then((v) => (v == null ? null : v));
   }
 
-  asJSON(_: string): Promise<T | null> {
+  asJSON(): Promise<T | null> {
     return this.value.then((v) => (v == null ? null : v));
   }
 

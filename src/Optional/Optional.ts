@@ -1,5 +1,5 @@
 import {
-  AbsentAsyncOptional,
+  NoopAsyncOptional,
   AsyncOptional,
   PresentAsyncOptional
 } from "./AsyncOptional";
@@ -248,7 +248,7 @@ export class AbsentOptional<T> extends Optional<T> {
   }
 
   mapAsync<X>(): AsyncOptional<NonNullable<X>> {
-    return new AbsentAsyncOptional();
+    return new NoopAsyncOptional();
   }
 
   filter(): Optional<T> {
@@ -260,7 +260,7 @@ export class AbsentOptional<T> extends Optional<T> {
   }
 
   flatMapAsync<X>(): AsyncOptional<X> {
-    return new AbsentAsyncOptional();
+    return new NoopAsyncOptional();
   }
 
   orElse<X>(other: X): T | X {
