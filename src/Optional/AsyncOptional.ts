@@ -1,4 +1,10 @@
-import {Optional, OptionalValuesFromTuple} from "./Optional";
+import {Result} from "../Result";
+import {
+  Optional,
+  OptionalizeArray,
+  OptionalValue,
+  OptionalValuesFromTuple
+} from "./Optional";
 
 export type AsyncOptionalOf<T> = AsyncOptional<NonNullable<T>>;
 
@@ -28,14 +34,20 @@ export abstract class AsyncOptional<T>
   abstract zip<X extends AnyOptional<any>[]>(
     ...others: X
   ): AsyncOptional<OptionalValuesFromTuple<[Optional<T>, ...X]>>;
+  abstract unzip<V extends AsyncOptional<[any, any]>>(
+    this: V
+  ): Promise<OptionalizeArray<OptionalValue<V>>>;
+  abstract unzip3<V extends AsyncOptional<[any, any, any]>>(
+    this: V
+  ): Promise<OptionalizeArray<OptionalValue<V>>>;
 
+  abstract flatMap<X>(transform: (value: T) => Optional<X>): AsyncOptional<X>;
   abstract flatMapAsync<X>(
     transform: (value: T) => Promise<Optional<X>> | AsyncOptional<X>
   ): AsyncOptionalOf<X>;
 
-  abstract flatMap<X>(transform: (value: T) => Optional<X>): AsyncOptional<X>;
-
   abstract filter(predicate: (value: T) => boolean): AsyncOptional<T>;
+  abstract filterNot(predicate: (value: T) => boolean): AsyncOptional<T>;
 
   abstract orElse<X>(value: X): Promise<X | T>;
 
@@ -47,10 +59,64 @@ export abstract class AsyncOptional<T>
 
   abstract toJSON(_: string): Promise<T | null>;
 
+  abstract toResult(): Promise<Result<T, null>>;
+
+  abstract toArray(): Promise<T[]>;
+
   abstract asJSON(_: string): Promise<T | null>;
 }
 
 export class PresentAsyncOptional<T> extends AsyncOptional<T> {
+  unzip<V extends AsyncOptional<[any, any]>>(
+    this: V
+  ): Promise<OptionalizeArray<OptionalValue<V>>> {
+    return this.orElse(null).then((v) => {
+      if (v == null) {
+        return [Optional.empty(), Optional.empty()] as any;
+      } else {
+        return [Optional.of(v[0]), Optional.of(v[1])] as any;
+      }
+    });
+  }
+  unzip3<V extends AsyncOptional<[any, any, any]>>(
+    this: V
+  ): Promise<OptionalizeArray<OptionalValue<V>>> {
+    return this.orElse(null).then((v) => {
+      if (v == null) {
+        return [Optional.empty(), Optional.empty(), Optional.empty()] as any;
+      } else {
+        return [Optional.of(v[0]), Optional.of(v[1]), Optional.of(v[2])] as any;
+      }
+    });
+  }
+  filterNot(predicate: (value: T) => boolean): AsyncOptional<T> {
+    return PresentAsyncOptional.fromPromise(
+      this.value.then((v: any) => {
+        if (v == null) {
+          return null;
+        }
+        return predicate(v) ? null : v;
+      })
+    );
+  }
+  toResult(): Promise<Result<T, null>> {
+    return this.value.then((v) => {
+      if (v == null) {
+        return Result.success(v);
+      } else {
+        return Result.fail(null);
+      }
+    });
+  }
+  toArray(): Promise<T[]> {
+    return this.value.then((v) => {
+      if (v == null) {
+        return [];
+      } else {
+        return [v];
+      }
+    });
+  }
   zip<X extends AnyOptional<any>[]>(
     ...others: X
   ): AsyncOptional<OptionalValuesFromTuple<[Optional<T>, ...X]>> {

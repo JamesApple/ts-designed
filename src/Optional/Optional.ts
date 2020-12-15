@@ -1,4 +1,10 @@
+import {Result} from "../Result";
 import {AsyncOptional, PresentAsyncOptional} from "./AsyncOptional";
+
+export type OptionalizeArray<T extends [...any[]]> = {
+  [Index in keyof T]: Optional<NonNullable<T[Index]>>;
+} &
+  Array<any>;
 
 export class OptionalValueMissingError extends Error {}
 
@@ -90,6 +96,7 @@ export abstract class Optional<T> {
    * ```
    */
   abstract filter(predicate: (value: T) => boolean): Optional<T>;
+  abstract filterNot(predicate: (value: T) => boolean): Optional<T>;
 
   /**
    * @remark
@@ -129,6 +136,12 @@ export abstract class Optional<T> {
   abstract zip<X extends Optional<any>[]>(
     ...others: X
   ): Optional<OptionalValuesFromTuple<[Optional<T>, ...X]>>;
+  abstract unzip<V extends Optional<[any, any]>>(
+    this: V
+  ): OptionalizeArray<OptionalValue<V>>;
+  abstract unzip3<V extends Optional<[any, any, any]>>(
+    this: V
+  ): OptionalizeArray<OptionalValue<V>>;
 
   /**
    * @example
@@ -177,6 +190,10 @@ export abstract class Optional<T> {
    */
   abstract toJSON(_: string): T | null;
 
+  abstract toResult(): Result<T, null>;
+
+  abstract toArray(): T[];
+
   /**
    * Serialize a value using designed's preferred #asJSON method
    */
@@ -184,6 +201,28 @@ export abstract class Optional<T> {
 }
 
 export class PresentOptional<T> extends Optional<T> {
+  toArray(): [T] {
+    return [this.value];
+  }
+
+  toResult(): Result<T, null> {
+    return Result.success(this.value);
+  }
+
+  unzip<V extends Optional<[any, any]>>(
+    this: V
+  ): OptionalizeArray<OptionalValue<V>> {
+    const [a, b] = this.get();
+    return [Optional.of(a), Optional.of(b)] as any;
+  }
+
+  unzip3<V extends Optional<[any, any, any]>>(
+    this: V
+  ): OptionalizeArray<OptionalValue<V>> {
+    const [a, b, c] = this.get();
+    return [Optional.of(a), Optional.of(b), Optional.of(c)] as any;
+  }
+
   zip<X extends Optional<any>[]>(
     ...others: X
   ): Optional<OptionalValuesFromTuple<[Optional<T>, ...X]>> {
@@ -198,10 +237,14 @@ export class PresentOptional<T> extends Optional<T> {
     return Optional.of(result as any);
   }
 
-  filter(transform: (value: T) => boolean): Optional<T> {
-    return transform(this.value)
+  filter(predicate: (value: T) => boolean): Optional<T> {
+    return predicate(this.value)
       ? new PresentOptional(this.value)
       : new AbsentOptional<T>();
+  }
+
+  filterNot(predicate: (value: T) => boolean): Optional<T> {
+    return this.filter((v) => !predicate(v));
   }
 
   constructor(private value: T) {
@@ -264,6 +307,22 @@ export class PresentOptional<T> extends Optional<T> {
 }
 
 export class AbsentOptional<T> extends Optional<T> {
+  toArray(): T[] {
+    return [];
+  }
+
+  unzip<V extends Optional<[any, any]>>(
+    this: V
+  ): OptionalizeArray<OptionalValue<V>> {
+    return [Optional.empty(), Optional.empty()] as any;
+  }
+
+  unzip3<V extends Optional<[any, any, any]>>(
+    this: V
+  ): OptionalizeArray<OptionalValue<V>> {
+    return [Optional.empty(), Optional.empty(), Optional.empty()] as any;
+  }
+
   zip<X extends Optional<any>[]>(): Optional<
     OptionalValuesFromTuple<[Optional<T>, ...X]>
   > {
@@ -283,6 +342,10 @@ export class AbsentOptional<T> extends Optional<T> {
   }
 
   filter(): Optional<T> {
+    return new AbsentOptional();
+  }
+
+  filterNot(): Optional<T> {
     return new AbsentOptional();
   }
 
@@ -327,6 +390,10 @@ export class AbsentOptional<T> extends Optional<T> {
 
   isAbsent(): this is AbsentOptional<T> {
     return true;
+  }
+
+  toResult(): Result<T, null> {
+    return Result.fail(null);
   }
 
   get(): T {

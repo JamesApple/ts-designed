@@ -4,8 +4,4 @@ export {
   PresentOptional,
   OptionalValueMissingError
 } from "./Optional";
-export {
-  AsyncOptional,
-  NoopAsyncOptional,
-  PresentAsyncOptional
-} from "./AsyncOptional";
+export {AsyncOptional, PresentAsyncOptional} from "./AsyncOptional";
