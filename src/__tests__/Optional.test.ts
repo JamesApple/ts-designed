@@ -1,5 +1,5 @@
 import {AbsentOptional, Optional, PresentOptional} from "../Optional";
-import {PresentAsyncOptional} from "../Optional/AsyncOptional";
+import {AsyncOptional, PresentAsyncOptional} from "../Optional/AsyncOptional";
 import {Result} from "../Result";
 
 describe("Optional", function () {
@@ -43,6 +43,44 @@ describe("Optional", function () {
     o.orThrow(() => {
       throw Error("optional should not have thrown");
     });
+  });
+
+  it("lets you zip other optionals", async function () {
+    const optional = Optional.of(1);
+    expect(optional.zip(Optional.empty())).toBeInstanceOf(AbsentOptional);
+    expect(optional.zip(Optional.of(2)).orElse(null)).toEqual([1, 2]);
+
+    expect(
+      optional.zip(Optional.of(2), Optional.of(3), Optional.of(4)).orElse(null)
+    ).toEqual([1, 2, 3, 4]);
+
+    expect(
+      optional.zip(Optional.of(2), Optional.empty(), Optional.of(4))
+    ).toBeInstanceOf(AbsentOptional);
+
+    expect(Optional.empty().zip(Optional.of(1))).toBeInstanceOf(AbsentOptional);
+
+    expect(Optional.empty().zip(Optional.of(1))).toBeInstanceOf(AbsentOptional);
+
+    const testType: Optional<["FIRST", "SECOND", "THIRD"]> = Optional.of(
+      "FIRST" as const
+    ).zip(Optional.of("SECOND" as const), Optional.of("THIRD" as const));
+
+    expect(testType.get()).toEqual(["FIRST", "SECOND", "THIRD"]);
+    const asyncTest: Optional<[
+      "FIRST",
+      "SECOND",
+      "THIRD",
+      "FOURTH"
+    ]> = await Optional.of("FIRST" as const)
+      .mapAsync(async (i) => i)
+      .zip(
+        Promise.resolve(Optional.of("SECOND" as const)),
+        AsyncOptional.of(Promise.resolve("THIRD" as const)),
+        Optional.of("FOURTH" as const)
+      );
+
+    expect(asyncTest.get()).toEqual(["FIRST", "SECOND", "THIRD", "FOURTH"]);
   });
 });
 
@@ -168,6 +206,36 @@ describe("Async Optional", function () {
           .orElse("not present"),
       (nulled) => expect(nulled).toEqual("not present"),
       (present) => expect(present).toEqual("not present")
+    ],
+
+    [
+      "zips in other async values and optional values",
+      async (opt) =>
+        await opt
+          .mapAsync(async (x) => x)
+          .zip(
+            Optional.of(2),
+            AsyncOptional.of(Promise.resolve(3)),
+            Promise.resolve(Optional.of(4))
+          )
+          .orElse("not present"),
+      (nulled) => expect(nulled).toEqual("not present"),
+      (present) => expect(present).toEqual([1, 2, 3, 4])
+    ],
+
+    [
+      "rejects on any zip rejection",
+      async (opt) =>
+        await opt
+          .mapAsync(async (x) => x)
+          .zip(
+            Optional.of(2),
+            Promise.reject(new Error("not possible")),
+            Promise.resolve(Optional.of(4))
+          )
+          .orElse("not present"),
+      (nulled) => expect(nulled).toEqual(new Error("not possible")),
+      (present) => expect(present).toEqual(new Error("not possible"))
     ]
   ];
 
@@ -179,6 +247,18 @@ describe("Async Optional", function () {
 
     it(`${name} with an Optional.empty()`, async function () {
       const r = await Result.fromPromise(action(Optional.empty()));
+      nulled(r.getEither());
+    });
+
+    it(`${name} with an AsyncOptional.of(1)`, async function () {
+      const r = await Result.fromPromise(
+        action(AsyncOptional.of(Promise.resolve(1)) as any)
+      );
+      present(r.getEither());
+    });
+
+    it(`${name} with an AsyncOptional.empty()`, async function () {
+      const r = await Result.fromPromise(action(AsyncOptional.empty() as any));
       nulled(r.getEither());
     });
   });

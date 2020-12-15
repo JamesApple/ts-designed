@@ -1,9 +1,18 @@
-import {
-  NoopAsyncOptional,
-  AsyncOptional,
-  PresentAsyncOptional
-} from "./AsyncOptional";
+import {AsyncOptional, PresentAsyncOptional} from "./AsyncOptional";
+
 export class OptionalValueMissingError extends Error {}
+
+export type OptionalValue<T> = T extends Optional<infer U>
+  ? U
+  : T extends AsyncOptional<infer U>
+  ? U
+  : T extends Promise<Optional<infer U>>
+  ? U
+  : never;
+
+export type OptionalValuesFromTuple<T extends [...any[]]> = {
+  [Index in keyof T]: OptionalValue<T[Index]>;
+} & {length: T["length"]};
 
 export abstract class Optional<T> {
   /**
@@ -95,7 +104,6 @@ export abstract class Optional<T> {
    * ```
    */
   abstract map<X>(transform: (value: T) => X): Optional<NonNullable<X>>;
-
   abstract mapAsync<X>(
     transform: (value: T) => Promise<X>
   ): AsyncOptional<NonNullable<X>>;
@@ -114,10 +122,13 @@ export abstract class Optional<T> {
    * ```
    */
   abstract flatMap<X>(transform: (value: T) => Optional<X>): Optional<X>;
-
   abstract flatMapAsync<X>(
     transform: (value: T) => AsyncOptional<X> | Promise<Optional<X>>
   ): AsyncOptional<X>;
+
+  abstract zip<X extends Optional<any>[]>(
+    ...others: X
+  ): Optional<OptionalValuesFromTuple<[Optional<T>, ...X]>>;
 
   /**
    * @example
@@ -173,6 +184,20 @@ export abstract class Optional<T> {
 }
 
 export class PresentOptional<T> extends Optional<T> {
+  zip<X extends Optional<any>[]>(
+    ...others: X
+  ): Optional<OptionalValuesFromTuple<[Optional<T>, ...X]>> {
+    const result = [this.value];
+    for (let i = 0; i < others.length; i++) {
+      if (others[i].isPresent()) {
+        result.push(others[i].get());
+      } else {
+        return Optional.empty();
+      }
+    }
+    return Optional.of(result as any);
+  }
+
   filter(transform: (value: T) => boolean): Optional<T> {
     return transform(this.value)
       ? new PresentOptional(this.value)
@@ -239,6 +264,12 @@ export class PresentOptional<T> extends Optional<T> {
 }
 
 export class AbsentOptional<T> extends Optional<T> {
+  zip<X extends Optional<any>[]>(): Optional<
+    OptionalValuesFromTuple<[Optional<T>, ...X]>
+  > {
+    return new AbsentOptional();
+  }
+
   constructor() {
     super();
   }
@@ -248,7 +279,7 @@ export class AbsentOptional<T> extends Optional<T> {
   }
 
   mapAsync<X>(): AsyncOptional<NonNullable<X>> {
-    return new NoopAsyncOptional();
+    return AsyncOptional.empty();
   }
 
   filter(): Optional<T> {
@@ -260,7 +291,7 @@ export class AbsentOptional<T> extends Optional<T> {
   }
 
   flatMapAsync<X>(): AsyncOptional<X> {
-    return new NoopAsyncOptional();
+    return AsyncOptional.empty();
   }
 
   orElse<X>(other: X): T | X {

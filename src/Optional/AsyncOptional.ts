@@ -1,6 +1,8 @@
-import {Optional} from "./Optional";
+import {Optional, OptionalValuesFromTuple} from "./Optional";
 
 export type AsyncOptionalOf<T> = AsyncOptional<NonNullable<T>>;
+
+type AnyOptional<T> = Optional<T> | Promise<Optional<T>> | AsyncOptional<T>;
 
 export abstract class AsyncOptional<T>
   implements PromiseLike<Optional<NonNullable<T>>> {
@@ -9,7 +11,7 @@ export abstract class AsyncOptional<T>
   }
 
   static empty<T>(): AsyncOptionalOf<T> {
-    return new NoopAsyncOptional();
+    return PresentAsyncOptional.fromPromise(Promise.resolve(undefined));
   }
 
   abstract then<TResult1 = Optional<NonNullable<T>>, TResult2 = never>(
@@ -22,6 +24,10 @@ export abstract class AsyncOptional<T>
   abstract map<X>(transform: (value: T) => X): AsyncOptional<X>;
 
   abstract mapAsync<X>(transform: (value: T) => Promise<X>): AsyncOptionalOf<X>;
+
+  abstract zip<X extends AnyOptional<any>[]>(
+    ...others: X
+  ): AsyncOptional<OptionalValuesFromTuple<[Optional<T>, ...X]>>;
 
   abstract flatMapAsync<X>(
     transform: (value: T) => Promise<Optional<X>> | AsyncOptional<X>
@@ -44,73 +50,17 @@ export abstract class AsyncOptional<T>
   abstract asJSON(_: string): Promise<T | null>;
 }
 
-export class NoopAsyncOptional<T> extends AsyncOptional<T> {
-  flatMapAsync<X>(): AsyncOptional<X> {
-    return new NoopAsyncOptional();
-  }
-
-  mapAsync<X>(): AsyncOptionalOf<X> {
-    return new NoopAsyncOptional();
-  }
-
-  filter(): AsyncOptional<T> {
-    return new NoopAsyncOptional();
-  }
-
-  flatMap<X>(): NoopAsyncOptional<X> {
-    return new NoopAsyncOptional();
-  }
-
-  toJSON(): Promise<T | null> {
-    return Promise.resolve(null);
-  }
-
-  asJSON(): Promise<T | null> {
-    return Promise.resolve(null);
-  }
-
-  get(): Promise<T> {
-    return Promise.reject(
-      new TypeError("AsyncOptional.get() was called but no value was provided")
-    );
-  }
-
-  orThrow(errThrower: () => Error): Promise<T> {
-    return Promise.resolve<T>(null!).then(() => {
-      const err = errThrower();
-      if (err instanceof Error) {
-        throw err;
-      }
-      throw new TypeError(
-        "AsyncOptional.orThrow did not return an error to throw"
-      );
-    });
-  }
-
-  orGet<X>(supplier: () => X): Promise<T | X> {
-    return Promise.resolve(supplier());
-  }
-
-  orElse<X>(value: X): Promise<T | X> {
-    return Promise.resolve(value);
-  }
-
-  map<X>(): AsyncOptional<X> {
-    return new NoopAsyncOptional();
-  }
-
-  then<TResult1 = Optional<NonNullable<T>>, TResult2 = never>(
-    onfulfilled?:
-      | ((value: Optional<NonNullable<T>>) => TResult1 | PromiseLike<TResult1>)
-      | null
-  ): PromiseLike<TResult1 | TResult2> {
-    return Promise.resolve(Optional.empty() as any).then(
-      onfulfilled ? onfulfilled : (x) => x
-    );
-  }
-}
-
 export class PresentAsyncOptional<T> extends AsyncOptional<T> {
+  zip<X extends AnyOptional<any>[]>(
+    ...others: X
+  ): AsyncOptional<OptionalValuesFromTuple<[Optional<T>, ...X]>> {
+    return PresentAsyncOptional.fromPromise(
+      Promise.all([this, ...others]).then(([main, ...rest]) => {
+        return main.zip(...rest).orElse(null) as any;
+      })
+    );
+  }
+
   flatMapAsync<X>(
     transform: (value: T) => Promise<Optional<X>> | AsyncOptional<X>
   ): AsyncOptionalOf<X> {
@@ -128,7 +78,7 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
     return PresentAsyncOptional.fromPromise(
       this.value.then((v: any) => {
         if (v == null) {
-          return v;
+          return null;
         }
         return transform(v);
       })
@@ -139,7 +89,7 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
     return PresentAsyncOptional.fromPromise(
       this.value.then((v: any) => {
         if (v == null) {
-          return new NoopAsyncOptional();
+          return null;
         }
         return predicate(v) ? v : null;
       })
@@ -154,7 +104,7 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
     return PresentAsyncOptional.fromPromise(
       this.value.then((v) => {
         if (v == null) {
-          return new NoopAsyncOptional();
+          return null;
         }
         return transform(v).orElse(null!) as any;
       })
@@ -209,7 +159,14 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
   }
 
   map<X>(transform: (value: T) => X): AsyncOptional<X> {
-    return PresentAsyncOptional.fromPromise(this.value.then(transform)) as any;
+    return PresentAsyncOptional.fromPromise(
+      this.value.then((v) => {
+        if (v == null) {
+          return null;
+        }
+        return transform(v);
+      })
+    ) as any;
   }
 
   then<TResult1 = Optional<NonNullable<T>>, TResult2 = never>(
