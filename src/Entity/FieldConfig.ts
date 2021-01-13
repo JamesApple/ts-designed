@@ -1,9 +1,21 @@
+import {Base, hasFromJSON} from "./Base";
 import {EntityConfig} from "./EntityConfig";
 
-export interface FieldConfigArgs {
+export type Enum = Object;
+type TaggedUnion<E extends Enum, B extends hasFromJSON> = {
+  enum: E;
+  getTag: (raw: any) => E[keyof E];
+  handlers: {[K in keyof E]: B | ((data: any, tag: E[keyof E]) => any)};
+};
+
+export interface FieldConfigArgs<
+  E extends Enum = any,
+  B extends typeof Base = any
+> {
   reflectedEntity?: any;
   entity?: Object;
   deserialize?: (v: any) => any;
+  taggedUnion?: TaggedUnion<E, B>;
   name: string;
   iterable?: boolean;
 }
@@ -18,14 +30,18 @@ export class FieldConfig {
 
   private iterable?: boolean;
 
+  private taggedUnion?: TaggedUnion<any, any>;
+
   constructor({
     name,
     entity,
     iterable,
     reflectedEntity,
-    deserialize
+    deserialize,
+    taggedUnion
   }: FieldConfigArgs) {
     this.name = name;
+    this.taggedUnion = taggedUnion;
     this.entity = entity;
     this.reflectedEntity = reflectedEntity;
     this._deserialize = deserialize;
@@ -40,6 +56,21 @@ export class FieldConfig {
     const mapSingle = (v: Object): any => {
       if (this._deserialize) {
         return this._deserialize(v);
+      }
+      const {taggedUnion} = this;
+      if (v != null && taggedUnion != null) {
+        const tag = taggedUnion.getTag(v);
+        const ent = taggedUnion.handlers[tag];
+        if (!ent) {
+          throw new TypeError(
+            `designed deserialize error: ${tag} does not have a matching value inside of ${taggedUnion.enum}`
+          );
+        }
+        if ("fromJSON" in ent) {
+          return ent.fromJSON(v);
+        } else {
+          return ent(v, tag);
+        }
       }
       if (entity && "fromJSON" in entity && v != null) {
         if (

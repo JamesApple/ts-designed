@@ -9,12 +9,20 @@ export type Attributes<T> = {
     T[P],
     null | undefined
   > extends (infer AV)[]
-    ? Attributes<AV>[]
+    ? AttributesOrPrimitive<AV>[]
     : Exclude<T[P], null | undefined> extends hasAsJSON
-    ? Attributes<T[P]> | T[P]
+    ? AttributesOrPrimitive<T[P]> | T[P]
     : T[P];
 };
 
+type AttributesOrPrimitive<T> = Exclude<T, null | undefined> extends
+  | string
+  | number
+  | boolean
+  ? T
+  : Attributes<T>;
+
+export type hasFromJSON = {fromJSON(...args: any): any};
 type hasAsJSON = {asJSON(...args: any): any};
 export type AttributesOrEntities<T> = {
   [K in keyof WithoutFunctions<T>]: T[K] extends hasAsJSON
