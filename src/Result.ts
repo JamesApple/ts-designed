@@ -1,5 +1,56 @@
 import {Optional} from "./Optional";
 
+export class AsyncResult<T, F> implements PromiseLike<Result<T, F>> {
+  protected constructor(protected promise: PromiseLike<T>) {}
+
+  then<TResult1 = Result<T, F>, TResult2 = never>(
+    onfulfilled?:
+      | ((value: Result<T, F>) => TResult1 | PromiseLike<TResult1>)
+      | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+  ): PromiseLike<TResult1 | TResult2> {
+    return (async () => {
+      try {
+        return Success.of(await this.promise) as any;
+      } catch (e) {
+        return Fail.of(e) as any;
+      }
+    })().then(onfulfilled, onrejected);
+  }
+
+  static fromPromise<T, F = unknown>(
+    promise: PromiseLike<T>
+  ): AsyncResult<T, F> {
+    return new AsyncResult(promise);
+  }
+
+  async getOrThrowFailure(): Promise<T> {
+    const value = await this.promise;
+    return value;
+  }
+
+  async getEither(): Promise<T | F> {
+    return (await this).getEither();
+  }
+
+  map<X, Y = F>(
+    mapSuccess: (success: T) => X,
+    mapError?: (error: F) => Y
+  ): AsyncResult<X, Y> {
+    return AsyncResult.fromPromise(
+      this.then((result) =>
+        result.map(mapSuccess, mapError).getOrThrowFailure()
+      )
+    );
+  }
+
+  mapFailure<X>(mapFailure: (failed: F) => X): AsyncResult<T, X> {
+    return AsyncResult.fromPromise(
+      this.then((result) => result.mapFailure(mapFailure).getOrThrowFailure())
+    );
+  }
+}
+
 export abstract class Result<T, F> {
   static fromThrowable<T, F = unknown>(throwable: () => T): Result<T, F> {
     try {
@@ -9,14 +60,8 @@ export abstract class Result<T, F> {
     }
   }
 
-  static async fromPromise<T, F = unknown>(
-    promise: Promise<T>
-  ): Promise<Result<T, F>> {
-    try {
-      return Success.of(await promise) as any;
-    } catch (e) {
-      return Fail.of(e) as any;
-    }
+  static fromPromise<T, F = unknown>(promise: Promise<T>): AsyncResult<T, F> {
+    return AsyncResult.fromPromise<T, F>(promise);
   }
 
   static success<T, F = unknown>(value: T): Result<T, F> {
