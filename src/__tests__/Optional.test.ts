@@ -236,6 +236,12 @@ describe("Async Optional", function () {
           .orElse("not present"),
       (nulled) => expect(nulled).toEqual(new Error("not possible")),
       (present) => expect(present).toEqual(new Error("not possible"))
+    ],
+    [
+      "allows using orElse to perform fallback behaviour",
+      async (opt) => await opt.orElse(Promise.resolve(2)),
+      (nulled) => expect(nulled).toEqual(2),
+      (present) => expect(present).toEqual(1)
     ]
   ];
 

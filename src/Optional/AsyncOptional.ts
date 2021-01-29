@@ -46,7 +46,14 @@ export abstract class AsyncOptional<T>
     transform: (value: T) => Promise<Optional<X>> | AsyncOptional<X>
   ): AsyncOptionalOf<X>;
 
+  abstract filter<X extends T>(
+    predicate: (value: T) => value is X
+  ): AsyncOptional<X>;
   abstract filter(predicate: (value: T) => boolean): AsyncOptional<T>;
+
+  abstract filterNot<X extends T>(
+    predicate: (value: T) => value is X
+  ): AsyncOptional<Exclude<T, X>>;
   abstract filterNot(predicate: (value: T) => boolean): AsyncOptional<T>;
 
   abstract orElse<X>(value: X): Promise<X | T>;
@@ -89,6 +96,10 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
       }
     });
   }
+
+  filterNot<X extends T>(
+    predicate: (value: T) => value is X
+  ): AsyncOptional<Exclude<T, X>>;
   filterNot(predicate: (value: T) => boolean): AsyncOptional<T> {
     return PresentAsyncOptional.fromPromise(
       this.value.then((v: any) => {
@@ -97,7 +108,7 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
         }
         return predicate(v) ? null : v;
       })
-    );
+    ) as any;
   }
   toResult(): Promise<Result<T, null>> {
     return this.value.then((v) => {

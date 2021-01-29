@@ -95,7 +95,14 @@ export abstract class Optional<T> {
    * Optional.of(5).filter(n => n === 5) // PresentOptional<number>
    * ```
    */
+  abstract filter<X extends T>(
+    predicate: (value: T) => value is X
+  ): Optional<X>;
   abstract filter(predicate: (value: T) => boolean): Optional<T>;
+
+  abstract filterNot<X extends T>(
+    predicate: (value: T) => value is X
+  ): Optional<Exclude<T, X>>;
   abstract filterNot(predicate: (value: T) => boolean): Optional<T>;
 
   /**
@@ -243,6 +250,9 @@ export class PresentOptional<T> extends Optional<T> {
       : new AbsentOptional<T>();
   }
 
+  filterNot<X extends T>(
+    predicate: (value: T) => value is X
+  ): Optional<Exclude<T, X>>;
   filterNot(predicate: (value: T) => boolean): Optional<T> {
     return this.filter((v) => !predicate(v));
   }
@@ -345,6 +355,9 @@ export class AbsentOptional<T> extends Optional<T> {
     return new AbsentOptional();
   }
 
+  filterNot<X extends T>(
+    predicate: (value: T) => value is X
+  ): Optional<Exclude<T, X>>;
   filterNot(): Optional<T> {
     return new AbsentOptional();
   }
