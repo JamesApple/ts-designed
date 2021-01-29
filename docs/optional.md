@@ -2,6 +2,8 @@
 
 AKA _Optional(Java/OOP)_ _Option(Scala/OCAML)_ _Maybe(Haskell)_
 
+## [API Docs](tsdoc/classes/_optional_optional_.optional)
+
 ## Why is this different from other libraries?
 
 Javascripts primary strength is its simple asynchronous code. This optional
@@ -37,11 +39,6 @@ updateUserPassword(undefined, '123')   // Resolves just fine
 updateUserPassword(userId, '123')      // Also resolves!
 ```
 
-[Docs](tsdoc/classes/_optional_optional_.optional)
-
-## Playground
-
-<iframe height="400px" width="100%" src="https://repl.it/@JamesApple/designedOptional?lite=true" scrolling="no" frameborder="no" allowtransparency="true" allowfullscreen="true" sandbox="allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-modals"></iframe>
 
 ## Public Interface
 
