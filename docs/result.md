@@ -88,7 +88,6 @@ await Result.fromPromise(getUser).map(toViewUser).map(setUser) // Result<void, E
 
 ### `swap`
 
-```js
 Swaps the types `<T>` and `<E>`. If a Result is a `Success<T>` it will return a
 `Fail<T>` and vice versa.
 
@@ -100,4 +99,17 @@ Swaps the types `<T>` and `<E>`. If a Result is a `Success<T>` it will return a
 
 ### `getEither`
 
+Returns `T | E` given `Result<T, E>`. Useful to merge multiple promises.
+
+```js
+await Result
+  .fromPromise(sendEmail)
+  .map(confirmEmailDelivery, rescheduleDelivery)
+  .getEither()
+```
+
 ### `getOrThrowFailure`
+
+Returns `T` or throws `E` given `Result<T, E>`. This essentially reverses the
+value having been wrapped in a result as an `AsyncResult` will be rejected and a `Result` will throw
+

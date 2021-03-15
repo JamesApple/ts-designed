@@ -38,15 +38,29 @@ export class AsyncResult<T, F> implements PromiseLike<Result<T, F>> {
     mapError?: (error: F) => Y
   ): AsyncResult<X, Y> {
     return AsyncResult.fromPromise(
-      this.then((result) =>
-        result.map(mapSuccess, mapError).getOrThrowFailure()
-      )
+      this.then((result) => {
+        const mapped = result.map(mapSuccess, mapError);
+        if (mapped.isSuccess()) {
+          return mapped.get();
+        }
+        throw mapped.getEither();
+      })
     );
+  }
+
+  async mergeFailure(mapFailure: (failure: F) => T): Promise<T> {
+    return this.then((r) => r.mergeFailure(mapFailure));
   }
 
   mapFailure<X>(mapFailure: (failed: F) => X): AsyncResult<T, X> {
     return AsyncResult.fromPromise(
-      this.then((result) => result.mapFailure(mapFailure).getOrThrowFailure())
+      this.then((result) => {
+        const mapped = result.mapFailure(mapFailure);
+        if (mapped.isSuccess()) {
+          return mapped.get();
+        }
+        throw mapped.getEither();
+      })
     );
   }
 }
@@ -77,6 +91,8 @@ export abstract class Result<T, F> {
     mapError?: (error: F) => Y
   ): Result<X, Y>;
 
+  abstract mergeFailure(mapFailure: (failure: F) => T): T;
+
   abstract mapFailure<X>(mapFailure: (failed: F) => X): Result<T, X>;
 
   abstract isSuccess(): this is Success<T>;
@@ -101,6 +117,14 @@ export class Fail<E> extends Result<unknown, E> {
 
   protected constructor(private value: E) {
     super();
+  }
+
+  mergeFailure<T>(mapFailure: (failure: E) => T): T {
+    return mapFailure(this.value);
+  }
+
+  get(): E {
+    return this.value;
   }
 
   map<X, Y = E>(
@@ -156,6 +180,14 @@ export class Success<T> extends Result<T, unknown> {
 
   static of<E>(value: E): Success<E> {
     return new Success(value);
+  }
+
+  mergeFailure(): T {
+    return this.value;
+  }
+
+  get(): T {
+    return this.value;
   }
 
   map<X, Y = unknown>(mapSuccess: (success: T) => X): Result<X, Y> {

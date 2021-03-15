@@ -1,7 +1,7 @@
 -   Modules
 	-  [Optional](/optional.md)
 	-  [Result](/result.md)
-
+	-  [DomainError](/domain_error.md)
 
 -   **Stats**
 -   ![Size](https://img.shields.io/bundlephobia/min/designed?style=for-the-badge)
