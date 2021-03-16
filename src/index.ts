@@ -4,3 +4,4 @@ export * from "./Topic";
 export * from "./Result";
 export * from "./Optional";
 export * as Interactor from "./Interactor";
+export * as Memoize from "./Memoize";
