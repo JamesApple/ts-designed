@@ -1,8 +1,8 @@
-import {Base, hasFromJSON} from "./Base";
+import {Base, ValueObjectClass} from "./Base";
 import {EntityConfig} from "./EntityConfig";
 
 export type Enum = Object;
-type TaggedUnion<E extends Enum, B extends hasFromJSON> = {
+type TaggedUnion<E extends Enum, B extends ValueObjectClass> = {
   enum: E;
   getTag: (raw: any) => E[keyof E];
   handlers: {[K in keyof E]: B | ((data: any, tag: E[keyof E]) => any)};

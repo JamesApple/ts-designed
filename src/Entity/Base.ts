@@ -11,8 +11,8 @@ export type Attributes<T> = {
     null | undefined
   > extends (infer AV)[]
     ? AttributesOrPrimitive<AV>[]
-    : Exclude<T[P], null | undefined> extends hasAsJSON
-    ? AttributesOrPrimitive<T[P]> | T[P]
+    : Exclude<T[P], null | undefined> extends ValueObjectInstance
+    ? ReturnType<Exclude<T[P], null | undefined>["asJSON"]> | T[P]
     : T[P];
 };
 
@@ -23,10 +23,12 @@ type AttributesOrPrimitive<T> = Exclude<T, null | undefined> extends
   ? T
   : Attributes<T>;
 
-export type hasFromJSON = {fromJSON(...args: any): any};
-type hasAsJSON = {asJSON(...args: any): any};
+export type ValueObjectClass = {fromJSON(...args: any): any};
+
+export type ValueObjectInstance = {asJSON(...args: any): any};
+
 export type AttributesOrEntities<T> = {
-  [K in keyof WithoutFunctions<T>]: T[K] extends hasAsJSON
+  [K in keyof WithoutFunctions<T>]: T[K] extends ValueObjectInstance
     ? T[K] | Attributes<T[K]>
     : T[K];
 };
