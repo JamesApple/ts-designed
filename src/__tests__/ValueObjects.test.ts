@@ -21,6 +21,18 @@ class Email {
 class Parent extends Entity.Base {
   @Entity.Field()
   email?: Email;
+
+  @Entity.Field({entity: Email}) emails?: Email[];
+
+  @Entity.Field() moreStrings?: string[];
+}
+
+class Nested extends Entity.Base {
+  @Entity.Field() parent?: Parent;
+
+  @Entity.Field({entity: Parent}) parents?: Parent[];
+
+  @Entity.Field() strings?: string[];
 }
 
 describe("Value object mapping", function () {
@@ -60,6 +72,55 @@ describe("Value object mapping", function () {
     Parent.create({
       // @ts-expect-error Should not accept an invalid raw object
       email: {value: "value"}
+    });
+
+    Nested.create({
+      //@ts-expect-error Not the right type for entity
+      parent: "not the right type",
+      parents: [Parent.create(), {}, {moreStrings: [""]}]
+    });
+    Nested.create({
+      //@ts-expect-error Should not allow invalid primitives
+      strings: 1,
+      //@ts-expect-error Should not allow invalid primitives
+      parent: 2,
+      //@ts-expect-error Should not allow invalid primitives
+      parents: 3
+    });
+  });
+
+  it("do", async function () {
+    Nested.create({
+      parent: {
+        email: "an@email.com"
+      }
+    });
+
+    Nested.create({
+      parent: Parent.create({email: "abc"})
+    });
+
+    Nested.create({});
+
+    Nested.create({
+      strings: []
+    });
+
+    Nested.create({
+      strings: ["hi"]
+    });
+
+    Nested.create({
+      strings: [],
+      parents: [
+        {
+          email: "abc"
+        },
+        {
+          email: Email.fromJSON("abc")
+        },
+        {}
+      ]
     });
   });
 });

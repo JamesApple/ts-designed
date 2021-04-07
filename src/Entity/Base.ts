@@ -5,15 +5,18 @@ import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
 import {AsJsonResult, EntitySerializer, RemoveNever} from "./EntitySerializer";
 import {Optional} from "..";
 
+type Require<T> = Exclude<T, null | undefined>;
+
 export type Attributes<T> = {
-  [P in keyof WithoutFunctions<T>]: Exclude<
-    T[P],
-    null | undefined
-  > extends (infer AV)[]
+  [P in keyof WithoutFunctions<T>]: Require<T[P]> extends (infer AV)[]
     ? AttributesOrPrimitive<AV>[]
-    : Exclude<T[P], null | undefined> extends ValueObjectInstance
-    ? ReturnType<Exclude<T[P], null | undefined>["asJSON"]> | T[P]
-    : T[P];
+    : Require<T[P]> extends {
+        serialize(): EntitySerializer<any>;
+      }
+    ? Attributes<Require<T[P]>> | T[P] // Is entity
+    : Require<T[P]> extends ValueObjectInstance
+    ? ReturnType<Require<T[P]>["asJSON"]> | T[P] // Is value object
+    : T[P]; // Allow nulls in final type
 };
 
 type AttributesOrPrimitive<T> = Exclude<T, null | undefined> extends
