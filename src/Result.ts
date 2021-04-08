@@ -18,6 +18,14 @@ export class AsyncResult<T, F> implements PromiseLike<Result<T, F>> {
     })().then(onfulfilled, onrejected);
   }
 
+  static fail<T = unknown, F = unknown>(error: F): AsyncResult<T, F> {
+    return AsyncResult.fromPromise(Promise.reject(error));
+  }
+
+  static success<T, F = unknown>(value: T): AsyncResult<T, F> {
+    return AsyncResult.fromPromise(Promise.resolve(value));
+  }
+
   static fromPromise<T, F = unknown>(
     promise: PromiseLike<T>
   ): AsyncResult<T, F> {
