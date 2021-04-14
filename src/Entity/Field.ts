@@ -1,13 +1,13 @@
 import {EntityConfig} from "./EntityConfig";
 import {FieldConfig, FieldConfigArgs} from "./FieldConfig";
-import {Base, ValueObjectClass} from "./Base";
+import {Base} from "./Base";
 
 /**
  * Field decorates a property to allow use in other helpers within the
  * entity library.
  */
-export function Field<B extends ValueObjectClass>(
-  fieldConfig: Omit<FieldConfigArgs<B>, "name" | "reflectedEntity"> = {}
+export function Field(
+  fieldConfig: Omit<FieldConfigArgs, "name" | "reflectedEntity"> = {}
 ): PropertyDecorator {
   return function (proto: Object, property: string | symbol) {
     const entityConfig = EntityConfig.forPrototype(proto);

@@ -1,4 +1,3 @@
-import {ValueObjectClass} from "./Base";
 import {EntityConfig} from "./EntityConfig";
 
 export type Enum = Object;
@@ -7,9 +6,9 @@ type TaggedUnion = {
   handlers: {[K: string]: any | ((data: any, tag: any) => any)};
 };
 
-export interface FieldConfigArgs<B extends ValueObjectClass> {
+export interface FieldConfigArgs {
   reflectedEntity?: any;
-  entity?: B;
+  entity?: any;
   deserialize?: (v: any) => any;
   taggedUnion?: TaggedUnion;
   name: string;
@@ -35,7 +34,7 @@ export class FieldConfig {
     reflectedEntity,
     deserialize,
     taggedUnion
-  }: FieldConfigArgs<any> & {reflectedEntity: any}) {
+  }: FieldConfigArgs & {reflectedEntity: any}) {
     this.name = name;
     this.taggedUnion = taggedUnion;
     this.entity = entity;
