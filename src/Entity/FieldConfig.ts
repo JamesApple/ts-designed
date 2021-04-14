@@ -1,21 +1,17 @@
-import {Base, ValueObjectClass} from "./Base";
+import {ValueObjectClass} from "./Base";
 import {EntityConfig} from "./EntityConfig";
 
 export type Enum = Object;
-type TaggedUnion<E extends Enum, B extends ValueObjectClass> = {
-  enum: E;
-  getTag: (raw: any) => E[keyof E];
-  handlers: {[K in keyof E]: B | ((data: any, tag: E[keyof E]) => any)};
+type TaggedUnion = {
+  getTag: (raw: any) => any;
+  handlers: {[K: string]: any | ((data: any, tag: any) => any)};
 };
 
-export interface FieldConfigArgs<
-  E extends Enum = any,
-  B extends typeof Base = any
-> {
+export interface FieldConfigArgs<B extends ValueObjectClass> {
   reflectedEntity?: any;
-  entity?: Object;
+  entity?: B;
   deserialize?: (v: any) => any;
-  taggedUnion?: TaggedUnion<E, B>;
+  taggedUnion?: TaggedUnion;
   name: string;
   iterable?: boolean;
 }
@@ -30,7 +26,7 @@ export class FieldConfig {
 
   private iterable?: boolean;
 
-  private taggedUnion?: TaggedUnion<any, any>;
+  private taggedUnion?: TaggedUnion;
 
   constructor({
     name,
@@ -39,7 +35,7 @@ export class FieldConfig {
     reflectedEntity,
     deserialize,
     taggedUnion
-  }: FieldConfigArgs) {
+  }: FieldConfigArgs<any> & {reflectedEntity: any}) {
     this.name = name;
     this.taggedUnion = taggedUnion;
     this.entity = entity;
@@ -63,7 +59,9 @@ export class FieldConfig {
         const ent = taggedUnion.handlers[tag];
         if (!ent) {
           throw new TypeError(
-            `designed deserialize error: ${tag} does not have a matching value inside of ${taggedUnion.enum}`
+            `designed deserialize error: ${tag} does not have a matching value inside of ${Object.keys(
+              taggedUnion.handlers
+            ).join(", ")}`
           );
         }
         if ("fromJSON" in ent) {

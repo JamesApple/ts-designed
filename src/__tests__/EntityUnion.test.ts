@@ -34,7 +34,6 @@ describe("Entity union mapping", function () {
     class Parent extends Entity.Base {
       @Entity.Field({
         taggedUnion: {
-          enum: Tags,
           getTag: (item: Bclass | Aclass) => item.myTag,
           handlers: {A: Aclass, B: Bclass, C: () => "manually returned"}
         }

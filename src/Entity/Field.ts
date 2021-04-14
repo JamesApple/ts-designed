@@ -1,13 +1,13 @@
 import {EntityConfig} from "./EntityConfig";
-import {Enum, FieldConfig, FieldConfigArgs} from "./FieldConfig";
-import {Base} from "./Base";
+import {FieldConfig, FieldConfigArgs} from "./FieldConfig";
+import {Base, ValueObjectClass} from "./Base";
 
 /**
  * Field decorates a property to allow use in other helpers within the
  * entity library.
  */
-export function Field<E extends Enum, B extends typeof Base>(
-  fieldConfig: Omit<FieldConfigArgs<E, B>, "name"> = {}
+export function Field<B extends ValueObjectClass>(
+  fieldConfig: Omit<FieldConfigArgs<B>, "name" | "reflectedEntity"> = {}
 ): PropertyDecorator {
   return function (proto: Object, property: string | symbol) {
     const entityConfig = EntityConfig.forPrototype(proto);
@@ -24,6 +24,12 @@ export function Field<E extends Enum, B extends typeof Base>(
       if (!entity || !(entity.prototype instanceof Base)) {
         entity = undefined;
       }
+    }
+
+    if ("entity" in fieldConfig && fieldConfig.entity === undefined) {
+      throw new TypeError(
+        `Designed: Entity.Field({ entity }) was set to undefined. This may indicate a circular dependency has been introduced.`
+      );
     }
 
     entityConfig.addField(

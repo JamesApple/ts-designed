@@ -71,7 +71,7 @@ export class Base {
     args?: Attributes<InstanceType<T>>
   ): InstanceType<T> {
     const instance = this.build(args);
-    this.validator(instance);
+    instance.validate();
     return instance;
   }
 
@@ -87,14 +87,6 @@ export class Base {
     return instance;
   }
 
-  static validator = <T extends Base>(entity: T): T => entity;
-  static setValidator<T extends typeof Base>(
-    this: T,
-    validator: typeof this.validator
-  ): void {
-    this.validator = validator;
-  }
-
   static fields<T extends typeof Base>(this: T): ClassFieldReader<T> {
     return new ClassFieldReader(this);
   }
@@ -107,9 +99,10 @@ export class Base {
     return new EntitySerializer(this);
   }
 
-  validate<T extends Base>(this: T): T {
-    return (this.constructor as any).validator(this);
-  }
+  /**
+   * This should throw if an entity is invalid
+   */
+  validate<T extends Base>(this: T): void {}
 
   static fromJSON<T extends typeof Base>(this: T, data: any): InstanceType<T> {
     return this.create(data);
