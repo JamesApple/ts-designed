@@ -7,28 +7,33 @@
  *
  * Throwing an exception inside the method will prevent the method from being memoized.
  */
-export function All(args?: {cacheKey?: string}) {
-  return (__: Object, _: string, d: TypedPropertyDescriptor<any>) => {
+export function All() {
+  return (obj: Object, _: string, d: TypedPropertyDescriptor<any>) => {
+    const proto = obj as Proto;
+    const config = proto[MEMOIZE_CONFIGURATION_KEY] ?? {memoizers: 0};
+
     if (d.value != null) {
-      d.value = impl(d.value, args);
+      d.value = impl(d.value, config);
     } else if (d.get != null) {
-      d.get = impl(d.get, args);
+      d.get = impl(d.get, config);
     } else {
       throw "Decorator can only be applied to a method or getter";
     }
+    config.memoizers += 1;
+    proto[MEMOIZE_CONFIGURATION_KEY] = config;
   };
 }
 const getCacheKey = (name: string) => `__designed_memoize_all_${name}`;
 
-All.bust = (instance: Object, name: string) => {
-  if (instance.hasOwnProperty(getCacheKey(name))) {
-    delete (<any>instance)[getCacheKey(name)];
-  }
-};
+// All.bust = (instance: Object, name: string) => {
+//   if (instance.hasOwnProperty(getCacheKey(name))) {
+//     delete (<any>instance)[getCacheKey(name)];
+//   }
+// };
 
-function impl(original: () => any, args?: {cacheKey?: string}) {
+function impl(original: () => any, config: MemoizeConfig) {
   const name = original.name;
-  const cacheProp = getCacheKey(`${name}-${args?.cacheKey}`);
+  const cacheProp = getCacheKey(`${name}-${config.memoizers}`);
 
   return function (this: Object, ...args: any[]) {
     if (this.hasOwnProperty(cacheProp)) {
@@ -45,4 +50,14 @@ function impl(original: () => any, args?: {cacheKey?: string}) {
     });
     return value;
   };
+}
+
+interface MemoizeConfig {
+  memoizers: number;
+}
+
+export const MEMOIZE_CONFIGURATION_KEY = Symbol("MEMOIZE_CONFIGURATION");
+
+interface Proto {
+  [MEMOIZE_CONFIGURATION_KEY]?: MemoizeConfig;
 }
