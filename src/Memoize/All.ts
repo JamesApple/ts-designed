@@ -7,12 +7,12 @@
  *
  * Throwing an exception inside the method will prevent the method from being memoized.
  */
-export function All() {
+export function All(args?: {cacheKey?: string}) {
   return (__: Object, _: string, d: TypedPropertyDescriptor<any>) => {
     if (d.value != null) {
-      d.value = impl(d.value);
+      d.value = impl(d.value, args);
     } else if (d.get != null) {
-      d.get = impl(d.get);
+      d.get = impl(d.get, args);
     } else {
       throw "Decorator can only be applied to a method or getter";
     }
@@ -26,9 +26,9 @@ All.bust = (instance: Object, name: string) => {
   }
 };
 
-function impl(original: () => any) {
+function impl(original: () => any, args?: {cacheKey?: string}) {
   const name = original.name;
-  const cacheProp = getCacheKey(name);
+  const cacheProp = getCacheKey(`${name}-${args?.cacheKey}`);
 
   return function (this: Object, ...args: any[]) {
     if (this.hasOwnProperty(cacheProp)) {
