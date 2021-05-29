@@ -29,27 +29,27 @@
     "node": ">= 6.0.0"
   },
   "dependencies": {
-    "tslib": "^2.0.1"
+    "tslib": "^2.2.0"
   },
   "peerDependencies": {
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "@microsoft/tsdoc": "^0.12.21",
-    "@types/jest": "^26.0.13",
+    "@microsoft/tsdoc": "^0.13.2",
+    "@types/jest": "^26.0.23",
     "@types/node": "^14.6.4",
-    "@typescript-eslint/eslint-plugin": "^4.0.1",
-    "@typescript-eslint/parser": "^4.0.1",
-    "docsify": "^4.11.6",
-    "eslint": "^7.8.1",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "jest": "^26.4.2",
-    "prettier": "^2.1.1",
+    "@typescript-eslint/eslint-plugin": "^4.25.0",
+    "@typescript-eslint/parser": "^4.25.0",
+    "docsify": "^4.12.1",
+    "eslint": "^7.27.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^27.0.1",
+    "prettier": "^2.3.0",
     "reflect-metadata": "^0.1.13",
-    "ts-jest": "^26.3.0",
-    "typedoc": "^0.19.2",
-    "typedoc-plugin-markdown": "^3.0.11",
-    "typescript": "^4.0.2"
+    "ts-jest": "^27.0.1",
+    "typedoc": "^0.20.36",
+    "typedoc-plugin-markdown": "^3.8.2",
+    "typescript": "^4.3.2"
   }
 }

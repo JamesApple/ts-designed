@@ -16,7 +16,6 @@ module.exports = {
   },
   testPathIgnorePatterns: ["/node_modules/", "/fixtures/", "/utils/"],
   moduleFileExtensions: ["ts", "tsx", "js"],
-  setupFilesAfterEnv: ["<rootDir>/test/jest.setup.ts"],
   testEnvironment: "node",
   transform: {
     "^.+\\.tsx?$": "ts-jest"
