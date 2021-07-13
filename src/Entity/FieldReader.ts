@@ -58,6 +58,14 @@ export class EntityFieldReader<
     this.instance = instance as T;
   }
 
+  onlySetOrNull(): MappedFieldUnion<T> {
+    return this.parentFields.filter((field) => {
+      const fieldValue = this.instance[field.name];
+      return fieldValue !== undefined;
+    });
+  }
+
+
   onlySet(): MappedFieldUnion<T> {
     return this.parentFields.filter((field) => {
       const fieldValue = this.instance[field.name];

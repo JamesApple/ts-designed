@@ -48,7 +48,7 @@ export class EntitySerializer<T extends Base> {
   }
 
   asJSON(): AsJsonResult<T> {
-    return new EntityFieldReader(this.instance).onlySet().reduce((json, f) => {
+    return new EntityFieldReader(this.instance).onlySetOrNull().reduce((json, f) => {
       const deserializeSingle = (v: any) => {
         if (hasAsJSONMethod(value)) {
           v = v.asJSON();

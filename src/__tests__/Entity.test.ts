@@ -218,3 +218,15 @@ describe("mapping arrays", function () {
     });
   });
 });
+
+describe('Accepts nulls',  function() {
+    class Value extends Entity.Base {
+      @Entity.Field()  maybeMissing?: null | string;
+    }
+
+    it('Returns nulls for fields that are marked as nullable', async function() {
+      expect(Value.create({maybeMissing: null}).maybeMissing).toBeNull()
+      expect(Value.create({maybeMissing: null}).asJSON()).toEqual({maybeMissing: null })
+    })
+  
+})
