@@ -1,6 +1,6 @@
 import {AbsentOptional, Optional, PresentOptional} from "../Optional";
 import {AsyncOptional, PresentAsyncOptional} from "../Optional/AsyncOptional";
-import {Result} from "../Result";
+import {Result} from "../Result/Result";
 
 describe("Optional", function () {
   it("creates from null", async function () {

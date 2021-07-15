@@ -1,4 +1,3 @@
-import {Result} from "../Result";
 import {
   Optional,
   OptionalizeArray,
@@ -66,8 +65,6 @@ export abstract class AsyncOptional<T>
 
   abstract toJSON(_: string): Promise<T | null>;
 
-  abstract toResult(): Promise<Result<T, null>>;
-
   abstract toArray(): Promise<T[]>;
 
   abstract asJSON(_: string): Promise<T | null>;
@@ -110,15 +107,7 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
       })
     ) as any;
   }
-  toResult(): Promise<Result<T, null>> {
-    return this.value.then((v) => {
-      if (v == null) {
-        return Result.success(v);
-      } else {
-        return Result.fail(null);
-      }
-    });
-  }
+
   toArray(): Promise<T[]> {
     return this.value.then((v) => {
       if (v == null) {

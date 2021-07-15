@@ -1,4 +1,3 @@
-import {Result} from "../Result";
 import {AsyncOptional, PresentAsyncOptional} from "./AsyncOptional";
 
 export type OptionalizeArray<T extends [...any[]]> = {
@@ -197,8 +196,6 @@ export abstract class Optional<T> {
    */
   abstract toJSON(_: string): T | null;
 
-  abstract toResult(): Result<T, null>;
-
   abstract toArray(): T[];
 
   /**
@@ -212,9 +209,6 @@ export class PresentOptional<T> extends Optional<T> {
     return [this.value];
   }
 
-  toResult(): Result<T, null> {
-    return Result.success(this.value);
-  }
 
   unzip<V extends Optional<[any, any]>>(
     this: V
@@ -403,10 +397,6 @@ export class AbsentOptional<T> extends Optional<T> {
 
   isAbsent(): this is AbsentOptional<T> {
     return true;
-  }
-
-  toResult(): Result<T, null> {
-    return Result.fail(null);
   }
 
   get(): T {
