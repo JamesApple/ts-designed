@@ -72,7 +72,7 @@ describe("EntityMapping", function () {
         })
           .serialize()
           .asJSON()
-      ).toEqual({ child: null });
+      ).toStrictEqual({});
     });
 
     it("Serializes an entity from an undefined value", async function () {
@@ -102,7 +102,7 @@ describe("EntityMapping", function () {
         })
           .serialize()
           .asJSON()
-      ).toEqual({child: null});
+      ).toEqual({});
     });
 
     it("Serializes an entity from an undefined value", async function () {

@@ -6,13 +6,12 @@ import "reflect-metadata";
 describe("Entity", function () {
   class Empty extends Entity.Base {}
 
-  class OneField extends Entity.Base {
-    @Entity.Field()
+  class NoMarkedFields extends Entity.Base {
     aField: string;
   }
 
-  class NoMarkedFields extends Entity.Base {
-    aField: string;
+  class OneField extends Entity.Base {
+    @Entity.Field() aField: string;
   }
 
   describe("Mapping", function () {
@@ -219,14 +218,20 @@ describe("mapping arrays", function () {
   });
 });
 
-describe('Accepts nulls',  function() {
-    class Value extends Entity.Base {
-      @Entity.Field()  maybeMissing?: null | string;
-    }
+describe("Accepts nulls", function () {
+  class Value extends Entity.Base {
+    @Entity.Field({nullable: true}) allowsNull?: null | string;
+    @Entity.Field() noNulls?: null | string;
+  }
 
-    it('Returns nulls for fields that are marked as nullable', async function() {
-      expect(Value.create({maybeMissing: null}).maybeMissing).toBeNull()
-      expect(Value.create({maybeMissing: null}).asJSON()).toEqual({maybeMissing: null })
-    })
-  
-})
+  it("Returns nulls for fields that are marked as nullable", async function () {
+    expect(Value.create({allowsNull: null}).allowsNull).toBeNull();
+    expect(Value.create({noNulls: null}).noNulls).toBeUndefined();
+
+    expect(Value.create({noNulls: null}).asJSON()).toStrictEqual({});
+
+    expect(Value.create({allowsNull: null}).asJSON()).toEqual({
+      allowsNull: null
+    });
+  });
+});

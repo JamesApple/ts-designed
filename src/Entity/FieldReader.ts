@@ -9,16 +9,14 @@ export interface FieldData<
   name: K;
   entityConstructor?: Object;
   fieldArrayLike: boolean;
+  nullable: boolean
 }
 
 export interface FieldDataWithSubfields<
   T extends HasFieldsIntrospection,
   K extends keyof Attributes<T>
-> {
-  name: K;
+> extends FieldData<T, K> {
   subFields?: MappedFieldUnion<T[K]>;
-  entityConstructor?: Object;
-  fieldArrayLike: boolean;
 }
 
 export class ClassFieldReader<
@@ -34,6 +32,7 @@ export class ClassFieldReader<
         name: f.name,
         fieldArrayLike: f.isArrayLike(),
         entityConstructor: f.entity ?? f.reflectedEntity,
+        nullable: f.nullable,
         subFields: isHasFieldsIntrospection(f.entity)
           ? f.entity?.fields()?.all()
           : undefined
@@ -58,17 +57,15 @@ export class EntityFieldReader<
     this.instance = instance as T;
   }
 
-  onlySetOrNull(): MappedFieldUnion<T> {
-    return this.parentFields.filter((field) => {
-      const fieldValue = this.instance[field.name];
-      return fieldValue !== undefined;
-    });
-  }
-
-
+  /**
+   * This will only return fields with `null` if the entity has configured it as such
+   */
   onlySet(): MappedFieldUnion<T> {
     return this.parentFields.filter((field) => {
       const fieldValue = this.instance[field.name];
+      if(field.nullable === true && fieldValue === null) {
+        return true
+      }
       return fieldValue != null;
     });
   }

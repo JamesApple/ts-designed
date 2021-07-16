@@ -29,35 +29,7 @@ describe("FieldReading", function () {
   it("returns all fields for the class", async function () {
     const fields = Person.fields().all();
     expect(fields[1].entityConstructor).toEqual(Address);
-    expect(fields).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "entityConstructor": [Function],
-          "fieldArrayLike": false,
-          "name": "name",
-          "subFields": undefined,
-        },
-        Object {
-          "entityConstructor": [Function],
-          "fieldArrayLike": false,
-          "name": "address",
-          "subFields": Array [
-            Object {
-              "entityConstructor": [Function],
-              "fieldArrayLike": false,
-              "name": "postcode",
-              "subFields": undefined,
-            },
-          ],
-        },
-        Object {
-          "entityConstructor": [Function],
-          "fieldArrayLike": false,
-          "name": "doesNotHaveAll",
-          "subFields": undefined,
-        },
-      ]
-    `);
+    expect(fields).toMatchSnapshot()
   });
 
   it("returns all set fields for an entity", async function () {
@@ -65,29 +37,7 @@ describe("FieldReading", function () {
       name: "Bob",
       address: Address.create({postcode: 1})
     });
-    expect(person.fields().onlySet()).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "entityConstructor": [Function],
-          "fieldArrayLike": false,
-          "name": "name",
-          "subFields": undefined,
-        },
-        Object {
-          "entityConstructor": [Function],
-          "fieldArrayLike": false,
-          "name": "address",
-          "subFields": Array [
-            Object {
-              "entityConstructor": [Function],
-              "fieldArrayLike": false,
-              "name": "postcode",
-              "subFields": undefined,
-            },
-          ],
-        },
-      ]
-    `);
+    expect(person.fields().onlySet()).toMatchSnapshot();
   });
 
   it("returns all unset fields for an entity", async function () {
@@ -95,32 +45,8 @@ describe("FieldReading", function () {
       name: "Bob",
       address: Address.create({postcode: 1})
     });
-    expect(person.fields().onlyUnset()).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "entityConstructor": [Function],
-          "fieldArrayLike": false,
-          "name": "doesNotHaveAll",
-          "subFields": undefined,
-        },
-      ]
-    `);
+    expect(person.fields().onlyUnset()).toMatchSnapshot();
     delete person.name;
-    expect(person.fields().onlyUnset()).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "entityConstructor": [Function],
-          "fieldArrayLike": false,
-          "name": "name",
-          "subFields": undefined,
-        },
-        Object {
-          "entityConstructor": [Function],
-          "fieldArrayLike": false,
-          "name": "doesNotHaveAll",
-          "subFields": undefined,
-        },
-      ]
-    `);
+    expect(person.fields().onlyUnset()).toMatchSnapshot();
   });
 });

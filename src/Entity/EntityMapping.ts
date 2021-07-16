@@ -3,16 +3,26 @@ import {EntityConfig} from "./EntityConfig";
 import {FieldConfig} from "./FieldConfig";
 
 export class EntityMapping {
-  private data: Object;
+  private dataBlob: any;
 
   constructor(public instance: Base, args: Attributes<Base> = {}) {
-    this.data = args;
+    this.dataBlob = args;
   }
 
   map(): void {
-    this.entityConfig.eachField((f) => {
-      this.assign(f, getValue(f.name, this.data, f));
+    this.entityConfig.eachField((fieldConfig) => {
+      const value = this.extractValueFromBlob(fieldConfig)
+
+      if(value === null && !fieldConfig.nullable) {
+        return
+      }
+
+      this.assign(fieldConfig, value);
     });
+  }
+
+  private extractValueFromBlob(fieldConfig: FieldConfig): any {
+    return fieldConfig.deserialize(this.dataBlob[fieldConfig.name]);
   }
 
   private assign(field: FieldConfig, data: Object): void {
@@ -22,8 +32,4 @@ export class EntityMapping {
   get entityConfig(): EntityConfig {
     return EntityConfig.forInstance(this.instance);
   }
-}
-
-export function getValue(path: string, object: unknown, f: FieldConfig): any {
-  return f.deserialize((object as any)[path]);
 }

@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FieldReading returns all fields for the class 1`] = `
+Array [
+  Object {
+    "entityConstructor": [Function],
+    "fieldArrayLike": false,
+    "name": "name",
+    "nullable": false,
+    "subFields": undefined,
+  },
+  Object {
+    "entityConstructor": [Function],
+    "fieldArrayLike": false,
+    "name": "address",
+    "nullable": false,
+    "subFields": Array [
+      Object {
+        "entityConstructor": [Function],
+        "fieldArrayLike": false,
+        "name": "postcode",
+        "nullable": false,
+        "subFields": undefined,
+      },
+    ],
+  },
+  Object {
+    "entityConstructor": [Function],
+    "fieldArrayLike": false,
+    "name": "doesNotHaveAll",
+    "nullable": false,
+    "subFields": undefined,
+  },
+]
+`;
+
+exports[`FieldReading returns all set fields for an entity 1`] = `
+Array [
+  Object {
+    "entityConstructor": [Function],
+    "fieldArrayLike": false,
+    "name": "name",
+    "nullable": false,
+    "subFields": undefined,
+  },
+  Object {
+    "entityConstructor": [Function],
+    "fieldArrayLike": false,
+    "name": "address",
+    "nullable": false,
+    "subFields": Array [
+      Object {
+        "entityConstructor": [Function],
+        "fieldArrayLike": false,
+        "name": "postcode",
+        "nullable": false,
+        "subFields": undefined,
+      },
+    ],
+  },
+]
+`;
+
+exports[`FieldReading returns all unset fields for an entity 1`] = `
+Array [
+  Object {
+    "entityConstructor": [Function],
+    "fieldArrayLike": false,
+    "name": "doesNotHaveAll",
+    "nullable": false,
+    "subFields": undefined,
+  },
+]
+`;
+
+exports[`FieldReading returns all unset fields for an entity 2`] = `
+Array [
+  Object {
+    "entityConstructor": [Function],
+    "fieldArrayLike": false,
+    "name": "name",
+    "nullable": false,
+    "subFields": undefined,
+  },
+  Object {
+    "entityConstructor": [Function],
+    "fieldArrayLike": false,
+    "name": "doesNotHaveAll",
+    "nullable": false,
+    "subFields": undefined,
+  },
+]
+`;

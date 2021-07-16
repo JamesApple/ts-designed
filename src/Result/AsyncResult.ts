@@ -1,14 +1,14 @@
 import {Result, Fail, Success} from "./Result";
 
-
 export class AsyncResult<T, F extends Error>
   implements PromiseLike<Result<T, F>>
 {
   protected constructor(protected promise: Promise<Result<T, F>>) {}
 
   then<TResult1 = Result<T, F>, TResult2 = never>(
-    onfulfilled?: ((value: Result<T, F>) => TResult1 | PromiseLike<TResult1>) |
-      null,
+    onfulfilled?:
+      | ((value: Result<T, F>) => TResult1 | PromiseLike<TResult1>)
+      | null,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
   ): Promise<TResult1 | TResult2> {
@@ -60,6 +60,15 @@ export class AsyncResult<T, F extends Error>
     );
   }
 
+  tapAsync(
+    mapSuccess: (success: T) => Promise<unknown>,
+    mapError?: (error: F) => Promise<unknown>
+  ): AsyncResult<T, F> {
+    return new AsyncResult(
+      this.then((result) => result.tapAsync(mapSuccess, mapError))
+    );
+  }
+
   map<X, Y extends Error = F>(
     mapSuccess: (success: T) => X,
     mapError?: (error: F) => Y
@@ -73,10 +82,8 @@ export class AsyncResult<T, F extends Error>
     mapSuccess: (success: T) => Promise<X>,
     mapError?: (error: F) => Promise<Y>
   ): AsyncResult<X, Y> {
-    return AsyncResult.unwrapResult(
-      this.then((result) => {
-        return result.mapAsync(mapSuccess, mapError);
-      })
+    return new AsyncResult(
+      this.then((result) => result.mapAsync(mapSuccess, mapError))
     );
   }
 
@@ -92,4 +99,3 @@ export class AsyncResult<T, F extends Error>
     );
   }
 }
-

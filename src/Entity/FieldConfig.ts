@@ -7,12 +7,39 @@ type TaggedUnion = {
 };
 
 export interface FieldConfigArgs {
+  /**
+   * If reflect-metadata is enabled this will automatically use the type of the
+   * property if it is an entity.
+   *
+   * If the type of the reflected entity is an array it will signal that it
+   * should be deserialized into an array.
+   */
   reflectedEntity?: any;
+  /**
+   * When an array or container type is provided this will be used as the
+   * individual items or as the entity used for deserialization
+   */
   entity?: any;
+  /**
+   * If provided this will completely replace designed's deserialization logic
+   */
   deserialize?: (v: any) => any;
+  /**
+   * Configuration that allows a union `User | Admin` to be correctly mapped
+   */
   taggedUnion?: TaggedUnion;
+  /**
+   * The property name returned by reflect-metadata
+   */
   name: string;
+  /**
+   * If true the entity will always attempt to call `.map()` on this value when deserializing
+   */
   iterable?: boolean;
+  /**
+   * Whether nulls should be mapped out when the entity is serialized
+   */
+  nullable?: true
 }
 
 export class FieldConfig {
@@ -20,6 +47,8 @@ export class FieldConfig {
 
   public reflectedEntity: any;
   public entity?: Object;
+
+  public nullable: boolean
 
   private _deserialize?: (v: any) => any;
 
@@ -33,7 +62,8 @@ export class FieldConfig {
     iterable,
     reflectedEntity,
     deserialize,
-    taggedUnion
+    taggedUnion,
+    nullable
   }: FieldConfigArgs & {reflectedEntity: any}) {
     this.name = name;
     this.taggedUnion = taggedUnion;
@@ -41,6 +71,7 @@ export class FieldConfig {
     this.reflectedEntity = reflectedEntity;
     this._deserialize = deserialize;
     this.iterable = iterable;
+    this.nullable = !!nullable
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
