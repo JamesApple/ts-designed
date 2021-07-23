@@ -5,7 +5,15 @@ import {Optional} from "../Optional";
 
 type Tuple<K extends string, V> = {[key in K]: V};
 
-type UnionableClass = {fromJSON(...args: any): any; new (...args: any): any; create(data: any): any; build(data: any): any};
+type UnionableClass = {
+  fromJSON(...args: any): any;
+  new (...args: any): {
+    __attributes(): any
+    asJSON(): any
+  };
+  create(data: any): any;
+  build(data: any): any;
+};
 
 type StringKeys<T> = {
   [K in keyof T]: T[K] extends string ? K : never;
@@ -45,7 +53,18 @@ export abstract class Union<
         return value;
       }
 
-      static build(data: Partial<ReturnType<InstanceType<T>["asJSON"]>>) {
+      static build(data: Parameters<T["build"]>[0]) {
+        if (typeof data !== "object") {
+          return undefined!;
+        }
+        const tag = data[config.key];
+        if (!tag) {
+          return undefined!;
+        }
+        const klass = config.entries.find((entry) => entry[config.key] === tag);
+        if (!klass) {
+          return undefined!;
+        }
         return this.fromJSON(data);
       }
 
@@ -68,7 +87,7 @@ export abstract class Union<
         if (!klass) {
           return undefined!;
         }
-        return new this(klass.fromJSON(data));
+        return new this(klass.create(data));
       }
     };
   }
@@ -80,10 +99,14 @@ export abstract class Union<
   is<K extends keyof UnionMapped<T, TK>>(
     type: K
   ): Optional<InstanceType<UnionMapped<T, TK>[K]>> {
-    return Optional.of(this.value).filter((value) => value[this.key] === type);
+    return Optional.of(this.value).filter((value) => (value as any)[this.key] === type);
   }
 
   asJSON(): ReturnType<InstanceType<T>["asJSON"]> {
     return this.value.asJSON();
+  }
+
+  __attributes(): ReturnType<InstanceType<T>["__attributes"]> | InstanceType<T> {
+    return this.value;
   }
 }

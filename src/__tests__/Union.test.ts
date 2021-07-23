@@ -63,10 +63,8 @@ test("It creates entities from its union config", async () => {
 
   const terrarium = Terrarium.create({
     favourite: {
-      // @ts-expect-error TS is confused as to why SNAKE has lizardy
       type: "SNAKE",
-      slithery: true,
-      lizardy: true
+      slithery: true
     }
   });
 
@@ -76,7 +74,6 @@ test("It creates entities from its union config", async () => {
   Terrarium.create({favourite: {type: "SNAKE", slithery: true, tail: "here"}});
 
   Terrarium.create({
-  //@ts-expect-error TODO: cannot provide direct value object
     favourite: {type: "SNAKE", slithery: true, tail: new Tail()}
   });
 
@@ -96,7 +93,7 @@ test("It creates entities from its union config", async () => {
         slithery: true
       },
       {
-        //@ts-expect-error Still shouldnt want this
+        // TODO: This should fail as `lizardy` is not on `SNAKE`
         type: "SNAKE",
         slithery: true,
         lizardy: true
@@ -111,6 +108,7 @@ test("It creates entities from its union config", async () => {
       null
     ]
   });
+
   expect(flippedUpTerrarium.all![0].value).toBeInstanceOf(Lizard);
   expect(flippedUpTerrarium.all![1].value).toBeInstanceOf(Snake);
   expect(flippedUpTerrarium.all![2].value).toBeInstanceOf(Snake);

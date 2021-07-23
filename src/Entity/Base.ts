@@ -67,6 +67,15 @@ export class Base {
   ): Optional<Exclude<T[K], null | undefined>> {
     return Optional.of(this[value]);
   }
+
+  /**
+   * @description
+   * This is a "noop" method used internally to access the attribute type of an instance outside of its class
+   */
+  __attributes(): Attributes<this> {
+    return this
+  }
+
 }
 
 export function isEntityConstructor(o: unknown): o is Base {
