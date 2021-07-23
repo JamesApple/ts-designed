@@ -1,5 +1,9 @@
+export {Base} from "./Base";
+export {Field} from "./Field";
+export {FieldConfigArgs} from "./FieldConfig";
+export {Union} from "./Union";
+export {EntityConfig} from "./EntityConfig";
 export {
-  Base,
   Attributes,
   AttributeSelection,
   AttributesWithout,
@@ -7,8 +11,4 @@ export {
   WithoutAttributes,
   WithRequiredAttributes,
   WithOptionalAttributes
-} from "./Base";
-export {Field} from "./Field";
-export {FieldConfigArgs} from "./FieldConfig";
-export {Union} from './Union'
-export {EntityConfig} from './EntityConfig'
+} from "./AttributeTypes";

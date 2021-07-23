@@ -1,11 +1,23 @@
 import "reflect-metadata";
 import {Entity} from "..";
 
+class Tail {
+  asJSON(): string {
+    return "tails";
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static fromJSON(_: any): Tail {
+    return new Tail();
+  }
+}
+
 class Snake extends Entity.Base {
   static type: "SNAKE" = "SNAKE";
   @Entity.Field() type: "SNAKE";
 
   @Entity.Field() slithery: boolean;
+
+  @Entity.Field() tail?: Tail;
 
   validate(): void {
     if (!this.slithery) {
@@ -61,6 +73,13 @@ test("It creates entities from its union config", async () => {
   expect(terrarium.favourite!.value).toBeInstanceOf(Snake);
   expect(terrarium.favourite!.value).toEqual({type: "SNAKE", slithery: true});
 
+  Terrarium.create({favourite: {type: "SNAKE", slithery: true, tail: "here"}});
+
+  Terrarium.create({
+  //@ts-expect-error TODO: cannot provide direct value object
+    favourite: {type: "SNAKE", slithery: true, tail: new Tail()}
+  });
+
   expect(() =>
     Terrarium.create({
       //@ts-expect-error TS should be angry this has no tag
@@ -107,4 +126,48 @@ test("it validates after creating the object", () => {
   expect(() =>
     Terrarium.create({favourite: {type: "SNAKE", slithery: false}})
   ).toThrowErrorMatchingSnapshot();
+});
+
+test("it serializes the same as the entity itself", () => {
+  expect(
+    Terrarium.create({favourite: {type: "SNAKE", slithery: true}}).asJSON()
+  ).toEqual({favourite: {type: "SNAKE", slithery: true}});
+});
+
+test("It accepts value objects", () => {
+  class VO {
+    constructor(private value: string) {}
+    asJSON(): string {
+      return this.value;
+    }
+    static fromJSON(data: any): VO {
+      return new VO(data);
+    }
+  }
+
+  class C extends Entity.Base {
+    static type = "C";
+    @Entity.Field() type = "C";
+    @Entity.Field() vo?: VO;
+  }
+  class U extends Entity.Union.define({key: "type", entries: [C]}) {}
+
+  U.create({type: "C", vo: "raw"});
+
+  U.create({type: "C", vo: VO.fromJSON("")});
+});
+
+it("Accepts nested entities", async function () {
+  class C extends Entity.Base {
+    @Entity.Field() value?: string;
+  }
+  class P extends Entity.Base {
+    static type = "P";
+    @Entity.Field() type: "P";
+    @Entity.Field() child?: C;
+  }
+
+  class U extends Entity.Union.define({key: "type", entries: [P]}) {}
+
+  U.create({type: "P", child: C.create({value: "hi"})});
 });

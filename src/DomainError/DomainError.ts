@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+
+import {Attributes} from "../Entity";
+
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import {Attributes} from "../Entity/Base";
 type AnyConstructor = {
   new (...args: any[]): {message: string};
 };

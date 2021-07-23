@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import {Attributes, AttributeSelection, Base} from "./Base";
+import {Base} from "./Base";
 import {EntityFieldReader} from "./FieldReader";
-import {WithoutFunctions} from "./utilityTypes";
+import {Require, WithoutFunctions} from "./utilityTypes";
+import {Attributes, AttributeSelection} from "./AttributeTypes";
 
 type FunctionlessBase = WithoutFunctions<Base>;
 
@@ -48,25 +49,27 @@ export class EntitySerializer<T extends Base> {
   }
 
   asJSON(): AsJsonResult<T> {
-    return new EntityFieldReader(this.instance).onlySet().reduce((json, f) => {
-      const deserializeSingle = (v: any) => {
-        if (hasAsJSONMethod(value)) {
-          v = v.asJSON();
-        } else if (canBeConvertedToJson(v)) {
-          v = (v as any).serialize().asJSON();
-        }
-        return v;
-      };
+    return new EntityFieldReader<any, any>(this.instance)
+      .onlySet()
+      .reduce((json, f) => {
+        const deserializeSingle = (v: any) => {
+          if (hasAsJSONMethod(value)) {
+            v = v.asJSON();
+          } else if (canBeConvertedToJson(v)) {
+            v = (v as any).serialize().asJSON();
+          }
+          return v;
+        };
 
-      let value: any = (this.instance as any)[f.name];
-      if (hasAsJSONMethod(value)) {
-        value = deserializeSingle(value);
-      } else if (f.fieldArrayLike && value) {
-        value = value.map(deserializeSingle);
-      }
-      json[f.name] = value;
-      return json;
-    }, {} as AsJsonResult<T>);
+        let value: any = (this.instance as any)[f.name];
+        if (hasAsJSONMethod(value)) {
+          value = deserializeSingle(value);
+        } else if (f.fieldArrayLike && value) {
+          value = value.map(deserializeSingle);
+        }
+        (json as any)[f.name] = value;
+        return json;
+      }, {} as AsJsonResult<T>);
   }
 }
 
@@ -82,10 +85,8 @@ function isIndirectMap(f: any): f is MapIndirect<any, any, any, any> {
   return "from" in f && "map" in f;
 }
 
-export type MapOutArgs<
-  T extends FunctionlessBase,
-  O extends Object
-> = MapOutArg<T, O>[];
+export type MapOutArgs<T extends FunctionlessBase, O extends Object> =
+  MapOutArg<T, O>[];
 
 export type MapOutArg<T extends FunctionlessBase, O extends Object> =
   | SameTypeFields<T, O>
@@ -126,19 +127,17 @@ type NonNeverKeys<T> = {
 
 export type RemoveNever<T> = Pick<T, NonNeverKeys<T>>;
 
-type SameTypeFields<
-  T extends FunctionlessBase,
-  O extends Object
-> = NonNeverKeys<
-  {
-    [K in keyof T & keyof O]: T[K] extends O[K] ? K : never;
-  }
->;
+type SameTypeFields<T extends FunctionlessBase, O extends Object> =
+  NonNeverKeys<
+    {
+      [K in keyof T & keyof O]: T[K] extends O[K] ? K : never;
+    }
+  >;
 
 type AnythingWithAsJSON = {asJSON(): any};
 export type AsJsonResult<T extends HasAsJSONMethod> = {
-  [K in keyof Attributes<T>]: T[K] extends AnythingWithAsJSON
-    ? ReturnType<T[K]["asJSON"]>
+  [K in keyof Attributes<T>]: Require<T[K]> extends AnythingWithAsJSON
+    ? ReturnType<Require<T[K]>["asJSON"]>
     : T[K];
 };
 

@@ -1,4 +1,5 @@
-import {Attributes, Base} from "./Base";
+import {Attributes} from ".";
+import {Base} from "./Base";
 
 import {EntityConfig} from "./EntityConfig";
 

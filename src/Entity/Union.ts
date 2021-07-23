@@ -5,32 +5,33 @@ import {Optional} from "../Optional";
 
 type Tuple<K extends string, V> = {[key in K]: V};
 
-type ValueObjectClass = {fromJSON(...args: any): any; new (...args: any): any};
+type UnionableClass = {fromJSON(...args: any): any; new (...args: any): any; create(data: any): any; build(data: any): any};
+
 type StringKeys<T> = {
   [K in keyof T]: T[K] extends string ? K : never;
 }[keyof T];
 type String<T> = T extends string ? T : never;
-type UnionMapped<T extends ValueObjectClass, TK extends StringKeys<T>> = {
+type UnionMapped<T extends UnionableClass, TK extends StringKeys<T>> = {
   [K in T[TK]]: Extract<T, Tuple<String<TK>, K>>;
 };
 
 export class UnionDeserializationError extends DomainError {}
 
 export abstract class Union<
-  T extends ValueObjectClass,
+  T extends UnionableClass,
   TK extends StringKeys<InstanceType<T>> & StringKeys<T>
 > {
   __designed_type: "UNION";
 
   static define<
-    T extends ValueObjectClass,
+    T extends UnionableClass,
     TK extends StringKeys<InstanceType<T>> & StringKeys<T>
   >(config: {entries: T[]; key: TK}) {
     return class extends Union<T, TK> {
       key = config.key;
       entries = config.entries;
 
-      static create(data: ReturnType<InstanceType<T>["asJSON"]>) {
+      static create(data: Parameters<T["create"]>[0]) {
         const value = this.fromJSON(data);
         if (!value) {
           throw UnionDeserializationError.create(
