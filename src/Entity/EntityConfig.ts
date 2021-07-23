@@ -1,10 +1,14 @@
 import {Base} from "./Base";
 import {FieldConfig} from "./FieldConfig";
 
+/**
+ * @private
+ * This class is internal and likely prone to sudden change
+ */
 export class EntityConfig {
   constructor(public proto: Object) {}
 
-  private wasReflectLoaded = "getMetadata" in Reflect;
+  wasReflectLoaded = "getMetadata" in Reflect;
 
   private fields: Map<string | Symbol, FieldConfig> = new Map();
 

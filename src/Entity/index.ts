@@ -10,3 +10,5 @@ export {
 } from "./Base";
 export {Field} from "./Field";
 export {FieldConfigArgs} from "./FieldConfig";
+export {Union} from './Union'
+export {EntityConfig} from './EntityConfig'

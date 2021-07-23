@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it validates after creating the object 1`] = `"this slither is not slithery"`;

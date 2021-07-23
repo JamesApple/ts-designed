@@ -99,10 +99,10 @@ function isHasFieldsIntrospection(
 }
 
 type ValueOf<T> = T[keyof T];
-type MappedFieldUnion<T extends HasFieldsIntrospection> = ValueOf<
+type MappedFieldUnion<T> = ValueOf<
   {
-    [K in keyof Attributes<T>]: T[K] extends HasFieldsIntrospection
+    [K in keyof Attributes<T>]: T extends HasFieldsIntrospection ? T[K] extends HasFieldsIntrospection
       ? FieldDataWithSubfields<T, K>
-      : FieldData<T, K>;
+      : FieldData<T, K> : never;
   }
 >[];

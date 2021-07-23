@@ -30,6 +30,24 @@ export abstract class AsyncOptional<T>
 
   abstract mapAsync<X>(transform: (value: T) => Promise<X>): AsyncOptionalOf<X>;
 
+  instanceOf<C extends (new (...args: any[]) => any)[]>(...klasses: C): AsyncOptional<InstanceType<C[number]>> {
+    return this.filter(( value ) => !!klasses.find(klass => value instanceof klass) ) as any
+  }
+
+  tap(view: (value: T) => unknown): AsyncOptional<T> {
+    return this.map((value) => { 
+      view(value)
+      return value
+    })
+  }
+
+  tapAsync( view: (value: T) => Promise<unknown>): AsyncOptional<T> {
+    return this.mapAsync(async (value) => { 
+      await view(value)
+      return value
+    })
+  }
+
   abstract zip<X extends AnyOptional<any>[]>(
     ...others: X
   ): AsyncOptional<OptionalValuesFromTuple<[Optional<T>, ...X]>>;

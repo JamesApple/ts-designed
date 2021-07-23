@@ -19,6 +19,7 @@ export type OptionalValuesFromTuple<T extends [...any[]]> = {
   [Index in keyof T]: OptionalValue<T[Index]>;
 } & {length: T["length"]};
 
+
 export abstract class Optional<T> {
   /**
    * @example
@@ -104,6 +105,10 @@ export abstract class Optional<T> {
   ): Optional<Exclude<T, X>>;
   abstract filterNot(predicate: (value: T) => boolean): Optional<T>;
 
+  instanceOf<C extends (new (...args: any[]) => any)[]>(...klasses: C): Optional<InstanceType<C[number]>> {
+    return this.filter(( value ) => !!klasses.find(klass => value instanceof klass) ) as any
+  }
+
   /**
    * @remark
    * Apply a transform to the value of the optional and return a new optional
@@ -120,6 +125,20 @@ export abstract class Optional<T> {
   abstract mapAsync<X>(
     transform: (value: T) => Promise<X>
   ): AsyncOptional<NonNullable<X>>;
+
+  tap(view: (value: T) => unknown): Optional<T> {
+    return this.map((value) => { 
+      view(value)
+      return value
+    })
+  }
+
+  tapAsync( view: (value: T) => Promise<unknown>): AsyncOptional<T> {
+    return this.mapAsync(async (value) => { 
+      await view(value)
+      return value
+    })
+  }
 
   /**
    * @remark
@@ -244,6 +263,7 @@ export class PresentOptional<T> extends Optional<T> {
       : new AbsentOptional<T>();
   }
 
+
   filterNot<X extends T>(
     predicate: (value: T) => value is X
   ): Optional<Exclude<T, X>>;
@@ -348,6 +368,7 @@ export class AbsentOptional<T> extends Optional<T> {
   filter(): Optional<T> {
     return new AbsentOptional();
   }
+
 
   filterNot<X extends T>(
     predicate: (value: T) => value is X

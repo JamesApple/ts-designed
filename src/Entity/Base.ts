@@ -3,19 +3,22 @@ import {WithoutFunctions} from "./utilityTypes";
 import {EntityMapping} from "./EntityMapping";
 import {ClassFieldReader, EntityFieldReader} from "./FieldReader";
 import {AsJsonResult, EntitySerializer, RemoveNever} from "./EntitySerializer";
-import {Optional} from "..";
+import {Optional} from "../Optional";
 
 type Require<T> = Exclude<T, null | undefined>;
 
-export type Attributes<T> = {
-  [P in keyof WithoutFunctions<T>]: Require<T[P]> extends (infer AV)[]
-    ? AttributesOrPrimitive<AV>[]
-    : Require<T[P]> extends {
-        serialize(): EntitySerializer<any>;
-      }
-    ? Attributes<Require<T[P]>> | T[P] // Is entity
-    : Require<T[P]> extends ValueObjectInstance
-    ? ReturnType<Require<T[P]>["asJSON"]> | T[P] // Is value object
+// prettier-ignore
+export type Attributes<T> = 
+Require<T> extends { __designed_type: 'UNION' } & ValueObjectInstance ? 
+  ReturnType<Require<T>["asJSON"]> | T
+: {
+  [P in keyof WithoutFunctions<T>]:
+      Require<T[P]> extends (infer AV)[] ? // Is Array
+        AttributesOrPrimitive<AV>[]
+    : Require<T[P]> extends { serialize(): EntitySerializer<any>; } ? // Is entity
+        Attributes<Require<T[P]>> | T[P]
+    : Require<T[P]> extends ValueObjectInstance ? // Is value object
+        ReturnType<Require<T[P]>["asJSON"]> | T[P]
     : T[P]; // Allow nulls in final type
 };
 
@@ -70,7 +73,7 @@ export class Base {
     this: T,
     args?: Attributes<InstanceType<T>>
   ): InstanceType<T> {
-    const instance = this.build(args);
+    const instance = this.build(args as any);
     instance.validate();
     return instance;
   }
