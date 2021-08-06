@@ -160,7 +160,7 @@ it("Accepts nested entities", async function () {
     @Entity.Field() value?: string;
   }
   class P extends Entity.Base {
-    static type = "P";
+    static type = "P" as const;
     @Entity.Field() type: "P";
     @Entity.Field() child?: C;
   }
