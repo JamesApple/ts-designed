@@ -7,13 +7,22 @@ import {Optional} from "../Optional";
 import {Attributes} from "./AttributeTypes";
 
 
+export const AttributeTypeKey = Symbol('Designed Attributes Type')
+export const AttributeClassTypeKey = Symbol('Designed Class Attributes Type')
+
 export class Base {
+  static [AttributeClassTypeKey]<T extends typeof Base>(
+    this: T
+  ): Attributes<InstanceType<T>> {
+    return this as any
+  }
+
   /**
    * Map then validate an entity
    */
   static create<T extends typeof Base>(
     this: T,
-    args?: Attributes<InstanceType<T>>
+    args: Attributes<InstanceType<T>>
   ): InstanceType<T> {
     const instance = this.build(args as any);
     instance.validate();
@@ -68,12 +77,8 @@ export class Base {
     return Optional.of(this[value]);
   }
 
-  /**
-   * @description
-   * This is a "noop" method used internally to access the attribute type of an instance outside of its class
-   */
-  __attributes(): Attributes<this> {
-    return this
+  [AttributeTypeKey](): Attributes<this> {
+    throw new TypeError('Do not access Entity.Base.Symbol<AttributeTypeKey>')
   }
 
 }

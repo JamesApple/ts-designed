@@ -2,15 +2,17 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import {DomainError} from "../DomainError";
 import {Optional} from "../Optional";
+import {AttributeClassTypeKey, AttributeTypeKey} from "./Base";
 
 type Tuple<K extends string, V> = {[key in K]: V};
 
 type UnionableClass = {
   fromJSON(...args: any): any;
   new (...args: any): {
-    __attributes(): any
+    [AttributeTypeKey](): any
     asJSON(): any
   };
+  [AttributeClassTypeKey](): any
   create(data: any): any;
   build(data: any): any;
 };
@@ -39,7 +41,7 @@ export abstract class Union<
       key = config.key;
       entries = config.entries;
 
-      static create(data: Parameters<T["create"]>[0]) {
+      static create(data: ReturnType<InstanceType<T>[typeof AttributeTypeKey]>) {
         const value = this.fromJSON(data);
         if (!value) {
           throw UnionDeserializationError.create(
@@ -106,7 +108,7 @@ export abstract class Union<
     return this.value.asJSON();
   }
 
-  __attributes(): ReturnType<InstanceType<T>["__attributes"]> | InstanceType<T> {
+  [AttributeTypeKey](): ReturnType<InstanceType<T>[typeof AttributeTypeKey]> | InstanceType<T> {
     return this.value;
   }
 }

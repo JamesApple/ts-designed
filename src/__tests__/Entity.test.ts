@@ -4,8 +4,6 @@ import {EntityConfig} from "../Entity/EntityConfig";
 import "reflect-metadata";
 
 describe("Entity", function () {
-  class Empty extends Entity.Base {}
-
   class NoMarkedFields extends Entity.Base {
     aField: string;
   }
@@ -15,10 +13,6 @@ describe("Entity", function () {
   }
 
   describe("Mapping", function () {
-    it("should create with no parameters", async function () {
-      Empty.create();
-    });
-
     it("should use the @Entity.Field decorator to map a single attribute", async function () {
       const entity = OneField.create({
         aField: "a-value"
