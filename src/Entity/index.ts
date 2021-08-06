@@ -1,4 +1,4 @@
-export {Base} from "./Base";
+export {Base, AttributeTypeKey, AttributeClassTypeKey} from "./Base";
 export {Field} from "./Field";
 export {FieldConfigArgs} from "./FieldConfig";
 export {Union} from "./Union";
