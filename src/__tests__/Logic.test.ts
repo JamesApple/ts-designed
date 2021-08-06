@@ -3,19 +3,19 @@ import * as tsd from "tsd";
 
 const error = new Error("I throw");
 class True extends Logic.Rule<{}> {
-  async satisfies(): Promise<boolean> {
+  async satisfied(): Promise<boolean> {
     return true;
   }
 }
 
 class Throw extends Logic.Rule<{}> {
-  async satisfies(): Promise<boolean> {
+  async satisfied(): Promise<boolean> {
     throw error;
   }
 }
 
 class False extends Logic.Rule<{}> {
-  async satisfies(): Promise<boolean> {
+  async satisfied(): Promise<boolean> {
     return false;
   }
 }
@@ -73,13 +73,13 @@ describe("Logic", () => {
 xdescribe("Logic Types", () => {
   it("", async function () {
     class User extends Logic.Rule<{ctx: {userId: string}}> {
-      satisfies(): Promise<boolean> {
+      satisfied(): Promise<boolean> {
         throw "";
       }
     }
 
     class Business extends Logic.Rule<{ctx: {businessId: string}}> {
-      satisfies(): Promise<boolean> {
+      satisfied(): Promise<boolean> {
         throw "";
       }
     }
@@ -87,7 +87,7 @@ xdescribe("Logic Types", () => {
     class Another extends Logic.Rule<{
       ctx: {getId: () => string};
     }> {
-      satisfies(): Promise<boolean> {
+      satisfied(): Promise<boolean> {
         throw "";
       }
     }
