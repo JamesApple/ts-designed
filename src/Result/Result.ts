@@ -50,7 +50,32 @@ export abstract class Result<T, F extends Error = Error> {
     mapFailure: (failed: F) => X
   ): Result<T, X>;
 
-  abstract recover<R>(recover: (failed: F) => R): Success<T | R>;
+  flatMap<X, XF extends Error>(
+    mapSuccess: (success: T) => Result<X>,
+    mapError?: (error: F) => Result<XF>
+  ): Result<X, XF> {
+    return this.map(mapSuccess, (err) =>
+      mapError ? mapError(err).getOrThrowFailure() : err
+    ).map((s) => s.getOrThrowFailure());
+  }
+
+  flatMapAsync<X, XF extends Error = F>(
+    mapSuccess: (success: T) => AsyncResult<X>,
+    mapError?: (error: F) => AsyncResult<XF>
+  ): AsyncResult<X, XF | F> {
+    return this.mapAsync(
+      async (result) => {
+        return await mapSuccess(result).getOrThrowFailure();
+      },
+      async (err) => (mapError ? await mapError(err).getOrThrowFailure() : err)
+    );
+  }
+
+  abstract recover<R>(mapError: (err: F) => R): Result<T | R>;
+
+  abstract recoverAsync<R>(
+    mapError: (err: F) => Promise<R>
+  ): AsyncResult<T | R>;
 
   abstract isSuccess(): this is Success<T>;
 
@@ -81,7 +106,6 @@ export class Fail<E extends Error> extends Result<unknown, E> {
   get(): E {
     return this.value;
   }
-
   map<X, Y extends Error = E>(
     _: (success: unknown) => X,
     mapError?: (error: E) => Y
@@ -142,10 +166,6 @@ export class Fail<E extends Error> extends Result<unknown, E> {
     return this.map((i) => i, mapFailure);
   }
 
-  recover<R>(recover: (failed: E) => R): Success<unknown> {
-    return Success.of(recover(this.value));
-  }
-
   isSuccess(): this is Success<unknown> {
     return false;
   }
@@ -156,10 +176,21 @@ export class Fail<E extends Error> extends Result<unknown, E> {
 
   getOrThrowFailure(): unknown {
     if (this.value instanceof Error) {
+      if ((Error as any).captureStackTrace) {
+        (Error as any).captureStackTrace(this.value, this.getOrThrowFailure);
+      }
       throw this.value;
     } else {
       throw new TypeError(`Result threw a non error type: ${this.value}`);
     }
+  }
+
+  recover<R>(recover: (failed: E) => R): Success<R> {
+    return Success.of(recover(this.value));
+  }
+
+  recoverAsync<R>(mapError: (err: E) => Promise<R>): AsyncResult<R> {
+    return AsyncResult.fromPromise<R>(mapError(this.value));
   }
 
   getEither(): E {
@@ -190,6 +221,10 @@ export class Success<T> extends Result<T, Error> {
 
   recover(): Success<T> {
     return this;
+  }
+
+  recoverAsync<R>(): AsyncResult<T | R, Error> {
+    return AsyncResult.success(this.value);
   }
 
   get(): T {

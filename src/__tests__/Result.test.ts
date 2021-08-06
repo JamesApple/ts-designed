@@ -1,4 +1,4 @@
-import {AsyncResult, Fail, Result} from "../Result";
+import {AsyncResult, Fail, Result, ResultTimeout} from "../Result";
 
 const value = "Value";
 const error = new Error("Error");
@@ -102,14 +102,45 @@ describe(AsyncResult.name, function () {
     expect(result.isFailure()).toBeTruthy();
   });
 
-
   it("maps through promises", async function () {
-    const result = await AsyncResult.fromPromise(Promise.reject( error )).mapAsync(
+    const result = await AsyncResult.fromPromise(
+      Promise.reject(error)
+    ).mapAsync(
       async (v) => v,
       async (e) => e
     );
 
     expect(result.getEither()).toEqual(error);
     expect(result.isFailure()).toBeTruthy();
+  });
+});
+
+describe("Timeouts", () => {
+  const timeout = (ms: number): Promise<"Success"> =>
+    new Promise((res) => setTimeout(() => res("Success"), ms));
+
+  it("Timesout", async () => {
+    const result = await AsyncResult.fromPromise(timeout(1000))
+      .withTimeout(100)
+      .getEither();
+
+    expect(result).toBeInstanceOf(ResultTimeout);
+  });
+
+  it("Does not timeout", async () => {
+    const result = await AsyncResult.fromPromise(timeout(10))
+      .withTimeout(20)
+      .getEither();
+
+    expect(result).toEqual("Success");
+  });
+
+  it("Throws a custom error", async () => {
+    const err =  new Error('This one')
+    const result = await AsyncResult.fromPromise(timeout(100))
+      .withTimeout(1, err)
+      .getEither();
+
+    expect(result).toEqual(err)
   });
 });

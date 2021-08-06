@@ -77,7 +77,7 @@ describe("Value object mapping", function () {
     Nested.create({
       //@ts-expect-error Not the right type for entity
       parent: "not the right type",
-      parents: [Parent.create(), {}, {moreStrings: [""]}]
+      parents: [Parent.create({}), {}, {moreStrings: [""]}]
     });
     Nested.create({
       //@ts-expect-error Should not allow invalid primitives

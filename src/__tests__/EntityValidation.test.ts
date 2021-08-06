@@ -18,14 +18,14 @@ describe("EntityValidation", function () {
   }
 
   it("throws the validation error on create", () => {
-    expect(() => Extended.create()).toThrowError(validationError);
+    expect(() => Extended.create({})).toThrowError(validationError);
   });
 
   it("throws the validation error on create for child", () => {
-    expect(() => Child.create()).toThrowError(validationError);
+    expect(() => Child.create({})).toThrowError(validationError);
   });
 
   it("throws the validation error on create for child", () => {
-    expect(() => ChildWithOverride.create()).not.toThrowError();
+    expect(() => ChildWithOverride.create({})).not.toThrowError();
   });
 });

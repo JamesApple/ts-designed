@@ -1,6 +1,12 @@
+import {DomainError} from "../DomainError";
+import {AsyncOptional, Optional} from "../Optional";
 import {Result, Fail, Success} from "./Result";
 
-export class AsyncResult<T, F extends Error>
+export class ResultTimeout extends DomainError {
+  message = "Exceeded Timeout";
+}
+
+export class AsyncResult<T, F extends Error = Error>
   implements PromiseLike<Result<T, F>>
 {
   protected constructor(protected promise: Promise<Result<T, F>>) {}
@@ -41,6 +47,30 @@ export class AsyncResult<T, F extends Error>
     promise: Promise<Result<T, F>>
   ): AsyncResult<T, F> {
     return new AsyncResult(promise);
+  }
+
+  withTimeout<E extends Error = ResultTimeout>(
+    ms: number,
+    error?: E
+  ): AsyncResult<T, F | E> {
+    return AsyncResult.fromPromise(
+      (async () => {
+        let timeoutMarker: any
+        const timeout = new Promise((_, rej) => {
+          timeoutMarker = setTimeout(
+            () =>
+              rej(
+                error ??
+                  new ResultTimeout(`Timeout of ${ms} milliseconds exceeded`)
+              ),
+            ms
+          );
+        });
+        await Promise.race([this, timeout]);
+        clearTimeout(timeoutMarker)
+        return this.getOrThrowFailure();
+      })()
+    );
   }
 
   async getOrThrowFailure(): Promise<T> {
@@ -84,6 +114,36 @@ export class AsyncResult<T, F extends Error>
   ): AsyncResult<X, Y> {
     return new AsyncResult(
       this.then((result) => result.mapAsync(mapSuccess, mapError))
+    );
+  }
+
+  flatMap<X, XF extends Error = F>(
+    mapSuccess: (success: T) => Result<X>,
+    mapError?: (error: F) => Result<XF>
+  ): AsyncResult<X, XF | F> {
+    return AsyncResult.unwrapResult(
+      this.then(async (result) => result.flatMap(mapSuccess, mapError))
+    );
+  }
+
+  flatMapAsync<X, XF extends Error = F>(
+    mapSuccess: (success: T) => AsyncResult<X>,
+    mapError?: (error: F) => AsyncResult<XF>
+  ): AsyncResult<X, XF | F> {
+    return AsyncResult.unwrapResult(
+      this.then(async (result) => result.flatMapAsync(mapSuccess, mapError))
+    );
+  }
+
+  toOptionalFailure(): AsyncOptional<F> {
+    return Optional.of(true).flatMapAsync(() =>
+      this.then((result) => result.toOptionalFailure())
+    );
+  }
+
+  toOptional(): AsyncOptional<T> {
+    return Optional.of(true).flatMapAsync(() =>
+      this.then((result) => result.toOptional())
     );
   }
 
