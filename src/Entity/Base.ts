@@ -6,12 +6,8 @@ import {AsJsonResult, EntitySerializer} from "./EntitySerializer";
 import {Optional} from "../Optional";
 import {Attributes} from "./AttributeTypes";
 
-
-export const AttributeTypeKey = Symbol('Designed Attributes Type')
-export const AttributeClassTypeKey = Symbol('Designed Class Attributes Type')
-
 export class Base {
-  static [AttributeClassTypeKey]<T extends typeof Base>(
+  static '__attributes'<T extends typeof Base>(
     this: T
   ): Attributes<InstanceType<T>> {
     return this as any
@@ -77,7 +73,7 @@ export class Base {
     return Optional.of(this[value]);
   }
 
-  [AttributeTypeKey](): Attributes<this> {
+  __attributes(): Attributes<this> {
     throw new TypeError('Do not access Entity.Base.Symbol<AttributeTypeKey>')
   }
 

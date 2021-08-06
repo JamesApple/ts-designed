@@ -4,16 +4,15 @@ import {
   WithoutFunctions
 } from "./utilityTypes";
 import {EntitySerializer, RemoveNever} from "./EntitySerializer";
-import type {AttributeTypeKey} from './Base';
 
 // prettier-ignore
 export type Attributes<T> = 
-Require<T> extends { __designed_type: 'UNION'; [AttributeTypeKey](): any }  ? // Is Direct Union
-  ReturnType<Require<T>[typeof AttributeTypeKey]> | T
+Require<T> extends { __designed_type: 'UNION'; __attributes(): any }  ? // Is Direct Union
+  ReturnType<Require<T>['__attributes']> | T
 : {
   [P in keyof WithoutFunctions<T>]:
-      Require<T[P]> extends { __designed_type: 'UNION'; [AttributeTypeKey](): any } ? // Is Union
-      ReturnType<Require<T[P]>[typeof AttributeTypeKey]> | T[P]
+      Require<T[P]> extends { __designed_type: 'UNION'; __attributes(): any } ? // Is Union
+      ReturnType<Require<T[P]>['__attributes']> | T[P]
     : Require<T[P]> extends (infer AV)[] ? // Is Array
         AttributesOrPrimitive<AV>[]
     : Require<T[P]> extends { serialize(): EntitySerializer<any>; } ? // Is entity
