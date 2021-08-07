@@ -1,22 +1,26 @@
 import {Logic} from "..";
 import * as tsd from "tsd";
+import {RuleResult} from "../Logic/Rule";
+import {Domain} from "domain";
+import {DomainError} from "../DomainError";
 
 const error = new Error("I throw");
 class True extends Logic.Rule<{}> {
-  async satisfied(): Promise<boolean> {
-    return true;
+  async satisfied(): Promise<Logic.RuleResult> {
+    return true
   }
 }
 
 class Throw extends Logic.Rule<{}> {
-  async satisfied(): Promise<boolean> {
-    throw error;
+  async satisfied(): Promise<Logic.RuleResult> {
+    throw error
   }
+
 }
 
 class False extends Logic.Rule<{}> {
-  async satisfied(): Promise<boolean> {
-    return false;
+  async satisfied(): Promise<Logic.RuleResult> {
+    return "False"
   }
 }
 
@@ -25,91 +29,91 @@ describe("Logic", () => {
   const f = new False();
   const thr = new Throw();
 
-  it("Lets you evaluate rules", async function () {
-    await expect(t.evaluate({})).resolves.toEqual(true);
-    await expect(f.evaluate({})).resolves.toEqual(false);
-    await expect(thr.evaluate({})).rejects.toEqual(error);
+  it("Lets you runWith rules", async function () {
+    await expect(t.runWith({}).isTruthy).resolves.toEqual(true);
+    await expect(f.runWith({}).isTruthy).resolves.toEqual(false);
+    await expect(thr.runWith({}).isTruthy).rejects.toEqual(error);
   });
 
   it("does basic ands", async function () {
-    await expect(t.and(f).evaluate({})).resolves.toEqual(false);
-    await expect(t.and(f).evaluate({})).resolves.toEqual(false);
-    await expect(f.and(f).evaluate({})).resolves.toEqual(false);
+    await expect(t.and(f).runWith({}).isTruthy).resolves.toEqual(false);
+    await expect(t.and(f).runWith({}).isTruthy).resolves.toEqual(false);
+    await expect(f.and(f).runWith({}).isTruthy).resolves.toEqual(false);
 
-    await expect(t.and(t).evaluate({})).resolves.toEqual(true);
+    await expect(t.and(t).runWith({}).isTruthy).resolves.toEqual(true);
   });
 
   it("Performs basic ors", async function () {
-    await expect(t.or(f).evaluate({})).resolves.toEqual(true);
-    await expect(f.or(t).evaluate({})).resolves.toEqual(true);
+    await expect(t.or(f).runWith({}).isTruthy).resolves.toEqual(true);
+    await expect(f.or(t).runWith({}).isTruthy).resolves.toEqual(true);
 
-    await expect(t.or(thr).evaluate({})).resolves.toEqual(true);
+    await expect(t.or(thr).runWith({}).isTruthy).resolves.toEqual(true);
 
-    await expect(thr.or(thr).evaluate({})).rejects.toEqual(error);
-    await expect(thr.or(f).evaluate({})).rejects.toEqual(error);
-    await expect(thr.or(t).evaluate({})).rejects.toEqual(error);
+    await expect(thr.or(thr).runWith({}).isTruthy).rejects.toEqual(error);
+    await expect(thr.or(f).runWith({}).isTruthy).rejects.toEqual(error);
+    await expect(thr.or(t).runWith({}).isTruthy).rejects.toEqual(error);
   });
 
   it("performs negations", async function () {
-    await expect(thr.notThis().evaluate({})).rejects.toEqual(error);
-    await expect(f.notThis().evaluate({})).resolves.toEqual(true);
-    await expect(t.andNot(f).evaluate({})).resolves.toEqual(true);
-    await expect(f.orNot(f).evaluate({})).resolves.toEqual(true);
+    await expect(thr.notThis().runWith({}).isTruthy).rejects.toEqual(error);
+    await expect(f.notThis().runWith({}).isTruthy).resolves.toEqual(true);
+    await expect(t.andNot(f).runWith({}).isTruthy).resolves.toEqual(true);
+    await expect(f.orNot(f).runWith({}).isTruthy).resolves.toEqual(true);
   });
 
   it("allows async rules", async function () {
     await expect(
-      Logic.async(async () => thr).notThis().evaluate({})
+      Logic.async(async () => thr).notThis().runWith({})
     ).rejects.toEqual(error);
     await expect(
       Logic.async(async () => {
         return t;
-      }).evaluate({})
+      }).runWith({}).isTruthy
     ).resolves.toEqual(true);
 
     await expect(
       Logic.async(async () => {
         return f;
-      }).evaluate({})
+      }).runWith({}).isTruthy
     ).resolves.toEqual(false);
     await expect(
-      Logic.async(async () => t).andNot(f).evaluate({})
+      Logic.async(async () => t).andNot(f).runWith({}).isTruthy
     ).resolves.toEqual(true);
-    await expect(f.orNot(f).evaluate({})).resolves.toEqual(true);
+    await expect(f.orNot(f).runWith({}).isTruthy).resolves.toEqual(true);
   });
 
   it("performs nested conditions", async function () {
-    await expect(t.and(t.and(t.and(t).and(t))).evaluate({})).resolves.toEqual(
+    await expect(t.and(t.and(t.and(t).and(t))).runWith({}).isTruthy).resolves.toEqual(
       true
     );
     await expect(
-      t.and(t.and(t.and(t).andNot(t))).evaluate({})
+      t.and(t.and(t.and(t).andNot(t))).runWith({}).isTruthy
     ).resolves.toEqual(false);
 
-    await expect(t.and(t).or(t.and(f)).evaluate({})).resolves.toEqual(true);
-    await expect(t.and(f).or(t.or(f)).evaluate({})).resolves.toEqual(true);
+    await expect(t.and(t).or(t.and(f)).runWith({}).isTruthy).resolves.toEqual(true);
+    await expect(t.and(f).or(t.or(f)).runWith({}).isTruthy).resolves.toEqual(true);
   });
 });
 
 xdescribe("Logic Types", () => {
-  it("merges resolvers", async function () {
+  it("merges ctxs", async function () {
     class User extends Logic.Rule<{ctx: {userId: string}}> {
-      satisfied(): Promise<boolean> {
-        throw "";
+      satisfied(): Promise<RuleResult> {
+        throw new Error("Method not implemented.");
       }
     }
 
     class Business extends Logic.Rule<{ctx: {businessId: string}}> {
-      satisfied(): Promise<boolean> {
-        throw "";
+      satisfied(): Promise<RuleResult> {
+        throw new Error("Method not implemented.");
       }
     }
 
     class Another extends Logic.Rule<{
       ctx: {getId: () => string};
     }> {
-      satisfied(): Promise<boolean> {
-        throw "";
+      satisfied(): Promise<Logic.RuleResult> {
+        throw new Error("Method not implemented.");
       }
     }
 
@@ -118,42 +122,42 @@ xdescribe("Logic Types", () => {
     const a = new Another();
 
     //@ts-expect-error wrong
-    b.or(u).or(a).evaluate({});
+    b.or(u).or(a).runWith({});
 
     b.or(u)
       .or(a)
       //@ts-expect-error mising userId
-      .evaluate({ctx: {businessId: ""}});
+      .runWith({ctx: {businessId: ""}});
 
     b.or(u)
       .or(a)
       //@ts-expect-error mising businessId
-      .evaluate({ctx: {userId: "", businessId: ""}});
+      .runWith({ctx: {userId: "", businessId: ""}});
 
     b.or(u)
       .or(a)
       //@ts-expect-error mising businessId
-      .evaluate({ctx: {userId: "", getId: () => ""}});
+      .runWith({ctx: {userId: "", getId: () => ""}});
 
     b.or(u)
       .or(a)
-      .evaluate({ctx: {businessId: "", userId: "", getId: () => ""}});
+      .runWith({ctx: {businessId: "", userId: "", getId: () => ""}});
 
     tsd.expectType<
-      (arg: {ctx: {userId: string; businessId: string}}) => Promise<boolean>
-    >(b.or(u).evaluate);
+      (arg: {ctx: {userId: string; businessId: string}}) => Logic.AsyncEvaluation
+    >(b.or(u).runWith);
   });
 
-  it("allows you to provide a resolver for some part of the tree", async function () {
+  it("allows you to provide a ctx for some part of the tree", async function () {
     class User extends Logic.Rule<{userId: string}> {
-      satisfied(): Promise<boolean> {
-        throw "";
+      satisfied(): Promise<Logic.RuleResult> {
+        throw new Error("Method not implemented.");
       }
     }
 
     class Business extends Logic.Rule<{businessId: string}> {
-      satisfied(): Promise<boolean> {
-        throw "";
+      satisfied(): Promise<Logic.RuleResult> {
+        throw new Error("Method not implemented.");
       }
     }
 
@@ -163,8 +167,8 @@ xdescribe("Logic Types", () => {
     });
 
     //@ts-expect-error Requires user Id
-    b.with({businessId: ""}).and(u).evaluate({});
+    b.with({businessId: ""}).and(u).runWith({});
 
-    b.with({businessId: ""}).and(u).evaluate({userId: ""});
+    b.with({businessId: ""}).and(u).runWith({userId: ""}).throwError(DomainError);
   });
 });

@@ -1,5 +1,4 @@
-import {AsyncOptional} from "../Optional";
-import {AsyncResult} from "../Result";
+import {AsyncEvaluation, Evaluation} from "./Evaluation";
 
 type TUnionToIntersection<U> = (
   U extends any ? (k: U) => void : never
@@ -46,43 +45,20 @@ export abstract class Operator<CTX = {}> {
     return new WithContextOperator(this, ctx);
   }
 
-  abstract evaluate(resolver: CTX): Promise<boolean>;
-
-  /*
-   * Catches all evaluation errors
-   */
-  toResult(resolver: CTX, getError: () => Error): AsyncResult<true> {
-    return AsyncResult.fromPromise((async () => this.evaluate(resolver))()).map(
-      (result) => {
-        if (result) {
-          return result;
-        }
-        throw getError();
-      }
-    );
+  runWith(ctx: CTX): AsyncEvaluation {
+    return Evaluation.evaluateTree(evaluation => this.evaluate(ctx, evaluation))
   }
 
-  async orThrow(resolver: CTX, getError: () => Error): Promise<true> {
-    return await this.toResult(resolver, getError).getOrThrowFailure();
-  }
-
-  /**
-   * Will not catch errors
-   */
-  maybe(resolver: CTX): AsyncOptional<true> {
-    return AsyncOptional.of(this.evaluate(resolver)).filter(
-      (value): value is true => value
-    );
-  }
+  abstract evaluate(ctx: CTX, evaluation: Evaluation): Promise<boolean>;
 }
 
 export class AsyncOperator<T> extends Operator<T> {
   constructor(private value: () => Promise<Operator<T>>) {
     super();
   }
-  async evaluate(resolver: T): Promise<boolean> {
-    const operator = await this.value()
-    return operator.evaluate(resolver);
+  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
+    const operator = await this.value();
+    return operator.evaluate(ctx, evaluation);
   }
 }
 
@@ -91,8 +67,8 @@ export class WithContextOperator<T> extends Operator<{}> {
     super();
   }
 
-  evaluate(): Promise<boolean> {
-    return this.value.evaluate(this.ctx);
+  evaluate(_: T, evaluation: Evaluation): Promise<boolean> {
+    return this.value.evaluate(this.ctx, evaluation);
   }
 }
 
@@ -100,11 +76,11 @@ export class OrOperator<T> extends Operator<T> {
   constructor(private left: Operator<T>, private right: Operator<T>) {
     super();
   }
-  async evaluate(resolver: T): Promise<boolean> {
-    if (await this.left.evaluate(resolver)) {
+  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
+    if (await this.left.evaluate(ctx, evaluation)) {
       return true;
     }
-    return await this.right.evaluate(resolver);
+    return await this.right.evaluate(ctx, evaluation);
   }
 }
 
@@ -112,10 +88,10 @@ export class XorOperator<T> extends Operator<T> {
   constructor(private left: Operator<T>, private right: Operator<T>) {
     super();
   }
-  async evaluate(resolver: T): Promise<boolean> {
+  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
     const [left, right] = await Promise.all([
-      this.left.evaluate(resolver),
-      this.right.evaluate(resolver)
+      this.left.evaluate(ctx, evaluation),
+      this.right.evaluate(ctx, evaluation)
     ]);
     return left === right;
   }
@@ -125,9 +101,9 @@ export class AndOperator<T> extends Operator<T> {
   constructor(private left: Operator<T>, private right: Operator<T>) {
     super();
   }
-  async evaluate(resolver: T): Promise<boolean> {
-    if (await this.left.evaluate(resolver)) {
-      return await this.right.evaluate(resolver);
+  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
+    if (await this.left.evaluate(ctx, evaluation)) {
+      return await this.right.evaluate(ctx, evaluation);
     }
     return false;
   }
@@ -138,7 +114,7 @@ export class NotOperator<T> extends Operator<T> {
     super();
   }
 
-  async evaluate(resolver: T): Promise<boolean> {
-    return !(await this.value.evaluate(resolver));
+  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
+    return !(await this.value.evaluate(ctx, evaluation));
   }
 }
