@@ -57,6 +57,27 @@ describe("Logic", () => {
     await expect(f.orNot(f).evaluate({})).resolves.toEqual(true);
   });
 
+  it("allows async rules", async function () {
+    await expect(
+      Logic.async(async () => thr).notThis().evaluate({})
+    ).rejects.toEqual(error);
+    await expect(
+      Logic.async(async () => {
+        return t;
+      }).evaluate({})
+    ).resolves.toEqual(true);
+
+    await expect(
+      Logic.async(async () => {
+        return f;
+      }).evaluate({})
+    ).resolves.toEqual(false);
+    await expect(
+      Logic.async(async () => t).andNot(f).evaluate({})
+    ).resolves.toEqual(true);
+    await expect(f.orNot(f).evaluate({})).resolves.toEqual(true);
+  });
+
   it("performs nested conditions", async function () {
     await expect(t.and(t.and(t.and(t).and(t))).evaluate({})).resolves.toEqual(
       true
@@ -71,7 +92,7 @@ describe("Logic", () => {
 });
 
 xdescribe("Logic Types", () => {
-  it("", async function () {
+  it("merges resolvers", async function () {
     class User extends Logic.Rule<{ctx: {userId: string}}> {
       satisfied(): Promise<boolean> {
         throw "";
@@ -121,5 +142,29 @@ xdescribe("Logic Types", () => {
     tsd.expectType<
       (arg: {ctx: {userId: string; businessId: string}}) => Promise<boolean>
     >(b.or(u).evaluate);
+  });
+
+  it("allows you to provide a resolver for some part of the tree", async function () {
+    class User extends Logic.Rule<{userId: string}> {
+      satisfied(): Promise<boolean> {
+        throw "";
+      }
+    }
+
+    class Business extends Logic.Rule<{businessId: string}> {
+      satisfied(): Promise<boolean> {
+        throw "";
+      }
+    }
+
+    const b = new Business();
+    const u = Logic.async(async () => {
+      return new User();
+    });
+
+    //@ts-expect-error Requires user Id
+    b.with({businessId: ""}).and(u).evaluate({});
+
+    b.with({businessId: ""}).and(u).evaluate({userId: ""});
   });
 });

@@ -11,6 +11,12 @@ type NewOperator<O, CTX> = O extends Operator<infer ACTX>
   ? Operator<TUnionToIntersection<CTX | ACTX>>
   : never;
 
+export function async<CTX>(
+  operatorPromise: () => Promise<Operator<CTX>>
+): Operator<CTX> {
+  return new AsyncOperator(operatorPromise);
+}
+
 export abstract class Operator<CTX = {}> {
   or<O extends Operator>(rule: O): NewOperator<O, CTX> {
     return new OrOperator(this, rule) as any;
@@ -36,6 +42,10 @@ export abstract class Operator<CTX = {}> {
     return new NotOperator(this);
   }
 
+  with(ctx: CTX): Operator<{}> {
+    return new WithContextOperator(this, ctx);
+  }
+
   abstract evaluate(resolver: CTX): Promise<boolean>;
 
   /*
@@ -52,6 +62,10 @@ export abstract class Operator<CTX = {}> {
     );
   }
 
+  async orThrow(resolver: CTX, getError: () => Error): Promise<true> {
+    return await this.toResult(resolver, getError).getOrThrowFailure();
+  }
+
   /**
    * Will not catch errors
    */
@@ -59,6 +73,26 @@ export abstract class Operator<CTX = {}> {
     return AsyncOptional.of(this.evaluate(resolver)).filter(
       (value): value is true => value
     );
+  }
+}
+
+export class AsyncOperator<T> extends Operator<T> {
+  constructor(private value: () => Promise<Operator<T>>) {
+    super();
+  }
+  async evaluate(resolver: T): Promise<boolean> {
+    const operator = await this.value()
+    return operator.evaluate(resolver);
+  }
+}
+
+export class WithContextOperator<T> extends Operator<{}> {
+  constructor(private value: Operator<T>, private ctx: T) {
+    super();
+  }
+
+  evaluate(): Promise<boolean> {
+    return this.value.evaluate(this.ctx);
   }
 }
 
