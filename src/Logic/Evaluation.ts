@@ -81,9 +81,21 @@ export class Evaluation {
     if (this.isTruthy) {
       return this;
     }
-    throw klass.create(this.falsy[0]?.cause?.message, {
-      details: this.falsy[0]?.cause?.message,
-      rule: this.falsy[0]?.rule
+    const failed: Falsy | undefined = this.falsy[0]
+    const message = failed?.cause?.message
+    const details = failed?.cause?.details
+    throw klass.create(message, {
+      details: {
+        details,
+        ruleClass: failed.rule.constructor,
+        allFalsy: this.falsy.map(f => {
+          return {
+            type: f.rule.constructor,
+            details: f.cause.details,
+            message: f.cause.message
+          }
+        }) ?? []
+      }
     });
   }
 
