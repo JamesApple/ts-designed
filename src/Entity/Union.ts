@@ -122,6 +122,10 @@ export abstract class Union<
     return this.value.asJSON();
   }
 
+  toJSON() {
+    return this.value.asJSON()
+  }
+
   __attributes():
     | ReturnType<InstanceType<T>['__attributes']>
     | InstanceType<T> {

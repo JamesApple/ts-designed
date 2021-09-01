@@ -52,15 +52,6 @@ export class EntitySerializer<T extends Base> {
     return new EntityFieldReader<any, any>(this.instance)
       .onlySet()
       .reduce((json, f) => {
-        const deserializeSingle = (v: any) => {
-          if (hasAsJSONMethod(value)) {
-            v = v.asJSON();
-          } else if (canBeConvertedToJson(v)) {
-            v = (v as any).serialize().asJSON();
-          }
-          return v;
-        };
-
         let value: any = (this.instance as any)[f.name];
         if (hasAsJSONMethod(value)) {
           value = deserializeSingle(value);
@@ -147,7 +138,7 @@ interface ConvertableToJson<T extends Base> {
 }
 
 interface HasAsJSONMethod {
-  asJSON(data: any): any;
+  asJSON(): any;
 }
 
 function canBeConvertedToJson<T extends Base>(
@@ -159,3 +150,12 @@ function canBeConvertedToJson<T extends Base>(
 function hasAsJSONMethod(v: any): v is HasAsJSONMethod {
   return v && typeof v === "object" && "asJSON" in v;
 }
+
+const deserializeSingle = (v: any) => {
+  if (hasAsJSONMethod(v)) {
+    v = v.asJSON();
+  } else if (canBeConvertedToJson(v)) {
+    v = (v as any).serialize().asJSON();
+  }
+  return v;
+};

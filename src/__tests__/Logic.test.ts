@@ -1,7 +1,6 @@
 import {Logic} from "..";
 import * as tsd from "tsd";
 import {RuleResult} from "../Logic/Rule";
-import {Domain} from "domain";
 import {DomainError} from "../DomainError";
 
 const error = new Error("I throw");

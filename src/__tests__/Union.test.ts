@@ -44,6 +44,10 @@ class Creature extends Entity.Union.define({
   entries: [Lizard, Snake]
 }) {}
 
+class Creatures extends Entity.Base {
+  @Entity.Field({entity: Creature}) creatures: Creature[];
+}
+
 class Terrarium extends Entity.Base {
   @Entity.Field() favourite?: Creature;
 
@@ -168,4 +172,22 @@ it("Accepts nested entities", async function () {
   class U extends Entity.Union.define({key: "type", entries: [P]}) {}
 
   U.create({type: "P", child: C.create({value: "hi"})});
+});
+
+it("Should be jsonable", async function () {
+  const creatures = Creatures.create({
+    creatures: [{type: "SNAKE", slithery: true}]
+  });
+  expect(JSON.stringify(creatures)).toEqual(
+    JSON.stringify({creatures: [{type: "SNAKE", slithery: true}]})
+  );
+
+  expect(
+    creatures
+      .asJSON()
+      .creatures.every(
+        (creature) =>
+          !(creature instanceof Entity.Base || creature instanceof Entity.Union)
+      )
+  ).toBeTruthy();
 });
