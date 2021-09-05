@@ -44,7 +44,7 @@ export abstract class Result<T, F extends Error = Error> {
     mapError?: (error: F) => Y
   ): Result<X, Y>;
 
-  abstract mergeFailure(mapFailure: (failure: F) => T): T;
+  abstract mergeFailure<R>(mapFailure: (failure: F) => R): T | R;
 
   abstract mapFailure<X extends Error>(
     mapFailure: (failed: F) => X

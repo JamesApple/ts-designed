@@ -147,7 +147,7 @@ export class AsyncResult<T, F extends Error = Error>
     );
   }
 
-  async mergeFailure(mapFailure: (failure: F) => T): Promise<T> {
+  async mergeFailure<R>(mapFailure: (failure: F) => R): Promise<T | R> {
     return this.then((r) => r.mergeFailure(mapFailure));
   }
 
