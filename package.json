@@ -1,6 +1,6 @@
 {
   "name": "designed",
-  "version": "0.8.14",
+  "version": "0.8.15",
   "description": "DDD Utilities to simplify standing up well designed services",
   "sideEffects": false,
   "keywords": [],
