@@ -1,30 +1,24 @@
 import {Logic} from "..";
 import * as tsd from "tsd";
-import {RuleResult} from "../Logic/Rule";
+import {Rule, RuleResult} from "../Logic/Rule";
 import {DomainError} from "../DomainError";
 
 const error = new Error("I throw");
-class True extends Logic.Rule<{}> {
-  async satisfied(): Promise<Logic.RuleResult> {
-    return true
-  }
-}
 
 class Throw extends Logic.Rule<{}> {
   async satisfied(): Promise<Logic.RuleResult> {
-    throw error
+    throw error;
   }
-
 }
 
 class False extends Logic.Rule<{}> {
   async satisfied(): Promise<Logic.RuleResult> {
-    return "False"
+    return "False";
   }
 }
 
 describe("Logic", () => {
-  const t = new True();
+  const t = Rule.of(() => true);
   const f = new False();
   const thr = new Throw();
 
@@ -62,7 +56,9 @@ describe("Logic", () => {
 
   it("allows async rules", async function () {
     await expect(
-      Logic.async(async () => thr).notThis().runWith({})
+      Logic.async(async () => thr)
+        .notThis()
+        .runWith({})
     ).rejects.toEqual(error);
     await expect(
       Logic.async(async () => {
@@ -76,21 +72,27 @@ describe("Logic", () => {
       }).runWith({}).isTruthy
     ).resolves.toEqual(false);
     await expect(
-      Logic.async(async () => t).andNot(f).runWith({}).isTruthy
+      Logic.async(async () => t)
+        .andNot(f)
+        .runWith({}).isTruthy
     ).resolves.toEqual(true);
     await expect(f.orNot(f).runWith({}).isTruthy).resolves.toEqual(true);
   });
 
   it("performs nested conditions", async function () {
-    await expect(t.and(t.and(t.and(t).and(t))).runWith({}).isTruthy).resolves.toEqual(
-      true
-    );
+    await expect(
+      t.and(t.and(t.and(t).and(t))).runWith({}).isTruthy
+    ).resolves.toEqual(true);
     await expect(
       t.and(t.and(t.and(t).andNot(t))).runWith({}).isTruthy
     ).resolves.toEqual(false);
 
-    await expect(t.and(t).or(t.and(f)).runWith({}).isTruthy).resolves.toEqual(true);
-    await expect(t.and(f).or(t.or(f)).runWith({}).isTruthy).resolves.toEqual(true);
+    await expect(t.and(t).or(t.and(f)).runWith({}).isTruthy).resolves.toEqual(
+      true
+    );
+    await expect(t.and(f).or(t.or(f)).runWith({}).isTruthy).resolves.toEqual(
+      true
+    );
   });
 });
 
@@ -143,7 +145,9 @@ xdescribe("Logic Types", () => {
       .runWith({ctx: {businessId: "", userId: "", getId: () => ""}});
 
     tsd.expectType<
-      (arg: {ctx: {userId: string; businessId: string}}) => Logic.AsyncEvaluation
+      (arg: {
+        ctx: {userId: string; businessId: string};
+      }) => Logic.AsyncEvaluation
     >(b.or(u).runWith);
   });
 
@@ -168,6 +172,20 @@ xdescribe("Logic Types", () => {
     //@ts-expect-error Requires user Id
     b.with({businessId: ""}).and(u).runWith({});
 
-    b.with({businessId: ""}).and(u).runWith({userId: ""}).throwError(DomainError);
+    b.with({businessId: ""})
+      .and(u)
+      .runWith({userId: ""})
+      .throwError(DomainError);
+  });
+});
+
+describe("Bare rules", () => {
+  it("Lets you define a rule", async function () {
+    const userIdRule = Rule.of(
+      (args: {userId?: string}) => !!args.userId || "Failed"
+    );
+
+    expect(await userIdRule.runWith({userId: "yes"}).isTruthy).toBeTruthy();
+    expect(await userIdRule.runWith({}).isTruthy).toBeFalsy();
   });
 });
