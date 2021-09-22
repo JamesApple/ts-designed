@@ -41,6 +41,17 @@ export class Base {
     return new ClassFieldReader(this);
   }
 
+  writeClean(args: Attributes<this>): this {
+    new EntityMapping(this, args).map()
+    this.validate()
+    return this
+  }
+
+  writePartial(args: Partial<Attributes<this>>): this {
+    new EntityMapping(this, args).map({onlyProvided: true})
+    return this
+  }
+
   fields<T extends Base>(this: T): EntityFieldReader<T> {
     return new EntityFieldReader(this) as any;
   }

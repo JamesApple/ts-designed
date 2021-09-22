@@ -10,12 +10,15 @@ export class EntityMapping {
     this.dataBlob = args;
   }
 
-  map(): void {
+  map(opts?: {onlyProvided?: boolean}): void {
     this.entityConfig.eachField((fieldConfig) => {
-      const value = this.extractValueFromBlob(fieldConfig)
+      const value = this.extractValueFromBlob(fieldConfig);
+      if (opts?.onlyProvided && !(fieldConfig.name in this.dataBlob)) {
+        return;
+      }
 
-      if(value === null && !fieldConfig.nullable) {
-        return
+      if (value === null && !fieldConfig.nullable) {
+        return;
       }
 
       this.assign(fieldConfig, value);
