@@ -54,6 +54,19 @@ class Terrarium extends Entity.Base {
   @Entity.Field({entity: Creature}) all?: Creature[];
 }
 
+it('lets you perform complete case statements', async function() {
+  //@ts-expect-error Should be required to enumerate all cases
+  Creature.create({type: 'SNAKE', slithery: true}).allCases({
+    SNAKE: () => ''
+  })
+
+  const cased = Creature.create({type: 'SNAKE', slithery: true}).allCases({
+    SNAKE: (s) => s.type,
+    LIZARD: (l) => l.type
+  })
+  expect(cased).toEqual('SNAKE')
+})
+
 test("It creates entities from its union config", async () => {
   const creature = Creature.create({type: "LIZARD", lizardy: true});
   expect(creature.is("LIZARD").isPresent()).toBeTruthy();

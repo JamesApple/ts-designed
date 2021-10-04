@@ -24,6 +24,16 @@ type UnionMapped<T extends UnionableClass, TK extends StringKeys<T>> = {
   [K in T[TK]]: Extract<T, Tuple<String<TK>, K>>;
 };
 
+type Stringy<T> = T extends string ? T : never
+
+type EachCase<
+  T extends UnionableClass,
+  TK extends StringKeys<InstanceType<T>> & StringKeys<T>,
+  RT
+  > = {
+    [K in Stringy<keyof UnionMapped<T, TK>>]: ((value: InstanceType<UnionMapped<T, TK>[K]>) => RT)
+}
+
 export class UnionDeserializationError extends DomainError {}
 
 export abstract class Union<
@@ -116,6 +126,12 @@ export abstract class Union<
     return Optional.of(this.value).filter(
       (value) => (value as any)[this.key] === type
     );
+  }
+
+  allCases<RT>(cased: EachCase<T, TK, RT>): RT {
+    const key = this.value[this.key]
+    const caseFn = ( cased as any )[key]
+    return caseFn(this.value)
   }
 
   asJSON(): ReturnType<InstanceType<T>["asJSON"]> {
