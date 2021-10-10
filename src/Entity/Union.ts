@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import {DomainError} from "../DomainError";
 import {Optional} from "../Optional";
+import {MergeUnion} from "./utilityTypes";
 
 type Tuple<K extends string, V> = {[key in K]: V};
 
@@ -132,6 +133,10 @@ export abstract class Union<
     const key = this.value[this.key]
     const caseFn = ( cased as any )[key]
     return caseFn(this.value)
+  }
+
+  get merged(): MergeUnion<InstanceType<T>> {
+    return this.value as any
   }
 
   asJSON(): ReturnType<InstanceType<T>["asJSON"]> {
