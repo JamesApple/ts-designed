@@ -55,7 +55,7 @@ export abstract class Union<
     }, {});
 
     return class extends Union<T, TK> {
-      get key() {
+      get key(): TK {
         return config.key;
       }
       static entries = config.entries;
@@ -66,7 +66,7 @@ export abstract class Union<
 
       static readonly classes: UnionMapped<T, TK> = classes;
 
-      static create<T extends {new (...args: any[]): Union<any, any>}>(
+      static create<T extends {new (...args: any[]): any}>(
         this: T,
         data: ReturnType<InstanceType<T>["__attributes"]> | InstanceType<T>
       ): InstanceType<T> {
