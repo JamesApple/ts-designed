@@ -125,7 +125,7 @@ export abstract class Union<
     };
   }
 
-  protected abstract key: TK;
+  abstract key: TK;
   constructor(public value: InstanceType<T>) {}
 
   is<K extends keyof UnionMapped<T, TK>>(
