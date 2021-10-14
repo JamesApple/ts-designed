@@ -54,6 +54,24 @@ class Terrarium extends Entity.Base {
   @Entity.Field({entity: Creature}) all?: Creature[];
 }
 
+
+it('lets you provide the union directly', async function() {
+  const c = Creature.create({
+    type: 'SNAKE',
+    slithery: true
+  })
+
+  expect( Creature.create(c) ).toBeInstanceOf(Creature)
+
+  expect(Terrarium.create({
+    favourite: c
+  })).toBeInstanceOf(Terrarium)
+
+  expect(Terrarium.create({
+    favourite: c.asJSON()
+  })).toBeInstanceOf(Terrarium)
+})
+
 it('lets you perform complete case statements', async function() {
   //@ts-expect-error Should be required to enumerate all cases
   Creature.create({type: 'SNAKE', slithery: true}).allCases({
@@ -204,3 +222,5 @@ it("Should be jsonable", async function () {
       )
   ).toBeTruthy();
 });
+
+

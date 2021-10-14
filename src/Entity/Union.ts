@@ -25,15 +25,17 @@ type UnionMapped<T extends UnionableClass, TK extends StringKeys<T>> = {
   [K in T[TK]]: Extract<T, Tuple<String<TK>, K>>;
 };
 
-type Stringy<T> = T extends string ? T : never
+type Stringy<T> = T extends string ? T : never;
 
 type EachCase<
   T extends UnionableClass,
   TK extends StringKeys<InstanceType<T>> & StringKeys<T>,
   RT
-  > = {
-    [K in Stringy<keyof UnionMapped<T, TK>>]: ((value: InstanceType<UnionMapped<T, TK>[K]>) => RT)
-}
+> = {
+  [K in Stringy<keyof UnionMapped<T, TK>>]: (
+    value: InstanceType<UnionMapped<T, TK>[K]>
+  ) => RT;
+};
 
 export class UnionDeserializationError extends DomainError {}
 
@@ -53,8 +55,10 @@ export abstract class Union<
     }, {});
 
     return class extends Union<T, TK> {
-      key = config.key;
-      entries = config.entries;
+      get key() {
+        return config.key;
+      }
+      static entries = config.entries;
 
       static readonly typeList: T[TK][] = config.entries.map(
         (value) => value[config.key]
@@ -62,10 +66,11 @@ export abstract class Union<
 
       static readonly classes: UnionMapped<T, TK> = classes;
 
-      static create(
-        data: ReturnType<InstanceType<T>['__attributes']>
-      ) {
-        const value = this.fromJSON(data);
+      static create<T extends {new (...args: any[]): Union<any, any>}>(
+        this: T,
+        data: ReturnType<InstanceType<T>["__attributes"]> | InstanceType<T>
+      ): InstanceType<T> {
+        const value = (this as any).fromJSON(data);
         if (!value) {
           throw UnionDeserializationError.create(
             "that could not be deserialized",
@@ -73,7 +78,7 @@ export abstract class Union<
           );
         }
         if ("validate" in value) {
-          (value as any).validate();
+          value.validate();
         }
         return value;
       }
@@ -101,6 +106,9 @@ export abstract class Union<
         this: T,
         data: any
       ): InstanceType<T> | undefined {
+        if (data instanceof this) {
+          return data;
+        }
         if (typeof data !== "object") {
           return undefined!;
         }
@@ -117,8 +125,7 @@ export abstract class Union<
     };
   }
 
-  protected key: TK;
-  protected entries: T[];
+  protected abstract key: TK;
   constructor(public value: InstanceType<T>) {}
 
   is<K extends keyof UnionMapped<T, TK>>(
@@ -130,13 +137,13 @@ export abstract class Union<
   }
 
   allCases<RT>(cased: EachCase<T, TK, RT>): RT {
-    const key = this.value[this.key]
-    const caseFn = ( cased as any )[key]
-    return caseFn(this.value)
+    const key = this.value[this.key];
+    const caseFn = (cased as any)[key];
+    return caseFn(this.value);
   }
 
   get merged(): MergeUnion<InstanceType<T>> {
-    return this.value as any
+    return this.value as any;
   }
 
   asJSON(): ReturnType<InstanceType<T>["asJSON"]> {
@@ -144,11 +151,11 @@ export abstract class Union<
   }
 
   toJSON() {
-    return this.value.asJSON()
+    return this.value.asJSON();
   }
 
   __attributes():
-    | ReturnType<InstanceType<T>['__attributes']>
+    | ReturnType<InstanceType<T>["__attributes"]>
     | InstanceType<T> {
     return this.value;
   }
