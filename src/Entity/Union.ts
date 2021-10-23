@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import {DomainError} from "../DomainError";
 import {Optional} from "../Optional";
-import {MergeUnion} from "./utilityTypes";
+import {MergeUnion, Require} from "./utilityTypes";
 
 type Tuple<K extends string, V> = {[key in K]: V};
 
@@ -17,29 +17,29 @@ type UnionableClass = {
   build(data: any): any;
 };
 
+type RequireString<T> = T extends string ? T : never;
 type StringKeys<T> = {
   [K in keyof T]: T[K] extends string ? K : never;
 }[keyof T];
-type String<T> = T extends string ? T : never;
 type UnionMapped<T extends UnionableClass, TK extends StringKeys<T>> = {
-  [K in T[TK]]: Extract<T, Tuple<String<TK>, K>>;
+  [K in T[TK]]: Extract<T, Tuple<RequireString<TK>, K>>;
 };
 
-type Stringy<T> = T extends string ? T : never;
 
 type EachCase<
   T extends UnionableClass,
   TK extends StringKeys<InstanceType<T>> & StringKeys<T>,
   RT
 > = {
-  [K in Stringy<keyof UnionMapped<T, TK>>]: (
+  [K in RequireString<keyof UnionMapped<T, TK>>]: (
     value: InstanceType<UnionMapped<T, TK>[K]>
   ) => RT;
 };
 
 export class UnionDeserializationError extends DomainError {}
 
-export abstract class Union<
+
+abstract class Union<
   T extends UnionableClass,
   TK extends StringKeys<InstanceType<T>> & StringKeys<T>
 > {
@@ -49,6 +49,7 @@ export abstract class Union<
     T extends UnionableClass,
     TK extends StringKeys<InstanceType<T>> & StringKeys<T>
   >(config: {entries: T[]; key: TK}) {
+
     const classes: any = config.entries.reduce((acc, klass) => {
       (acc as any)[klass[config.key]] = klass;
       return acc;
@@ -74,7 +75,7 @@ export abstract class Union<
         if (!value) {
           throw UnionDeserializationError.create(
             "that could not be deserialized",
-            {details: {value}}
+            {details: {data, value}}
           );
         }
         if ("validate" in value) {
@@ -99,7 +100,7 @@ export abstract class Union<
       }
 
       /**
-       * @todo
+       * TODO:
        * This method does not warn when a missing tag or unknown tag is provided
        */
       static fromJSON<T extends {new (...args: any): any}>(
@@ -160,3 +161,23 @@ export abstract class Union<
     return this.value;
   }
 }
+
+namespace Union {
+  export type Classes<T> = Require<T> extends Union<infer C, any> ? C : never
+
+  export type Instances<T> = Require<T> extends Union<infer C, any> ? InstanceType<C> : never
+
+  export type Data<T> = Require<T> extends Union<infer C, any> ? ReturnType<InstanceType<C>['__attributes']> : never
+
+  export type AsJSONResult<T> = Require<T> extends Union<infer C, any> ? ReturnType<InstanceType<C>['asJSON']> : never
+
+  /**
+   * The instances of the union, the arguments to create a union, or the union instance itself
+   */
+  export type Attributes<T> = Require<T> extends Union<any, any> ? Data<T> | Instances<T> | T : never
+
+  export type IsUnion<T> = Require<T> extends Union<any, any> ? true : false
+}
+
+export { Union }
+

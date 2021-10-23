@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import {Entity} from "..";
+import {Require} from "../Entity/utilityTypes";
 
 class Tail {
   asJSON(): string {
@@ -63,6 +64,8 @@ it('lets you provide the union directly', async function() {
 
   expect( Creature.create(c) ).toBeInstanceOf(Creature)
 
+  expect(Terrarium.create({})).toBeInstanceOf(Terrarium)
+
   expect(Terrarium.create({
     favourite: c
   })).toBeInstanceOf(Terrarium)
@@ -119,6 +122,14 @@ test("It creates entities from its union config", async () => {
       all: []
     })
   ).not.toThrow();
+
+  type b = Entity.Union.Attributes<Creature>
+
+
+  const c: b = {
+    type: 'LIZARD',
+    lizardy: true
+  }
 
   const flippedUpTerrarium = Terrarium.create({
     all: [

@@ -2,14 +2,14 @@
 import {Base} from "./Base";
 import {EntityFieldReader} from "./FieldReader";
 import {Require, WithoutFunctions} from "./utilityTypes";
-import {Attributes, AttributeSelection} from "./AttributeTypes";
+import {AttributeSelection} from "./AttributeTypes";
 
 type FunctionlessBase = WithoutFunctions<Base>;
 
 export class EntitySerializer<T extends Base> {
   constructor(private instance: T) {}
 
-  pick<K extends keyof Attributes<T>>(
+  pick<K extends keyof WithoutFunctions<T>>(
     ...fields: K[]
   ): AttributeSelection<T, K> {
     return fields.reduce((picked, key) => {
@@ -127,7 +127,7 @@ type SameTypeFields<T extends FunctionlessBase, O extends Object> =
 
 type AnythingWithAsJSON = {asJSON(): any};
 export type AsJsonResult<T extends HasAsJSONMethod> = {
-  [K in keyof Attributes<T>]: Require<T[K]> extends AnythingWithAsJSON
+  [K in keyof WithoutFunctions<T>]: Require<T[K]> extends AnythingWithAsJSON
     ? ReturnType<Require<T[K]>["asJSON"]>
     : T[K];
 };
