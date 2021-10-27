@@ -1,11 +1,10 @@
-import type { Base} from ".";
+import type { Attributes, Base } from ".";
 
 import {EntityConfig} from "./EntityConfig";
-import {WithoutFunctions} from "./utilityTypes";
 
 export interface FieldData<
   T extends HasFieldsIntrospection,
-  K extends keyof WithoutFunctions<T>
+  K extends keyof Attributes<T>
 > {
   name: K;
   entityConstructor?: Object;
@@ -15,7 +14,7 @@ export interface FieldData<
 
 export interface FieldDataWithSubfields<
   T extends HasFieldsIntrospection,
-  K extends keyof WithoutFunctions<T>
+  K extends keyof Attributes<T>
 > extends FieldData<T, K> {
   subFields?: MappedFieldUnion<T[K]>;
 }
@@ -102,7 +101,7 @@ function isHasFieldsIntrospection(
 type ValueOf<T> = T[keyof T];
 type MappedFieldUnion<T> = ValueOf<
   {
-    [K in keyof WithoutFunctions<T>]: T extends HasFieldsIntrospection ? T[K] extends HasFieldsIntrospection
+    [K in keyof Attributes<T>]: T extends HasFieldsIntrospection ? T[K] extends HasFieldsIntrospection
       ? FieldDataWithSubfields<T, K>
       : FieldData<T, K> : never;
   }

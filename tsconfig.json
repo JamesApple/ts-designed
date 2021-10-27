@@ -4,6 +4,7 @@
     "lib": ["es2018"],
     "module": "commonjs",
     "target": "es2018",
-    "outDir": "./dist/cjs"
+    "outDir": "./dist/cjs",
+    "useUnknownInCatchVariables": false
   }
 }

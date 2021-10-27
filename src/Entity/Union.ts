@@ -39,7 +39,7 @@ type EachCase<
 export class UnionDeserializationError extends DomainError {}
 
 
-abstract class Union<
+class Union<
   T extends UnionableClass,
   TK extends StringKeys<InstanceType<T>> & StringKeys<T>
 > {
@@ -126,7 +126,9 @@ abstract class Union<
     };
   }
 
-  abstract key: TK;
+  get key(): TK {
+    throw new Error('Not implemented')
+  }
   constructor(public value: InstanceType<T>) {}
 
   is<K extends keyof UnionMapped<T, TK>>(
@@ -155,6 +157,10 @@ abstract class Union<
     return this.value.asJSON();
   }
 
+  __class(): T {
+    throw new Error('Not implemented')
+  }
+
   __attributes():
     | ReturnType<InstanceType<T>["__attributes"]>
     | InstanceType<T> {
@@ -177,7 +183,9 @@ namespace Union {
   export type Attributes<T> = Require<T> extends Union<any, any> ? Data<T> | Instances<T> | T : never
 
   export type IsUnion<T> = Require<T> extends Union<any, any> ? true : false
+
+  export type Keys<T> = Require<T> extends Union<infer C, infer K> ? C[K] : never
 }
 
-export { Union }
 
+export { Union }

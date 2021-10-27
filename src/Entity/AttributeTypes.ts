@@ -4,15 +4,15 @@ import {
   WithoutFunctions
 } from "./utilityTypes";
 import {EntitySerializer, RemoveNever} from "./EntitySerializer";
-import type {Union} from './Union'
 
 // prettier-ignore
 export type Attributes<T> = 
-  Union.IsUnion<T> extends true ? Union.Attributes<T> :
- {
+Require<T> extends { __designed_type: 'UNION'; __attributes(): any }  ? // Is Direct Union
+  ReturnType<Require<T>['__attributes']> | T
+: {
   [P in keyof WithoutFunctions<T>]:
-      Union.IsUnion<T[P]> extends true ? // Is Union
-      Union.Attributes<T[P]>
+      Require<T[P]> extends { __designed_type: 'UNION'; __attributes(): any } ? // Is Union
+      ReturnType<Require<T[P]>['__attributes']> | T[P]
     : Require<T[P]> extends (infer AV)[] ? // Is Array
         AttributesOrPrimitive<AV>[]
     : Require<T[P]> extends { serialize(): EntitySerializer<any>; } ? // Is entity
@@ -35,7 +35,7 @@ export type AttributesOrEntities<T> = {
     : T[K];
 };
 
-export type AttributeSelection<I, K extends keyof WithoutFunctions<I>> = Pick<I, K>;
+export type AttributeSelection<I, K extends keyof Attributes<I>> = Pick<I, K>;
 
 export type AttributesWithout<I, K extends keyof Attributes<I>> = RemoveNever<
   {
