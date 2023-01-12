@@ -1,4 +1,6 @@
-import {AsyncEvaluation, Evaluation} from "./Evaluation";
+import {AsyncOperator} from "./AsyncOperator";
+import * as async from "./AsyncOperator";
+import {Evaluation} from "./Evaluation";
 
 type TUnionToIntersection<U> = (
   U extends any ? (k: U) => void : never
@@ -6,34 +8,56 @@ type TUnionToIntersection<U> = (
   ? I
   : never;
 
-type NewOperator<O, CTX> = O extends Operator<infer ACTX>
-  ? Operator<TUnionToIntersection<CTX | ACTX>>
-  : never;
-
-export function async<CTX>(
-  operatorPromise: () => Promise<Operator<CTX>>
-): Operator<CTX> {
-  return new AsyncOperator(operatorPromise);
+// Must use "OperatorLike" instead of "Operator" to avoid circular dependency
+interface AsyncOperatorLike<T = {}> {
+  evaluate(ctx: T, evaluation: Evaluation): Promise<boolean>;
 }
 
+interface OperatorLike<T = {}> {
+  evaluate(ctx: T, evaluation: Evaluation): boolean;
+}
+
+type NewOperator<O, CTX> = O extends OperatorLike<infer ACTX>
+  ? Operator<TUnionToIntersection<CTX | ACTX>>
+  : O extends AsyncOperatorLike<infer ACTX>
+  ? AsyncOperator<TUnionToIntersection<CTX | ACTX>>
+  : never;
+
+type AnOperator<T = {}> = AsyncOperator<T> | Operator<T>;
+
 export abstract class Operator<CTX = {}> {
-  or<O extends Operator>(rule: O): NewOperator<O, CTX> {
+  or<O extends AnOperator>(rule: O): NewOperator<O, CTX> {
+    if (rule instanceof AsyncOperator) {
+      return new async.OrOperator(this, rule) as any;
+    }
     return new OrOperator(this, rule) as any;
   }
 
-  orNot<O extends Operator>(rule: O): NewOperator<O, CTX> {
+  orNot<O extends AnOperator>(rule: O): NewOperator<O, CTX> {
+    if (rule instanceof AsyncOperator) {
+      return new async.OrOperator(this, rule.notThis()) as any;
+    }
     return new OrOperator(this, rule.notThis()) as any;
   }
 
-  xor<O extends Operator>(rule: O): NewOperator<O, CTX> {
+  xor<O extends AnOperator>(rule: O): NewOperator<O, CTX> {
+    if (rule instanceof AsyncOperator) {
+      return new async.XorOperator(this, rule.notThis()) as any;
+    }
     return new XorOperator(this, rule.notThis()) as any;
   }
 
-  and<O extends Operator>(rule: O): NewOperator<O, CTX> {
+  and<O extends AnOperator>(rule: O): NewOperator<O, CTX> {
+    if (rule instanceof AsyncOperator) {
+      return new async.AndOperator(this, rule) as any;
+    }
     return new AndOperator(this, rule) as any;
   }
 
-  andNot<O extends Operator>(rule: O): NewOperator<O, CTX> {
+  andNot<O extends AnOperator>(rule: O): NewOperator<O, CTX> {
+    if (rule instanceof AsyncOperator) {
+      return new async.AndOperator(this, rule.notThis()) as any;
+    }
     return new AndOperator(this, rule.notThis()) as any;
   }
 
@@ -45,21 +69,13 @@ export abstract class Operator<CTX = {}> {
     return new WithContextOperator(this, ctx);
   }
 
-  runWith(ctx: CTX): AsyncEvaluation {
-    return Evaluation.evaluateTree(evaluation => this.evaluate(ctx, evaluation))
+  runWith(ctx: CTX): Evaluation {
+    return Evaluation.evaluateTree((evaluation) =>
+      this.evaluate(ctx, evaluation)
+    );
   }
 
-  abstract evaluate(ctx: CTX, evaluation: Evaluation): Promise<boolean>;
-}
-
-export class AsyncOperator<T> extends Operator<T> {
-  constructor(private value: () => Promise<Operator<T>>) {
-    super();
-  }
-  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
-    const operator = await this.value();
-    return operator.evaluate(ctx, evaluation);
-  }
+  abstract evaluate(ctx: CTX, evaluation: Evaluation): boolean;
 }
 
 export class WithContextOperator<T> extends Operator<{}> {
@@ -67,7 +83,7 @@ export class WithContextOperator<T> extends Operator<{}> {
     super();
   }
 
-  evaluate(_: T, evaluation: Evaluation): Promise<boolean> {
+  evaluate(_: T, evaluation: Evaluation): boolean {
     return this.value.evaluate(this.ctx, evaluation);
   }
 }
@@ -76,11 +92,11 @@ export class OrOperator<T> extends Operator<T> {
   constructor(private left: Operator<T>, private right: Operator<T>) {
     super();
   }
-  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
-    if (await this.left.evaluate(ctx, evaluation)) {
+  evaluate(ctx: T, evaluation: Evaluation): boolean {
+    if (this.left.evaluate(ctx, evaluation)) {
       return true;
     }
-    return await this.right.evaluate(ctx, evaluation);
+    return this.right.evaluate(ctx, evaluation);
   }
 }
 
@@ -88,12 +104,11 @@ export class XorOperator<T> extends Operator<T> {
   constructor(private left: Operator<T>, private right: Operator<T>) {
     super();
   }
-  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
-    const [left, right] = await Promise.all([
-      this.left.evaluate(ctx, evaluation),
+  evaluate(ctx: T, evaluation: Evaluation): boolean {
+    return (
+      this.left.evaluate(ctx, evaluation) ===
       this.right.evaluate(ctx, evaluation)
-    ]);
-    return left === right;
+    );
   }
 }
 
@@ -101,9 +116,9 @@ export class AndOperator<T> extends Operator<T> {
   constructor(private left: Operator<T>, private right: Operator<T>) {
     super();
   }
-  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
-    if (await this.left.evaluate(ctx, evaluation)) {
-      return await this.right.evaluate(ctx, evaluation);
+  evaluate(ctx: T, evaluation: Evaluation): boolean {
+    if (this.left.evaluate(ctx, evaluation)) {
+      return this.right.evaluate(ctx, evaluation);
     }
     return false;
   }
@@ -114,7 +129,7 @@ export class NotOperator<T> extends Operator<T> {
     super();
   }
 
-  async evaluate(ctx: T, evaluation: Evaluation): Promise<boolean> {
-    return !(await this.value.evaluate(ctx, evaluation));
+  evaluate(ctx: T, evaluation: Evaluation): boolean {
+    return !this.value.evaluate(ctx, evaluation);
   }
 }

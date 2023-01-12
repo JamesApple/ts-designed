@@ -1,4 +1,4 @@
-import type {Rule} from "./Rule";
+import type {AsyncRule, Rule} from "./Rule";
 
 export class AsyncEvaluation implements PromiseLike<Evaluation> {
   constructor(private val: PromiseLike<Evaluation>) {}
@@ -12,48 +12,6 @@ export class AsyncEvaluation implements PromiseLike<Evaluation> {
     return this.val.then(onfulfilled, onrejected);
   }
 
-  get isTruthy(): Promise<boolean> {
-    return (async () => {
-      return await this.then((r) => r.isTruthy);
-    })();
-  }
-
-  throw(
-    cb: (args: {lastFalsy?: Falsy; falsy: Falsy[]; truthy: Rule[]}) => Error
-  ): AsyncEvaluation {
-    return new AsyncEvaluation(
-      this.then((result) => {
-        return result.throw(cb);
-      })
-    );
-  }
-
-  throwError<T extends {
-    create(message?: string, other?: any): any;
-  }>(klass: T): AsyncEvaluation {
-    return new AsyncEvaluation(
-      this.then((result) => {
-        return result.throwError(klass);
-      })
-    );
-  }
-}
-
-export type Falsy = {
-  rule: Rule;
-  cause: {
-    message: string;
-    details: Object;
-  };
-};
-
-export class Evaluation {
-  private readonly truthy: Rule[] = [];
-
-  private readonly falsy: Falsy[] = [];
-
-  private result: boolean;
-
   static evaluateTree(
     run: (evaluation: Evaluation) => Promise<boolean>
   ): AsyncEvaluation {
@@ -66,6 +24,60 @@ export class Evaluation {
     );
   }
 
+  get isTruthy(): Promise<boolean> {
+    return (async () => {
+      return await this.then((r) => r.isTruthy);
+    })();
+  }
+
+  throw(
+    cb: (args: {
+      lastFalsy?: Falsy;
+      falsy: Falsy[];
+      truthy: (Rule | AsyncRule)[];
+    }) => Error
+  ): AsyncEvaluation {
+    return new AsyncEvaluation(
+      this.then((result) => {
+        return result.throw(cb);
+      })
+    );
+  }
+
+  throwError<
+    T extends {
+      create(message?: string, other?: any): any;
+    }
+  >(klass: T): AsyncEvaluation {
+    return new AsyncEvaluation(
+      this.then((result) => {
+        return result.throwError(klass);
+      })
+    );
+  }
+}
+
+export type Falsy = {
+  rule: Rule | AsyncRule;
+  cause: {
+    message: string;
+    details: Object;
+  };
+};
+
+export class Evaluation {
+  private readonly truthy: (Rule | AsyncRule)[] = [];
+
+  private readonly falsy: Falsy[] = [];
+
+  result: boolean;
+
+  static evaluateTree(run: (evaluation: Evaluation) => boolean): Evaluation {
+    const evaluation = new Evaluation();
+    evaluation.result = run(evaluation);
+    return evaluation;
+  }
+
   get isTruthy(): boolean {
     if (this.result == null) {
       throw new TypeError(
@@ -75,32 +87,35 @@ export class Evaluation {
     return this.result;
   }
 
-  throwError(klass: {
-    create(message?: string, other?: any): any;
-  }): Evaluation {
+  throwError(klass: {create(message?: string, other?: any): any}): Evaluation {
     if (this.isTruthy) {
       return this;
     }
-    const failed: Falsy | undefined = this.falsy[0]
-    const message = failed?.cause?.message
-    const details = failed?.cause?.details
+    const failed: Falsy | undefined = this.falsy[0];
+    const message = failed?.cause?.message;
+    const details = failed?.cause?.details;
     throw klass.create(message, {
       details: {
         details,
         ruleClass: failed.rule.constructor,
-        allFalsy: this.falsy.map(f => {
-          return {
-            type: f.rule.constructor,
-            details: f.cause.details,
-            message: f.cause.message
-          }
-        }) ?? []
+        allFalsy:
+          this.falsy.map((f) => {
+            return {
+              type: f.rule.constructor,
+              details: f.cause.details,
+              message: f.cause.message
+            };
+          }) ?? []
       }
     });
   }
 
   throw(
-    cb: (args: {lastFalsy?: Falsy; falsy: Falsy[]; truthy: Rule[]}) => Error
+    cb: (args: {
+      lastFalsy?: Falsy;
+      falsy: Falsy[];
+      truthy: (Rule | AsyncRule)[];
+    }) => Error
   ): Evaluation {
     if (this.isTruthy) {
       return this;
@@ -112,7 +127,25 @@ export class Evaluation {
     });
   }
 
-  protected async evaluateRule(rule: Rule): Promise<boolean> {
+  protected evaluateRule(rule: Rule): boolean {
+    const result = rule.satisfied();
+    if (result === true) {
+      this.truthy.unshift(rule);
+      return true;
+    }
+
+    if (typeof result === "string") {
+      this.falsy.unshift({rule, cause: {details: {}, message: result}});
+    }
+
+    if (typeof result === "object") {
+      this.falsy.unshift({cause: result, rule});
+    }
+
+    return false;
+  }
+
+  protected async evaluateRuleAsync(rule: AsyncRule): Promise<boolean> {
     const result = await rule.satisfied();
     if (result === true) {
       this.truthy.unshift(rule);

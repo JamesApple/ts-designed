@@ -5,20 +5,20 @@ import {DomainError} from "../DomainError";
 
 const error = new Error("I throw");
 
-class Throw extends Logic.Rule<{}> {
+class Throw extends Logic.AsyncRule<{}> {
   async satisfied(): Promise<Logic.RuleResult> {
     throw error;
   }
 }
 
-class False extends Logic.Rule<{}> {
-  async satisfied(): Promise<Logic.RuleResult> {
+class False extends Logic.AsyncRule<{}> {
+  async satisfied() {
     return "False";
   }
 }
 
 describe("Logic", () => {
-  const t = Rule.of(() => true);
+  const t = Logic.AsyncRule.of(() => true);
   const f = new False();
   const thr = new Throw();
 
@@ -55,27 +55,11 @@ describe("Logic", () => {
   });
 
   it("allows async rules", async function () {
-    await expect(
-      Logic.async(async () => thr)
-        .notThis()
-        .runWith({})
-    ).rejects.toEqual(error);
-    await expect(
-      Logic.async(async () => {
-        return t;
-      }).runWith({}).isTruthy
-    ).resolves.toEqual(true);
+    await expect(thr.notThis().runWith({})).rejects.toEqual(error);
+    await expect(t.runWith({}).isTruthy).resolves.toEqual(true);
 
-    await expect(
-      Logic.async(async () => {
-        return f;
-      }).runWith({}).isTruthy
-    ).resolves.toEqual(false);
-    await expect(
-      Logic.async(async () => t)
-        .andNot(f)
-        .runWith({}).isTruthy
-    ).resolves.toEqual(true);
+    await expect(f.runWith({}).isTruthy).resolves.toEqual(false);
+    await expect(t.andNot(f).runWith({}).isTruthy).resolves.toEqual(true);
     await expect(f.orNot(f).runWith({}).isTruthy).resolves.toEqual(true);
   });
 
@@ -98,19 +82,19 @@ describe("Logic", () => {
 
 xdescribe("Logic Types", () => {
   it("merges ctxs", async function () {
-    class User extends Logic.Rule<{ctx: {userId: string}}> {
+    class User extends Logic.AsyncRule<{ctx: {userId: string}}> {
       satisfied(): Promise<RuleResult> {
         throw new Error("Method not implemented.");
       }
     }
 
-    class Business extends Logic.Rule<{ctx: {businessId: string}}> {
+    class Business extends Logic.AsyncRule<{ctx: {businessId: string}}> {
       satisfied(): Promise<RuleResult> {
         throw new Error("Method not implemented.");
       }
     }
 
-    class Another extends Logic.Rule<{
+    class Another extends Logic.AsyncRule<{
       ctx: {getId: () => string};
     }> {
       satisfied(): Promise<Logic.RuleResult> {
@@ -152,22 +136,20 @@ xdescribe("Logic Types", () => {
   });
 
   it("allows you to provide a ctx for some part of the tree", async function () {
-    class User extends Logic.Rule<{userId: string}> {
+    class User extends Logic.AsyncRule<{userId: string}> {
       satisfied(): Promise<Logic.RuleResult> {
         throw new Error("Method not implemented.");
       }
     }
 
-    class Business extends Logic.Rule<{businessId: string}> {
+    class Business extends Logic.AsyncRule<{businessId: string}> {
       satisfied(): Promise<Logic.RuleResult> {
         throw new Error("Method not implemented.");
       }
     }
 
     const b = new Business();
-    const u = Logic.async(async () => {
-      return new User();
-    });
+    const u = new User();
 
     //@ts-expect-error Requires user Id
     b.with({businessId: ""}).and(u).runWith({});
@@ -187,5 +169,50 @@ describe("Bare rules", () => {
 
     expect(await userIdRule.runWith({userId: "yes"}).isTruthy).toBeTruthy();
     expect(await userIdRule.runWith({}).isTruthy).toBeFalsy();
+  });
+});
+
+describe("sync rules", () => {
+  it("Lets you define a rule", async function () {
+    expect(
+      Logic.Rule.of(() => true)
+        .or(Logic.Rule.of(() => false))
+        .runWith({}).isTruthy
+    ).toEqual(true);
+
+    expect(
+      () =>
+        Logic.Rule.of(() => {
+          throw new Error("I should exit execution");
+        })
+          .or(Logic.Rule.of(() => true))
+          .runWith({}).isTruthy
+    ).toThrowErrorMatchingInlineSnapshot(`"I should exit execution"`);
+  });
+
+  it("Lets you define a rule and map into the rule being async", async function () {
+    await expect(
+      Logic.AsyncRule.of(() => true)
+        .or(Logic.Rule.of(() => false))
+        .runWith({}).isTruthy
+    ).resolves.toEqual(true);
+
+    await expect(
+      Logic.AsyncRule.of(() => false)
+        .or(Logic.Rule.of(() => false))
+        .runWith({}).isTruthy
+    ).resolves.toEqual(false);
+
+    await expect(
+      Logic.Rule.of(() => true)
+        .and(Logic.AsyncRule.of(async () => false))
+        .runWith({}).isTruthy
+    ).resolves.toEqual(false);
+
+    await expect(
+      Logic.Rule.of(() => false)
+        .and(Logic.AsyncRule.of(async () => true))
+        .runWith({}).isTruthy
+    ).resolves.toEqual(false);
   });
 });

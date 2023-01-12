@@ -1,5 +1,5 @@
-export {Rule, RuleResult} from "./Rule";
-export {async} from './Operator'
+export {Rule, RuleResult, AsyncRule} from "./Rule";
 export * as op from "./Operator";
-export {AsyncEvaluation, Evaluation} from './Evaluation'
-export * as evaluation from './Evaluation'
+export * as async from "./AsyncOperator";
+export {AsyncEvaluation, Evaluation} from "./Evaluation";
+export * as evaluation from "./Evaluation";
