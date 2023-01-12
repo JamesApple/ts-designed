@@ -1,4 +1,4 @@
-export {Base}  from "./Base";
+export {Base} from "./Base";
 export {Field} from "./Field";
 export {FieldConfigArgs} from "./FieldConfig";
 export {Union} from "./Union";
@@ -12,3 +12,4 @@ export {
   WithRequiredAttributes,
   WithOptionalAttributes
 } from "./AttributeTypes";
+export {AsJsonResult} from "./EntitySerializer";
