@@ -67,18 +67,14 @@ describe("Optional", function () {
     ).zip(Optional.of("SECOND" as const), Optional.of("THIRD" as const));
 
     expect(testType.get()).toEqual(["FIRST", "SECOND", "THIRD"]);
-    const asyncTest: Optional<[
-      "FIRST",
-      "SECOND",
-      "THIRD",
-      "FOURTH"
-    ]> = await Optional.of("FIRST" as const)
-      .mapAsync(async (i) => i)
-      .zip(
-        Promise.resolve(Optional.of("SECOND" as const)),
-        AsyncOptional.of(Promise.resolve("THIRD" as const)),
-        Optional.of("FOURTH" as const)
-      );
+    const asyncTest: Optional<["FIRST", "SECOND", "THIRD", "FOURTH"]> =
+      await Optional.of("FIRST" as const)
+        .mapAsync(async (i) => i)
+        .zip(
+          Promise.resolve(Optional.of("SECOND" as const)),
+          AsyncOptional.of(Promise.resolve("THIRD" as const)),
+          Optional.of("FOURTH" as const)
+        );
 
     expect(asyncTest.get()).toEqual(["FIRST", "SECOND", "THIRD", "FOURTH"]);
   });
@@ -242,6 +238,36 @@ describe("Async Optional", function () {
       async (opt) => await opt.orElse(Promise.resolve(2)),
       (nulled) => expect(nulled).toEqual(2),
       (present) => expect(present).toEqual(1)
+    ],
+    [
+      "allows injecting a default value",
+      async (opt) => await opt.defaultTo(666).orElse(2),
+      (nulled) => expect(nulled).toEqual(666),
+      (present) => expect(present).toEqual(1)
+    ],
+    [
+      "allows injecting a default value from a getter",
+      async (opt) => await opt.defaultGet(() => 666).orElse(2),
+      (nulled) => expect(nulled).toEqual(666),
+      (present) => expect(present).toEqual(1)
+    ],
+    [
+      "allows injecting a default value from an async getter",
+      async (opt) => await opt.defaultGetAsync(async () => 666).orElse(2),
+      (nulled) => expect(nulled).toEqual(666),
+      (present) => expect(present).toEqual(1)
+    ],
+    [
+      "allows maybe injecting a default value (present)",
+      async (opt) => await opt.defaultGetFlat(() => Optional.of(666)).orElse(2),
+      (nulled) => expect(nulled).toBe(666),
+      (present) => expect(present).toEqual(1)
+    ],
+    [
+      "allows maybe injecting a default value (missing)",
+      async (opt) => await opt.defaultGetFlat(() => Optional.empty()).orElse(2),
+      (nulled) => expect(nulled).toBe(2),
+      (present) => expect(present).toEqual(1)
     ]
   ];
 
@@ -267,5 +293,23 @@ describe("Async Optional", function () {
       const r = await Result.fromPromise(action(AsyncOptional.empty() as any));
       nulled(r.getEither());
     });
+  });
+
+  it("Can pick a field from an object", async () => {
+    const result = await AsyncOptional.of(Promise.resolve({a: 1}))
+      .pick("a")
+      .orElse("not present");
+
+    expect(result).toEqual(1);
+  });
+
+  it("can call a method on a wrapped object", async () => {
+    const result = await AsyncOptional.of(
+      Promise.resolve({a: (arg: string) => "Result " + arg})
+    )
+      .call("a", "Argument")
+      .orElse("not present");
+
+    expect(result).toEqual("Result Argument");
   });
 });

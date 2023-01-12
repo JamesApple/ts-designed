@@ -1,3 +1,4 @@
+import {WithFunctions} from "../Entity/utilityTypes";
 import {
   Optional,
   OptionalizeArray,
@@ -10,7 +11,8 @@ export type AsyncOptionalOf<T> = AsyncOptional<NonNullable<T>>;
 type AnyOptional<T> = Optional<T> | Promise<Optional<T>> | AsyncOptional<T>;
 
 export abstract class AsyncOptional<T>
-  implements PromiseLike<Optional<NonNullable<T>>> {
+  implements PromiseLike<Optional<NonNullable<T>>>
+{
   static of<T>(promise: Promise<T>): AsyncOptionalOf<T> {
     return PresentAsyncOptional.fromPromise(promise);
   }
@@ -26,26 +28,30 @@ export abstract class AsyncOptional<T>
     onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
   ): PromiseLike<TResult1 | TResult2>;
 
-  abstract map<X>(transform: (value: T) => X): AsyncOptional<X>;
+  abstract map<X>(transform: (value: T) => X): AsyncOptionalOf<X>;
 
   abstract mapAsync<X>(transform: (value: T) => Promise<X>): AsyncOptionalOf<X>;
 
-  instanceOf<C extends (new (...args: any[]) => any)[]>(...klasses: C): AsyncOptional<InstanceType<C[number]>> {
-    return this.filter(( value ) => !!klasses.find(klass => value instanceof klass) ) as any
+  instanceOf<C extends (new (...args: any[]) => any)[]>(
+    ...klasses: C
+  ): AsyncOptional<InstanceType<C[number]>> {
+    return this.filter(
+      (value) => !!klasses.find((klass) => value instanceof klass)
+    ) as any;
   }
 
   tap(view: (value: T) => unknown): AsyncOptional<T> {
-    return this.map((value) => { 
-      view(value)
-      return value
-    })
+    return this.map((value) => {
+      view(value);
+      return value;
+    });
   }
 
-  tapAsync( view: (value: T) => Promise<unknown>): AsyncOptional<T> {
-    return this.mapAsync(async (value) => { 
-      await view(value)
-      return value
-    })
+  tapAsync(view: (value: T) => Promise<unknown>): AsyncOptional<T> {
+    return this.mapAsync(async (value) => {
+      await view(value);
+      return value;
+    });
   }
 
   abstract zip<X extends AnyOptional<any>[]>(
@@ -72,6 +78,84 @@ export abstract class AsyncOptional<T>
     predicate: (value: T) => value is X
   ): AsyncOptional<Exclude<T, X>>;
   abstract filterNot(predicate: (value: T) => boolean): AsyncOptional<T>;
+
+  /**
+   * Select a field from the wrapped object and return an optional of that
+   * field.
+   *
+   * @example
+   * ```ts
+   * Optional.of({name: 'Hello'}).select('name') // Optional<"Hello">
+   * ```
+   */
+  pick<K extends keyof T>(key: K): AsyncOptionalOf<T[K]> {
+    return this.map((value) => value[key]);
+  }
+
+  /**
+   * Invoke a method on the wrapped object and return an optional of the return value
+   */
+  call<K extends keyof WithFunctions<T>>(
+    key: K,
+    ...args: Parameters<T[K] extends (...args: any[]) => any ? T[K] : never>
+  ): AsyncOptionalOf<
+    ReturnType<T[K] extends (...args: any[]) => any ? T[K] : never>
+  > {
+    return this.map((value) => (value as any)[key](...args));
+  }
+
+  /**
+   * Invoke a method on the wrapped object and return an Async Optional of the return value
+   */
+  callAsync<K extends keyof WithFunctions<T>>(
+    key: K,
+    ...args: Parameters<
+      T[K] extends (...args: any[]) => Promise<any> ? T[K] : never
+    >[]
+  ): AsyncOptionalOf<
+    ReturnType<T[K] extends (...args: any[]) => any ? T[K] : never>
+  > {
+    return this.mapAsync(async (value) => (value as any)[key](...args));
+  }
+
+  /**
+   * Inject a default value to the optional if it is absent to
+   * allow continued chaining
+   */
+  defaultTo<X>(value: X): AsyncOptionalOf<T | X> {
+    return AsyncOptional.of(this.orElse(value));
+  }
+
+  /**
+   * Inject a default value to the optional if it is absent to
+   * allow continued chaining
+   */
+  defaultGet<X>(method: () => X): AsyncOptionalOf<T | X> {
+    return AsyncOptional.of(this.orGet(method));
+  }
+  defaultGetFlat<X>(method: () => Optional<X>): AsyncOptionalOf<T | X> {
+    return AsyncOptional.of(
+      this.then((o) => o.defaultGetFlat(method).orElse(null)) as any
+    );
+  }
+
+  /**
+   * Inject a default value to the optional if it is absent to
+   * allow continued
+   */
+  defaultGetAsync<X>(method: () => Promise<X>): AsyncOptionalOf<T | X> {
+    return AsyncOptional.of(
+      this.then((o) => o.defaultGetAsync(method).orElse(null)) as any
+    );
+  }
+
+  defaultGetFlatAsync<X>(
+    method: () => AsyncOptional<X>
+  ): AsyncOptionalOf<T | X> {
+    return AsyncOptional.of(
+      this.then((o) => o.defaultGetFlatAsync(method).orElse(null)) as any
+    );
+  }
 
   abstract orElse<X>(value: X): Promise<X | T>;
 
@@ -242,7 +326,7 @@ export class PresentAsyncOptional<T> extends AsyncOptional<T> {
     return new PresentAsyncOptional(promise) as any;
   }
 
-  map<X>(transform: (value: T) => X): AsyncOptional<X> {
+  map<X>(transform: (value: T) => X): AsyncOptionalOf<X> {
     return PresentAsyncOptional.fromPromise(
       this.value.then((v) => {
         if (v == null) {

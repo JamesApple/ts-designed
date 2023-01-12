@@ -1,9 +1,20 @@
-import {AsyncOptional, PresentAsyncOptional} from "./AsyncOptional";
+import {WithFunctions} from "../Entity/utilityTypes";
+import {
+  AsyncOptional,
+  AsyncOptionalOf,
+  PresentAsyncOptional
+} from "./AsyncOptional";
 
 export type OptionalizeArray<T extends [...any[]]> = {
   [Index in keyof T]: Optional<NonNullable<T[Index]>>;
 } &
   Array<any>;
+
+type OptionalOf<T> = Optional<NonNullable<T>>;
+
+type MaybePresentOptionalOf<T> = T extends null | undefined
+  ? Optional<T>
+  : PresentOptional<T>;
 
 export class OptionalValueMissingError extends Error {}
 
@@ -19,7 +30,6 @@ export type OptionalValuesFromTuple<T extends [...any[]]> = {
   [Index in keyof T]: OptionalValue<T[Index]>;
 } & {length: T["length"]};
 
-
 export abstract class Optional<T> {
   /**
    * @example
@@ -31,10 +41,8 @@ export abstract class Optional<T> {
    * Optional.of<string>(null) // Optional<string>
    * ```
    */
-  static of = <T>(
-    value: T | Optional<NonNullable<T>>
-  ): Optional<NonNullable<T>> => {
-    if (value instanceof Optional) return value;
+  static of = <T>(value: T | Optional<NonNullable<T>>): OptionalOf<T> => {
+    if (value instanceof Optional) return value as any;
     return value == null
       ? new AbsentOptional<NonNullable<T>>()
       : new PresentOptional<NonNullable<T>>(value as any);
@@ -105,8 +113,12 @@ export abstract class Optional<T> {
   ): Optional<Exclude<T, X>>;
   abstract filterNot(predicate: (value: T) => boolean): Optional<T>;
 
-  instanceOf<C extends (new (...args: any[]) => any)[]>(...klasses: C): Optional<InstanceType<C[number]>> {
-    return this.filter(( value ) => !!klasses.find(klass => value instanceof klass) ) as any
+  instanceOf<C extends (new (...args: any[]) => any)[]>(
+    ...klasses: C
+  ): Optional<InstanceType<C[number]>> {
+    return this.filter(
+      (value) => !!klasses.find((klass) => value instanceof klass)
+    ) as any;
   }
 
   /**
@@ -121,23 +133,21 @@ export abstract class Optional<T> {
    * Optional.of(null).map(s => s.toUpperCase())    // AbsentOptional<string>
    * ```
    */
-  abstract map<X>(transform: (value: T) => X): Optional<NonNullable<X>>;
-  abstract mapAsync<X>(
-    transform: (value: T) => Promise<X>
-  ): AsyncOptional<NonNullable<X>>;
+  abstract map<X>(transform: (value: T) => X): OptionalOf<X>;
+  abstract mapAsync<X>(transform: (value: T) => Promise<X>): AsyncOptionalOf<X>;
 
   tap(view: (value: T) => unknown): Optional<T> {
-    return this.map((value) => { 
-      view(value)
-      return value
-    })
+    return this.map((value) => {
+      view(value);
+      return value;
+    });
   }
 
-  tapAsync( view: (value: T) => Promise<unknown>): AsyncOptional<T> {
-    return this.mapAsync(async (value) => { 
-      await view(value)
-      return value
-    })
+  tapAsync(view: (value: T) => Promise<unknown>): AsyncOptional<T> {
+    return this.mapAsync(async (value) => {
+      await view(value);
+      return value;
+    });
   }
 
   /**
@@ -167,6 +177,80 @@ export abstract class Optional<T> {
   abstract unzip3<V extends Optional<[any, any, any]>>(
     this: V
   ): OptionalizeArray<OptionalValue<V>>;
+
+  /**
+   * Select a field from the wrapped object and return an optional of that
+   * field.
+   *
+   * @example
+   * ```ts
+   * Optional.of({name: 'Hello'}).select('name') // Optional<"Hello">
+   * ```
+   */
+  pick<K extends keyof T>(key: K): OptionalOf<T[K]> {
+    return this.map((value) => value[key]);
+  }
+
+  /**
+   * Invoke a method on the wrapped object and return an optional of the return value
+   */
+  call<K extends keyof WithFunctions<T>>(
+    key: K,
+    ...args: Parameters<T[K] extends (...args: any[]) => any ? T[K] : never>[]
+  ): OptionalOf<
+    ReturnType<T[K] extends (...args: any[]) => any ? T[K] : never>
+  > {
+    return this.map((value) => (value as any)[key](...args));
+  }
+
+  /**
+   * Invoke a method on the wrapped object and return an Async Optional of the return value
+   */
+  callAsync<K extends keyof WithFunctions<T>>(
+    key: K,
+    ...args: Parameters<
+      T[K] extends (...args: any[]) => Promise<any> ? T[K] : never
+    >[]
+  ): AsyncOptionalOf<
+    ReturnType<T[K] extends (...args: any[]) => any ? T[K] : never>
+  > {
+    return this.mapAsync(async (value) => (value as any)[key](...args));
+  }
+
+  /**
+   * Inject a default value to the optional if it is absent to
+   * allow continued chaining
+   */
+  defaultTo<X>(value: X): MaybePresentOptionalOf<T | X> {
+    return this.isAbsent() ? Optional.of(value) : (this as any);
+  }
+
+  /**
+   * Inject a default value to the optional if it is absent to
+   * allow continued chaining
+   */
+  defaultGet<X>(method: () => X): MaybePresentOptionalOf<T | X> {
+    return this.isAbsent() ? Optional.of(method()) : (this as any);
+  }
+  defaultGetFlat<X>(method: () => Optional<X>): OptionalOf<T | X> {
+    return this.isAbsent() ? method() : (this as any);
+  }
+
+  /**
+   * Inject a default value to the optional if it is absent to
+   * allow continued
+   */
+  defaultGetAsync<X>(method: () => Promise<X>): AsyncOptionalOf<T | X> {
+    return this.isAbsent()
+      ? AsyncOptional.of(method())
+      : this.mapAsync(async (i) => i);
+  }
+
+  defaultGetFlatAsync<X>(
+    method: () => AsyncOptional<X>
+  ): AsyncOptionalOf<T | X> {
+    return this.isAbsent() ? method() : this.mapAsync(async (i: any) => i);
+  }
 
   /**
    * @example
@@ -228,7 +312,6 @@ export class PresentOptional<T> extends Optional<T> {
     return [this.value];
   }
 
-
   unzip<V extends Optional<[any, any]>>(
     this: V
   ): OptionalizeArray<OptionalValue<V>> {
@@ -263,7 +346,6 @@ export class PresentOptional<T> extends Optional<T> {
       : new AbsentOptional<T>();
   }
 
-
   filterNot<X extends T>(
     predicate: (value: T) => value is X
   ): Optional<Exclude<T, X>>;
@@ -297,7 +379,7 @@ export class PresentOptional<T> extends Optional<T> {
     );
   }
 
-  orElse(): T {
+  orElse(_: unknown): T {
     return this.value;
   }
 
@@ -368,7 +450,6 @@ export class AbsentOptional<T> extends Optional<T> {
   filter(): Optional<T> {
     return new AbsentOptional();
   }
-
 
   filterNot<X extends T>(
     predicate: (value: T) => value is X
