@@ -1,8 +1,4 @@
-import {
-  Require,
-  ValueObjectInstance,
-  WithoutFunctions
-} from "./utilityTypes";
+import {Require, ValueObjectInstance, WithoutFunctions} from "./utilityTypes";
 import {EntitySerializer, RemoveNever} from "./EntitySerializer";
 
 // prettier-ignore
@@ -35,7 +31,8 @@ export type AttributesOrEntities<T> = {
     : T[K];
 };
 
-export type AttributeSelection<I, K extends keyof Attributes<I>> = Pick<I, K>;
+export type AttributeSelection<I, K extends keyof Attributes<I>> =
+  K extends keyof I ? Pick<I, K> : never;
 
 export type AttributesWithout<I, K extends keyof Attributes<I>> = RemoveNever<
   {

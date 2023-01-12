@@ -1,4 +1,4 @@
-import type { Attributes, Base } from ".";
+import type {Attributes, Base} from ".";
 
 import {EntityConfig} from "./EntityConfig";
 
@@ -9,14 +9,14 @@ export interface FieldData<
   name: K;
   entityConstructor?: Object;
   fieldArrayLike: boolean;
-  nullable: boolean
+  nullable: boolean;
 }
 
 export interface FieldDataWithSubfields<
   T extends HasFieldsIntrospection,
   K extends keyof Attributes<T>
 > extends FieldData<T, K> {
-  subFields?: MappedFieldUnion<T[K]>;
+  subFields?: MappedFieldUnion<K extends keyof T ? T[K] : never>;
 }
 
 export class ClassFieldReader<
@@ -63,8 +63,8 @@ export class EntityFieldReader<
   onlySet(): MappedFieldUnion<T> {
     return this.parentFields.filter((field) => {
       const fieldValue = this.instance[field.name];
-      if(field.nullable === true && fieldValue === null) {
-        return true
+      if (field.nullable === true && fieldValue === null) {
+        return true;
       }
       return fieldValue != null;
     });
@@ -101,8 +101,12 @@ function isHasFieldsIntrospection(
 type ValueOf<T> = T[keyof T];
 type MappedFieldUnion<T> = ValueOf<
   {
-    [K in keyof Attributes<T>]: T extends HasFieldsIntrospection ? T[K] extends HasFieldsIntrospection
-      ? FieldDataWithSubfields<T, K>
-      : FieldData<T, K> : never;
+    [K in keyof Attributes<T>]: T extends HasFieldsIntrospection
+      ? K extends keyof T
+        ? T[K] extends HasFieldsIntrospection
+          ? FieldDataWithSubfields<T, K>
+          : FieldData<T, K>
+        : never
+      : never;
   }
 >[];

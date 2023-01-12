@@ -13,7 +13,9 @@ export class EntitySerializer<T extends Base> {
     ...fields: K[]
   ): AttributeSelection<T, K> {
     return fields.reduce((picked, key) => {
-      picked[key] = this.instance[key];
+      // Typescript 4.5+ has broken string keys
+      // https://github.com/microsoft/TypeScript/issues/51161
+      (picked as any)[key] = this.instance[key as keyof T];
       return picked;
     }, {} as AttributeSelection<T, K>);
   }
@@ -127,9 +129,11 @@ type SameTypeFields<T extends FunctionlessBase, O extends Object> =
 
 type AnythingWithAsJSON = {asJSON(): any};
 export type AsJsonResult<T extends HasAsJSONMethod> = {
-  [K in keyof Attributes<T>]: Require<T[K]> extends AnythingWithAsJSON
-    ? ReturnType<Require<T[K]>["asJSON"]>
-    : T[K];
+  [K in keyof Attributes<T>]: K extends keyof T
+    ? Require<T[K]> extends AnythingWithAsJSON
+      ? ReturnType<Require<T[K]>["asJSON"]>
+      : T[K]
+    : never;
 };
 
 // AsJsonResult<T[K]>

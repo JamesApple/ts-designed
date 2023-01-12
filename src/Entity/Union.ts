@@ -21,10 +21,12 @@ type RequireString<T> = T extends string ? T : never;
 type StringKeys<T> = {
   [K in keyof T]: T[K] extends string ? K : never;
 }[keyof T];
-type UnionMapped<T extends UnionableClass, TK extends StringKeys<T>> = {
-  [K in T[TK]]: Extract<T, Tuple<RequireString<TK>, K>>;
-};
-
+type UnionMapped<T extends UnionableClass, TK extends StringKeys<T>> =
+  T[TK] extends string
+    ? {
+        [K in T[TK]]: Extract<T, Tuple<RequireString<TK>, K>>;
+      }
+    : never;
 
 type EachCase<
   T extends UnionableClass,
@@ -38,7 +40,6 @@ type EachCase<
 
 export class UnionDeserializationError extends DomainError {}
 
-
 class Union<
   T extends UnionableClass,
   TK extends StringKeys<InstanceType<T>> & StringKeys<T>
@@ -49,7 +50,6 @@ class Union<
     T extends UnionableClass,
     TK extends StringKeys<InstanceType<T>> & StringKeys<T>
   >(config: {entries: T[]; key: TK}) {
-
     const classes: any = config.entries.reduce((acc, klass) => {
       (acc as any)[klass[config.key]] = klass;
       return acc;
@@ -127,7 +127,7 @@ class Union<
   }
 
   get key(): TK {
-    throw new Error('Not implemented')
+    throw new Error("Not implemented");
   }
   constructor(public value: InstanceType<T>) {}
 
@@ -158,7 +158,7 @@ class Union<
   }
 
   __class(): T {
-    throw new Error('Not implemented')
+    throw new Error("Not implemented");
   }
 
   __attributes():
@@ -169,23 +169,32 @@ class Union<
 }
 
 namespace Union {
-  export type Classes<T> = Require<T> extends Union<infer C, any> ? C : never
+  export type Classes<T> = Require<T> extends Union<infer C, any> ? C : never;
 
-  export type Instances<T> = Require<T> extends Union<infer C, any> ? InstanceType<C> : never
+  export type Instances<T> = Require<T> extends Union<infer C, any>
+    ? InstanceType<C>
+    : never;
 
-  export type Data<T> = Require<T> extends Union<infer C, any> ? ReturnType<InstanceType<C>['__attributes']> : never
+  export type Data<T> = Require<T> extends Union<infer C, any>
+    ? ReturnType<InstanceType<C>["__attributes"]>
+    : never;
 
-  export type AsJSONResult<T> = Require<T> extends Union<infer C, any> ? ReturnType<InstanceType<C>['asJSON']> : never
+  export type AsJSONResult<T> = Require<T> extends Union<infer C, any>
+    ? ReturnType<InstanceType<C>["asJSON"]>
+    : never;
 
   /**
    * The instances of the union, the arguments to create a union, or the union instance itself
    */
-  export type Attributes<T> = Require<T> extends Union<any, any> ? Data<T> | Instances<T> | T : never
+  export type Attributes<T> = Require<T> extends Union<any, any>
+    ? Data<T> | Instances<T> | T
+    : never;
 
-  export type IsUnion<T> = Require<T> extends Union<any, any> ? true : false
+  export type IsUnion<T> = Require<T> extends Union<any, any> ? true : false;
 
-  export type Keys<T> = Require<T> extends Union<infer C, infer K> ? C[K] : never
+  export type Keys<T> = Require<T> extends Union<infer C, infer K>
+    ? C[K]
+    : never;
 }
 
-
-export { Union }
+export {Union};
