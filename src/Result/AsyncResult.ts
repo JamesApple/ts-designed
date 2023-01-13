@@ -11,6 +11,24 @@ export class AsyncResult<T, F extends Error = Error>
 {
   protected constructor(protected promise: Promise<Result<T, F>>) {}
 
+  /**
+   * Wraps a potentially unsafe function and makes it return a result type
+   */
+  static wrap<FN extends (...args: any[]) => any>(fn: FN) {
+    return (
+      ...args: Parameters<FN>
+    ): FN extends (...args: any[]) => infer RT ? AsyncResult<RT> : never => {
+      return AsyncResult.fromPromise((async () => fn(...args))()) as any;
+    };
+  }
+
+  /**
+   * Create a result by immediately invoking the passed callback
+   */
+  static invoke = <T>(fn: () => Promise<T> | T) => {
+    return AsyncResult.fromPromise((async () => fn())());
+  };
+
   then<TResult1 = Result<T, F>, TResult2 = never>(
     onfulfilled?:
       | ((value: Result<T, F>) => TResult1 | PromiseLike<TResult1>)
@@ -55,7 +73,7 @@ export class AsyncResult<T, F extends Error = Error>
   ): AsyncResult<T, F | E> {
     return AsyncResult.fromPromise(
       (async () => {
-        let timeoutMarker: any
+        let timeoutMarker: any;
         const timeout = new Promise((_, rej) => {
           timeoutMarker = setTimeout(
             () =>
@@ -67,7 +85,7 @@ export class AsyncResult<T, F extends Error = Error>
           );
         });
         await Promise.race([this, timeout]);
-        clearTimeout(timeoutMarker)
+        clearTimeout(timeoutMarker);
         return this.getOrThrowFailure();
       })()
     );

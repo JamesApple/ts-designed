@@ -10,6 +10,17 @@ export abstract class Result<T, F extends Error = Error> {
     }
   }
 
+  /**
+   * Wraps a potentially unsafe function and makes it return a result type
+   */
+  static wrap<FN extends (...args: any[]) => any>(fn: FN) {
+    return (
+      ...args: Parameters<FN>
+    ): FN extends (...args: any[]) => infer RT ? Result<RT> : never => {
+      return Result.fromThrowable(() => fn(...args)) as any;
+    };
+  }
+
   static fromPromise<T, F extends Error = Error>(
     promise: Promise<T>
   ): AsyncResult<T, F> {
