@@ -3,6 +3,7 @@ export {Field} from "./Field";
 export {FieldConfigArgs} from "./FieldConfig";
 export {Union} from "./Union";
 export {EntityConfig} from "./EntityConfig";
+export {List} from "./List";
 export {
   Attributes,
   AttributeSelection,
