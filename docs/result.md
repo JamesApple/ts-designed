@@ -86,6 +86,14 @@ await Result.fromPromise(getUser).map(setUser, onError) // Result<void, void>
 await Result.fromPromise(getUser).map(toViewUser).map(setUser) // Result<void, E>
 ```
 
+### `tap`
+
+The tap method is used for side effects. Similar to `.map` it takes 2 functions for `success` and `error` as arguments, but unlike `.map`, it doesn't change the `Result`. Instead, it just calls the success or failure function for its side effect and then returns the original `Result`. This is useful when you want to do something with a successful `Result` (like logging or updating an external resource) without changing the `Result` itself.
+
+```js
+await Result.fromPromise(createSubscription).tap(logMetrics)
+```
+
 ### `swap`
 
 Swaps the types `<T>` and `<E>`. If a Result is a `Success<T>` it will return a
